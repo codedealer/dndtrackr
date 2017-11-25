@@ -1,0 +1,8 @@
+{
+    "apiKey": "AIzaSyBBAWSqFbC2e7gqSTa40fK1oaDaZVX5Xjg",
+    "authDomain": "dndtrackr.firebaseapp.com",
+    "databaseURL": "https://dndtrackr.firebaseio.com",
+    "projectId": "dndtrackr",
+    "storageBucket": "dndtrackr.appspot.com",
+    "messagingSenderId": "638459681444"
+  }
