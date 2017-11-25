@@ -61,6 +61,7 @@ export default {
   max-height: 180px;
   background: #fff;
   z-index: 101;
+  overflow: auto;
   &:after {
     content: '';
     display: block;
