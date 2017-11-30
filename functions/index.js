@@ -83,11 +83,11 @@ const s = (request, response) => {
       </div>`;
 
     description += monster.props.join('');
-    if (monster.sprops) description += `<div class="m-t-20">
+    if (monster.sprops.length) description += `<div class="m-t-20">
         ${monster.sprops.join('')}</div>`;
-    if (monster.actions) description += `<div class="m-t-20">
+    if (monster.actions.length) description += `<div class="m-t-20">
         <div class="i f-w-b f-s-18">Actions</div>${monster.actions.join('')}</div>`;
-    if (monster.reactions) description += `<div class="m-t-20">
+    if (monster.reactions.length) description += `<div class="m-t-20">
         <div class="i f-w-b f-s-18">Reactions</div>${monster.reactions.join('')}</div>`;
     let lactions = monster.lactions.join('');
     if (lactions) description += `<div class="m-t-20">
