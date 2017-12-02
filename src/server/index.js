@@ -2,7 +2,6 @@ import firebase from 'firebase'
 import firebaseui from 'firebaseui'
 import config from './config.json'
 import axios from 'axios'
-import spells from '../spells.json'
 
 let cache = {};
 let spellCache = {};
@@ -144,20 +143,5 @@ export default {
         spellCache[snap.key] = data;
       });
     });
-  },
-  addSpells () {
-    let keys = [];
-    let refName = this.db.ref('spellnames');
-
-    spells.forEach(spell => {
-      keys.push(refName.push(spell.name).key);
-    });
-
-    let updateObject = {};
-    for (let i = 0; i < spells.length; i++) {
-      updateObject[keys[i]] = spells[i];
-    }
-
-    this.db.ref('spells').update(updateObject);
   }
 }
