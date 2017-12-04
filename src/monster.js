@@ -20,7 +20,7 @@ export default class Monster {
     this.name = data.name;
     this.info = data.description;
     if (data.hasOwnProperty('dex')) this.dex = data.dex;
-    if (!softReset && data.hasOwnProperty('hit')) this.health = this.getHealth(data.hit);
+    if (!softReset && data.hasOwnProperty('hit')) this.getHealth(data.hit);
   }
   getHealth (hitDice) {
     let diceParams;
@@ -28,7 +28,8 @@ export default class Monster {
       diceParams = parser.parse(hitDice);
     } catch (e) {
       console.error(e);
-      return 0;
+      this.health = 0;
+      return;
     }
 
     random.get(diceParams.die, diceParams.n)
