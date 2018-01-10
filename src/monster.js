@@ -19,7 +19,11 @@ export default class Monster {
 
     this.name = data.name;
     this.info = data.description;
-    if (data.hasOwnProperty('dex')) this.dex = data.dex;
+    if (data.hasOwnProperty('dex')) {
+      let dex = parseInt(data.dex);
+      if (isNaN(dex)) dex = 0;
+      this.dex = dex;
+    }
     if (!softReset && data.hasOwnProperty('hit')) this.getHealth(data.hit);
   }
   getHealth (hitDice) {
