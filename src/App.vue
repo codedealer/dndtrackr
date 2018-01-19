@@ -3,9 +3,9 @@
     <div class="controls">
       <div class="list-control">
         <a href="#" class="control-button add-monster" @click.prevent="addMonster" title="add new monster">+</a>
-        <a href="#" class="control-button rename-monster" @click.prevent="renameMonsters" v-show="monsters.length" title="rename monster duplicates">R</a>
-        <a href="#" class="control-button" @click.prevent="generateInitiative" v-show="monsters.length" title="generate monsters' initiative">I</a>
-        <a href="#" class="control-button sort-monster" @click.prevent="sortMonsters" v-show="monsters.length" title="sort by initiative">S</a>
+        <a href="#" class="control-button rename-monster" @click.prevent="renameMonsters" v-show="monsters.length" title="rename monster duplicates"><img src="./assets/rename.png" class="icon"></a>
+        <a href="#" class="control-button" @click.prevent="generateInitiative" v-show="monsters.length" title="generate monsters' initiative"><img src="./assets/init.png" class="icon"></a>
+        <a href="#" class="control-button sort-monster" @click.prevent="sortMonsters" v-show="monsters.length" title="sort by initiative"><img src="./assets/sort.png" class="icon"></a>
       </div>
       <div class="combat-control">
         <dice-roller></dice-roller>
@@ -42,8 +42,8 @@
               <div class="initiative-counter"><input class="initiative" v-model.number="initiative[index]" type="text" :tabindex="1+index"></div>
               <div class="type-counter" @click="changeType(index)" title="Change type monster/player">
                 <div class="type-slider" :class="{'slided': monster.type}">
-                  <div class="type">M</div>
-                  <div class="type type-player">P</div>
+                  <div class="type"><img src="./assets/monster.png" class="icon"></div>
+                  <div class="type type-player"><img src="./assets/player.png" class="icon"></div>
                 </div>
               </div>
               <Autocomplete
@@ -58,7 +58,7 @@
               type="text"
               v-show="showInput(monster)"
               @keydown.tab.prevent = "onMonsterRequest(index)">
-              <div class="name-button" :class="{'name-set': monster.showNick}" @click="setNickname(monster)" title="toggle custom name">N</div>
+              <div class="name-button" :class="{'name-set': monster.showNick}" @click="setNickname(monster)" title="toggle custom name"><img src="./assets/edit.png" class="icon"></div>
               <div class="delete-button" @click.stop="removeItem(index)">-</div>
             </div>
           </div>
@@ -313,6 +313,11 @@ body {
   color: #2c3e50;
   height: 100%;
 }
+.icon {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+}
 .control-button {
   display: inline-block;
   width: 32px;
@@ -364,6 +369,12 @@ body {
   order: 0;
   flex: 0 0 320px;
   align-self: auto;
+}
+.list-control {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: left;
 }
 .info,
 .combat-control {
