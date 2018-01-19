@@ -196,6 +196,7 @@ export default {
     },
     changeType (index) {
       this.monsters[index].type ^= 1;
+      this.monsters[index].showNick = true;
     },
     sortMonsters () {
       this.monsters.forEach((monster, i) => {
@@ -219,6 +220,8 @@ export default {
       return this.types.character === monster.type || monster.showNick;
     },
     setNickname (monster) {
+      if (monster.type === this.types.character) return;
+
       monster.showNick = !monster.showNick;
     },
     renameMonsters () {
