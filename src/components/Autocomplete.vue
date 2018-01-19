@@ -60,6 +60,7 @@ export default {
 
     // When enter key pressed on the input
     enter () {
+      if (!this.matches.length) return;
       this.$emit('input', this.matches[this.current].key);
       this.input = this.matches[this.current].name;
       this.open = false;
