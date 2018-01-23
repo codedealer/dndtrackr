@@ -2,7 +2,9 @@
   <div id="app">
     <div class="controls">
       <div class="list-control">
-        <a href="#" class="control-button add-monster" @click.prevent="addMonster" title="add new monster">+</a>
+        <img src="static/puff.svg" class="icon-loader" v-show="!isNamesLoaded">
+        <span class="s-loader" v-show="!isNamesLoaded">Filling bestiary...</span>
+        <a href="#" class="control-button add-monster" @click.prevent="addMonster" v-show="isNamesLoaded" title="add new monster">+</a>
         <a href="#" class="control-button rename-monster" @click.prevent="renameMonsters" v-show="monsters.length" title="rename monster duplicates"><img src="./assets/rename.png" class="icon"></a>
         <a href="#" class="control-button" @click.prevent="generateInitiative" v-show="monsters.length" title="generate monsters' initiative"><img src="./assets/init.png" class="icon"></a>
         <a href="#" class="control-button sort-monster" @click.prevent="sortMonsters" v-show="monsters.length" title="sort by initiative"><img src="./assets/sort.png" class="icon"></a>
@@ -19,9 +21,12 @@
         </div>
       </div>
       <div class="spell-control">
+        <img src="static/puff.svg" class="icon-loader" v-show="!isSpellsLoaded">
+        <span class="s-loader" v-show="!isSpellsLoaded">Fetching spellbooks...</span>
         <Spellfinder
         :suggestions="spellNames"
         v-model="currentSpell"
+        v-show="isSpellsLoaded"
         ></Spellfinder>
         <div id="ui-container" v-show="!user.state"></div>
         <div class="user-container" v-show="user.state">
@@ -107,13 +112,17 @@ export default {
     this.server.connect(this.user);
     this.server.fetchNames().then(data => {
       this.names = data;
+      this.isNamesLoaded = true;
       this.server.fetchSpells().then(spellNames => {
         this.spellNames = spellNames;
+        this.isSpellsLoaded = true;
       });
     });
   },
   data () {
     return {
+      isNamesLoaded: false,
+      isSpellsLoaded: false,
       server: Server,
       user: {
         state: 0,
@@ -707,6 +716,24 @@ body {
     font-size: 12px;
     color: #999;
     margin-bottom: 10px;
+  }
+}
+.icon-loader {
+  margin-left: 15px;
+}
+.s-loader {
+  margin-left: 5px;
+  font-size: 12px;
+  margin-top: 9px;
+}
+.spell-control {
+  .icon-loader {
+    margin-left: 0;
+    margin-top: 10px;
+    vertical-align: middle;
+  }
+  .s-loader {
+    margin-top: 0;
   }
 }
 </style>
