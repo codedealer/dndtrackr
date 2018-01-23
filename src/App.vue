@@ -36,6 +36,17 @@
     <div class="monster-container" v-show="!showAddForm">
       <div class="list">
         <div class="list-fix">
+          <div class="tips" v-show="monsters.length == 0">
+            <h1>Dungeons &amp; Dragons Initiative Tracker</h1>
+            <p>Press + to add a monster</p>
+            <ul>
+              <li>Type a name of a monster in the field. Suggestions will pop up. Once you chose a monster its info will appear on the right side of the page.</li>
+              <li>You can press &laquo;Tab&raquo; while in the field to quickly create the next monster.</li>
+              <li>Press monster icon to change the type to player. Players do not have info/health tracking and initiative is not generated for them. It is important to change the type for your players for initiative sorting to work properly.</li>
+              <li>Once done you can press pen icon to give monsters custom names or rename all duplicates automaticaly with the button on the top.</li>
+              <li>Press dice icon to generate monsters' initiative (taken their dexterity into account if info is available) and then sort it.</li>
+            </ul>
+          </div>
           <div v-for="(monster, index) in monsters">
             <div class="list-item" :class="{'selected': index === selected}" @click="selectItem(index)">
               <span class="current"></span>
@@ -677,6 +688,25 @@ body {
       }
       cursor: pointer;
     }
+  }
+}
+.tips {
+  h1 {
+    font-size: 24px;
+  }
+  p {
+    font-weight: bold;
+    text-align: left;
+    padding-left: 15px;
+  }
+  ul {
+    margin-right: 15px;
+  }
+  li {
+    text-align: left;
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 10px;
   }
 }
 </style>
