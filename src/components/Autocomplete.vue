@@ -42,7 +42,7 @@ export default {
       });
     },
     openSuggestion () {
-      return this.selection !== '' &&
+      return this.input !== '' &&
              this.matches.length !== 0 &&
              this.open === true;
     }
