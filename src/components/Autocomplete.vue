@@ -105,6 +105,8 @@ export default {
     },
 
     newMonster () {
+      this.current = 0;
+      this.open = false;
       this.$emit('monsterRequest', this.index);
     }
   }
