@@ -1,6 +1,6 @@
 <template>
   <div class="name-counter" v-bind:class="{'open':openSuggestion}">
-    <input class="form-control" type="text" :value="input" @input.stop="updateValue($event.target.value)"
+    <input ref="input" class="form-control" type="text" :value="value" @input.stop="updateValue($event.target.value)"
       @keydown.enter = 'enter'
       @keydown.down = 'down'
       @keydown.up = 'up'
@@ -8,7 +8,7 @@
       @keydown.tab.prevent = 'newMonster'
     >
     <ul class="dropdown-menu">
-        <li v-for="(suggestion, index) in matches"
+        <li v-for="(suggestion, index) in match"
             v-bind:class="{'active': isActive(index)}"
             @click.stop="suggestionClick(index)"
             class="pointer"
@@ -31,19 +31,19 @@ export default {
   data () {
     return {
       open: false,
-      current: 0,
-      input: ''
+      current: 0
     }
   },
   computed: {
-    matches () {
+    match () {
+      this.current = 0;
       return this.suggestions.filter(obj => {
-        return obj.name.toLowerCase().indexOf(this.input.toLowerCase()) >= 0;
+        return obj.name.toLowerCase().indexOf(this.value.toLowerCase()) >= 0;
       });
     },
     openSuggestion () {
-      return this.input !== '' &&
-             this.matches.length !== 0 &&
+      return this.value !== '' &&
+             this.match.length !== 0 &&
              this.open === true;
     }
   },
@@ -55,14 +55,15 @@ export default {
         this.open = true
         this.current = 0
       }
-      this.input = value;
+      this.$emit('input', value);
     },
 
     // When enter key pressed on the input
     enter () {
-      if (!this.matches.length) return;
-      this.$emit('input', this.matches[this.current].key);
-      this.input = this.matches[this.current].name;
+      if (!this.match.length) return;
+      this.$emit('input', this.match[this.current].name);
+      this.$emit('monsterKey', this.match[this.current].key);
+      //this.$refs.input.value = this.match[this.current].name;
       this.open = false;
     },
 
@@ -80,7 +81,7 @@ export default {
 
     // When down arrow pressed while suggestions are open
     down () {
-      if (this.current < this.matches.length - 1) {
+      if (this.current < this.match.length - 1) {
         this.current++
       }
     },
@@ -92,8 +93,8 @@ export default {
 
     // When one of the suggestion is clicked
     suggestionClick (index) {
-      this.$emit('input', this.matches[index].key);
-      this.input = this.matches[index].name;
+      this.$emit('input', this.match[index].key);
+      this.input = this.match[index].name;
       this.open = false;
     },
 
@@ -104,6 +105,8 @@ export default {
     },
 
     newMonster () {
+      this.current = 0;
+      this.open = false;
       this.$emit('monsterRequest', this.index);
     }
   }

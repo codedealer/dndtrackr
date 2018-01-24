@@ -52,31 +52,16 @@
               <li>Press dice icon to generate monsters' initiative (taken their dexterity into account if info is available) and then sort it.</li>
             </ul>
           </div>
-          <div v-for="(monster, index) in monsters">
-            <div class="list-item" :class="{'selected': index === selected}" @click="selectItem(index)">
-              <span class="current"></span>
-              <div class="initiative-counter"><input class="initiative" v-model.number="initiative[index]" type="text" :tabindex="1+index"></div>
-              <div class="type-counter" @click="changeType(index)" title="Change type monster/player">
-                <div class="type-slider" :class="{'slided': monster.type}">
-                  <div class="type"><img src="./assets/monster.png" class="icon"></div>
-                  <div class="type type-player"><img src="./assets/player.png" class="icon"></div>
-                </div>
-              </div>
-              <Autocomplete
-              :suggestions="monsterList"
-              :index="index"
-              v-model="monster.key"
-              v-show="!showInput(monster)"
-              @monsterRequest="onMonsterRequest"
-              ></Autocomplete>
-              <input class="ordinary-input"
-              v-model="monster.nick"
-              type="text"
-              v-show="showInput(monster)"
-              @keydown.tab.prevent = "onMonsterRequest(index)">
-              <div class="name-button" :class="{'name-set': monster.showNick}" @click="setNickname(monster)" title="toggle custom name"><img src="./assets/edit.png" class="icon"></div>
-              <div class="delete-button" @click.stop="removeItem(index)">-</div>
-            </div>
+          <div v-for="(monster, index) in monsters" @click="selectItem(index)">
+            <Monster
+            :monster="monster"
+            :index="index"
+            :userMonsters="user.monsters"
+            :monsters="names"
+            :selected="selected"
+            :initiative="initiative"
+            @monsterRequest="onMonsterRequest"
+            @removeMonster="onRemoveMonster"></Monster>
           </div>
         </div>
       </div>
@@ -95,14 +80,14 @@
 </template>
 
 <script>
-import Autocomplete from './components/Autocomplete'
+import Monster from './components/Monster'
 import Spellfinder from './components/Spellfinder'
 import AddForm from './components/AddForm'
 import SpellInfo from './components/SpellInfo'
 import Info from './components/Info'
 import diceRoller from './components/dice-roller'
 import Server from './server'
-import Monster from './monster'
+import MonsterClass from './monster'
 import types from './monster-type.json'
 import random from './random'
 
@@ -145,23 +130,6 @@ export default {
     }
   },
   computed: {
-    monsterList () {
-      if (!this.user.monsters.length) return this.names;
-      if (!this.names.length) return this.user.monsters;
-
-      let list = this.names.slice();
-
-      for (let i = 0; i < this.user.monsters.length; i++) {
-        for (let j = 0; j < this.names.length; j++) {
-          if (this.user.monsters[i].name < this.names[j].name) {
-            list.splice(j, 0, this.user.monsters[i]);
-            break;
-          }
-        }
-      }
-
-      return list;
-    },
     hitpoints: {
       get () {
         if (this.selected === -1 || this.selected >= this.monsters.length) return 0;
@@ -201,22 +169,12 @@ export default {
   },
   methods: {
     addMonster () {
-      this.monsters.push(new Monster());
+      this.monsters.push(new MonsterClass());
       this.initiative.push(0);
       this.selected = this.monsters.length - 1;
     },
     selectItem (index) {
       this.selected = index;
-    },
-    removeItem (index) {
-      this.selected = -1;
-      this.monsters.splice(index, 1);
-      this.initiative.splice(index, 1);
-      this.$emit('item-removed', this.monsters);
-    },
-    changeType (index) {
-      this.monsters[index].type ^= 1;
-      this.monsters[index].showNick = true;
     },
     sortMonsters () {
       this.monsters.forEach((monster, i) => {
@@ -235,14 +193,6 @@ export default {
 
       this.initiative = this.monsters.map(monster => monster.initiative);
       this.$emit('items-sorted', this.monsters);
-    },
-    showInput (monster) {
-      return this.types.character === monster.type || monster.showNick;
-    },
-    setNickname (monster) {
-      if (monster.type === this.types.character) return;
-
-      monster.showNick = !monster.showNick;
     },
     renameMonsters () {
       let duplicates = [];
@@ -267,17 +217,30 @@ export default {
         });
       });
     },
-    onMonsterRequest (index) {
-      if (this.monsters.length - 1 > index) return this.tab(index);
-
-      this.addMonster();
-      this.$nextTick(() => { this.tab(index) });
-    },
     tab (index) {
       let next = index + 1;
       let inputs = document.getElementsByClassName('form-control');
 
       if (next < inputs.length) inputs[next].focus();
+    },
+    onMonsterRequest (index) {
+      if (this.monsters.length - 1 > index) return this.tab(index);
+
+      // if a monster is not found it is probably a player at this point
+      let monster = this.monsters[index];
+      if (!monster.key && monster.type === this.types.monster && !monster.nick.length) {
+        monster.type = this.types.character;
+        monster.nick = monster.name;
+        monster.showNick = true;
+      }
+
+      this.addMonster();
+      this.$nextTick(() => { this.tab(index) });
+    },
+    onRemoveMonster (index) {
+      this.selected = -1;
+      this.monsters.splice(index, 1);
+      this.initiative.splice(index, 1);
     },
     generateInitiative () {
       this.monsters.forEach((monster, i) => {
@@ -310,7 +273,7 @@ export default {
     }
   },
   components: {
-    Autocomplete,
+    Monster,
     Info,
     diceRoller,
     Spellfinder,
