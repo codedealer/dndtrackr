@@ -34,6 +34,7 @@ export default {
   padding: 30px 25px;
   .m-t-10 div {
     column-count: 1 !important;
+    width: 100% !important;
   }
   .p-b-20 {
     padding-bottom: 20px;
