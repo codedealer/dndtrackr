@@ -226,6 +226,14 @@ export default {
     onMonsterRequest (index) {
       if (this.monsters.length - 1 > index) return this.tab(index);
 
+      // if a monster is not found it is probably a player at this point
+      let monster = this.monsters[index];
+      if (!monster.key && monster.type === this.types.monster && !monster.nick.length) {
+        monster.type = this.types.character;
+        monster.nick = monster.name;
+        monster.showNick = true;
+      }
+
       this.addMonster();
       this.$nextTick(() => { this.tab(index) });
     },
