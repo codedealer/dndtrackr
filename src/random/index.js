@@ -1,6 +1,7 @@
 import axios from 'axios'
 import api from './api-key.json'
 import cache from './cache'
+import queue from './queue'
 
 let id = 10;
 const sampleSize = 100;
@@ -23,23 +24,44 @@ function compose (n, min, max) {
 }
 
 export default {
+  queue,
   get (max, n = 1) {
-    if (parseInt(max, 10) <= 1) max = 2;
+    if (parseInt(max, 10) <= 1 || isNaN(parseInt(max, 10))) max = 2;
     if (n > sampleSize) n = sampleSize;
 
     if (cache.has(max, n)) return Promise.resolve(cache.get(max, n));
 
     return new Promise((resolve, reject) => {
-      axios.post(url, JSON.stringify(compose(n, 1, max)))
-        .then((response) => {
-          if (response.data.error) return reject(response.data.error);
+      const packet = compose(n, 1, max);
 
-          if (response.data.result && response.data.result.random.data.length) {
-            cache.update(max, response.data.result.random.data);
-            resolve(cache.get(max, n));
-          }
-        })
-        .catch((err) => { reject(err) });
+      if (this.queue.pending(max)) {
+        this.queue.waitFor(max).then(() => {
+          this.get(max, n).then(data => {
+            resolve(data);
+          });
+        });
+        return;
+      }
+
+      const request = axios.post(url, JSON.stringify(packet));
+      this.queue.push(packet, request);
+
+      request.then((response) => {
+        if (response.data.error) {
+          this.queue.fail(packet);
+          return reject(response.data.error);
+        }
+
+        if (response.data.result && response.data.result.random.data.length) {
+          cache.update(max, response.data.result.random.data);
+          this.queue.ok(packet);
+          resolve(cache.get(max, n));
+        }
+      })
+      .catch((err) => {
+        this.queue.fail(packet);
+        reject(err);
+      });
     });
   }
 }
