@@ -22,12 +22,6 @@
 <script>
 export default {
   props: ['suggestions', 'value', 'index'],
-  mounted () {
-    //this is workaround for a bug where old values
-    //persist in items after array was changed
-    this.$parent.$on('item-removed', this.fixInput);
-    this.$parent.$on('items-sorted', this.fixInput);
-  },
   data () {
     return {
       open: false,
@@ -96,12 +90,6 @@ export default {
       this.$emit('input', this.match[index].key);
       this.input = this.match[index].name;
       this.open = false;
-    },
-
-    fixInput (names) {
-      if (this.index >= names.length) return;
-
-      this.input = names[this.index].name;
     },
 
     newMonster () {

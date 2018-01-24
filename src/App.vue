@@ -193,7 +193,6 @@ export default {
       });
 
       this.initiative = this.monsters.map(monster => monster.initiative);
-      this.$emit('items-sorted', this.monsters);
     },
     renameMonsters () {
       let duplicates = [];
