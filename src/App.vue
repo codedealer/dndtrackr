@@ -673,6 +673,7 @@ body {
   }
   ul {
     margin-right: 15px;
+    padding-left: 30px;
   }
   li {
     text-align: left;
