@@ -20,6 +20,7 @@
     v-model="monster.nick"
     type="text"
     v-show="showInput(monster)"
+    placeholder="custom name"
     @keydown.tab.prevent = "monsterRequest(index)">
     <div class="name-button" :class="{'name-set': monster.showNick}" @click="setNickname(monster)" title="toggle custom name"><img src="../assets/edit.png" class="icon"></div>
     <div class="delete-button" @click.stop="removeItem(index)">-</div>
@@ -58,6 +59,13 @@ export default {
   },
   methods: {
     changeType () {
+      // if we switch to player while name is already set
+      // copy it to custom name too
+      if (this.types.monster === this.monster.type &&
+        this.monster.name.length && !this.monster.nick.length) {
+        this.monster.nick = this.monster.name;
+      }
+
       this.monster.type ^= 1;
       this.monster.showNick = true;
     },
