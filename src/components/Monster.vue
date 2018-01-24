@@ -2,7 +2,7 @@
   <div class="list-item" :class="{'selected': index === selected}">
     <span class="current"></span>
     <div class="initiative-counter"><input class="initiative" v-model.number="initiative[index]" type="text" :tabindex="1+index"></div>
-    <div class="type-counter" @click="changeType(index)" title="Change type monster/player">
+    <div class="type-counter" @click="changeType()" title="Change type monster/player">
       <div class="type-slider" :class="{'slided': monster.type}">
         <div class="type"><img src="../assets/monster.png" class="icon"></div>
         <div class="type type-player"><img src="../assets/player.png" class="icon"></div>
@@ -57,9 +57,9 @@ export default {
     }
   },
   methods: {
-    changeType (index) {
-      this.monsters[index].type ^= 1;
-      this.monsters[index].showNick = true;
+    changeType () {
+      this.monster.type ^= 1;
+      this.monster.showNick = true;
     },
     removeItem (index) {
       this.$emit('removeMonster', index);
