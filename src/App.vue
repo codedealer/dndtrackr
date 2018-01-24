@@ -60,7 +60,8 @@
             :monsters="names"
             :selected="selected"
             :initiative="initiative"
-            @monsterRequest="onMonsterRequest"></Monster>
+            @monsterRequest="onMonsterRequest"
+            @removeMonster="onRemoveMonster"></Monster>
           </div>
         </div>
       </div>
@@ -227,6 +228,11 @@ export default {
 
       this.addMonster();
       this.$nextTick(() => { this.tab(index) });
+    },
+    onRemoveMonster (index) {
+      this.selected = -1;
+      this.monsters.splice(index, 1);
+      this.initiative.splice(index, 1);
     },
     generateInitiative () {
       this.monsters.forEach((monster, i) => {

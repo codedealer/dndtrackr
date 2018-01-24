@@ -62,10 +62,7 @@ export default {
       this.monsters[index].showNick = true;
     },
     removeItem (index) {
-      this.selected = -1;
-      this.monsters.splice(index, 1);
-      this.initiative.splice(index, 1);
-      this.$emit('item-removed', this.monsters);
+      this.$emit('removeMonster', index);
     },
     setNickname (monster) {
       if (monster.type === this.types.character) return;
