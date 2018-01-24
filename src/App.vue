@@ -155,6 +155,7 @@ export default {
     showHits () {
       if (this.selected === -1 || this.selected >= this.monsters.length) return false;
       if (this.monsters[this.selected].type === this.types.character) return false;
+      if (!this.monsters[this.selected].key.length) return false;
       if (this.monsters[this.selected].name.length === 0) return false;
 
       return true;
