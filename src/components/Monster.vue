@@ -11,9 +11,10 @@
     <Autocomplete
     :suggestions="monsterList"
     :index="index"
-    v-model="monster.key"
+    v-model="monster.name"
     v-show="!showInput(monster)"
     @monsterRequest="monsterRequest"
+    @monsterKey="monsterKey"
     ></Autocomplete>
     <input class="ordinary-input"
     v-model="monster.nick"
@@ -76,6 +77,9 @@ export default {
     },
     monsterRequest (index) {
       this.$emit('monsterRequest', index);
+    },
+    monsterKey (key) {
+      this.monster.key = key;
     }
   },
   components: {
