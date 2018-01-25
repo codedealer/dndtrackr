@@ -31,8 +31,24 @@ export default {
   computed: {
     match () {
       this.current = 0;
-      return this.suggestions.filter(obj => {
+      let match = this.suggestions.filter(obj => {
         return obj.name.toLowerCase().indexOf(this.value.toLowerCase()) >= 0;
+      });
+
+      return match.sort((a, b) => {
+        let names = a.name.toLowerCase().split(' ');
+
+        if (names.some(name => name.indexOf(this.value.toLowerCase()) === 0)) {
+          return -1;
+        } else {
+          names = b.name.toLowerCase().split(' ');
+
+          if (names.some(name => name.indexOf(this.value.toLowerCase()) === 0)) {
+            return 1;
+          }
+
+          return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1;
+        }
       });
     },
     openSuggestion () {
