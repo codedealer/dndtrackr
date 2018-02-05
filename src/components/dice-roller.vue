@@ -1,11 +1,11 @@
 <template>
   <div class="control-item control-flex-item">
     <div class="dice-wrapper">
-      <input v-model="dice" placeholder="2(1d20 + 3)" class="dice-roller-input" @keydown.enter.self="roll">
+      <input v-model.trim="dice" placeholder="2(1d20 + 3)" class="dice-roller-input" @keydown.enter.self="roll">
     </div>
     <div class="dice-result" @click.stop="expand">
       {{resultTotal}}
-      <div class="dice-detector" v-show="detected">nat {{nat}}</div>
+      <div class="dice-detector" v-show="detected">{{nat}}</div>
     </div>
     <expander :resultArray="result" v-show="showExpander"></expander>
   </div>
@@ -28,6 +28,8 @@ export default {
     resultTotal () {
       if (!this.result.length) return 0;
 
+      if (this.result[0].diceParams.advantage || this.result[0].diceParams.disadvantage) return this.compare();
+
       return this.result.reduce((prev, cur) => {
         return prev + cur.data.reduce((p, c) => p + c, 0) + cur.diceParams.modifier;
       }, 0);
@@ -35,6 +37,7 @@ export default {
     detected () {
       if (!this.result.length) return false;
       if (this.result[0].diceParams.die !== 20) return false;
+      if (this.result[0].diceParams.advantage || this.result[0].diceParams.disadvantage) return true;
 
       return this.result.some(res => {
         return res.data.some(el => el === 20 || el === 1);
@@ -42,12 +45,22 @@ export default {
     },
     nat () {
       if (!this.detected) return 0;
-      let nat;
+      let res, nat;
 
-      for (var i = this.result.length - 1; i >= 0; i--) {
-        nat = this.result[i].data.find(el => el === 20 || el === 1);
-        if (nat !== undefined) return nat;
-      };
+      if (this.result[0].diceParams.advantage) res = 'adv';
+      if (this.result[0].diceParams.disadvantage) res = 'd/adv';
+
+      if (res !== undefined) {
+        nat = this.compare() - this.result[0].diceParams.modifier;
+        if (nat === 20 || nat === 1) res = `nat ${nat}`;
+      } else {
+        for (var i = this.result.length - 1; i >= 0; i--) {
+          nat = this.result[i].data.find(el => el === 20 || el === 1);
+          if (nat !== undefined) res = `nat ${nat}`;
+        }
+      }
+
+      return res;
     }
   },
   methods: {
@@ -78,6 +91,15 @@ export default {
           console.error(e);
           this.dice = 'error';
         });
+    },
+    compare () {
+      const first = this.result[0].data[0] + this.result[0].diceParams.modifier;
+      const last = this.result[1].data[0] + this.result[1].diceParams.modifier;
+      if (this.result[0].diceParams.advantage) {
+        return first > last ? first : last;
+      } else {
+        return first > last ? last : first;
+      }
     },
     expand () {
       this.showExpander = !this.showExpander;
