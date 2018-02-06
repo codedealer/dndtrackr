@@ -1,7 +1,9 @@
 <template>
   <div class="control-item control-flex-item">
     <div class="dice-wrapper">
-      <input v-model.trim="dice" placeholder="2(1d20 + 3)" class="dice-roller-input" @keydown.enter.self="roll">
+      <input v-model.trim="dice" placeholder="2(1d20 + 3)" class="dice-roller-input" @keydown.enter.self="roll"
+      @keydown.up.self.prevent="prevRoll"
+      @keydown.down.self.prevent="nextRoll">
     </div>
     <div class="dice-result" @click.stop="expand">
       {{resultTotal}}
@@ -15,12 +17,14 @@
 import random from '../random'
 import parser from '../parser'
 import expander from './expander'
+import history from '../roll_history'
 
 export default {
   data () {
     return {
       dice: '',
       result: [],
+      history,
       showExpander: false
     }
   },
@@ -67,6 +71,7 @@ export default {
     roll () {
       if (!this.dice.length) return;
       let diceParams;
+      const str = this.dice;
 
       try {
         diceParams = parser.parse(this.dice, true);
@@ -85,6 +90,10 @@ export default {
               diceParams: diceParams[i]
             });
           }
+          this.history.push({
+            str,
+            result: this.result
+          });
           this.dice = '';
         })
         .catch(e => {
@@ -100,6 +109,19 @@ export default {
       } else {
         return first > last ? last : first;
       }
+    },
+    prevRoll () {
+      const roll = this.history.prev();
+      if (roll === false) return;
+
+      this.dice = roll.str;
+      this.result = roll.result;
+    },
+    nextRoll () {
+      const roll = this.history.next();
+
+      this.dice = roll.str;
+      this.result = roll.result;
     },
     expand () {
       this.showExpander = !this.showExpander;
