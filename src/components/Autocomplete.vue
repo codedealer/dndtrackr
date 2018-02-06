@@ -103,8 +103,8 @@ export default {
 
     // When one of the suggestion is clicked
     suggestionClick (index) {
-      this.$emit('input', this.match[index].key);
-      this.input = this.match[index].name;
+      this.$emit('input', this.match[index].name);
+      this.$emit('monsterKey', this.match[index].key);
       this.open = false;
     },
 
