@@ -13,13 +13,7 @@ export default {
     //sanitize
     str = str.replace(/\s/g, '');
 
-    // shorthand
-    if (/^\d+$/.test(str)) {
-      obj = Object.assign({}, template);
-      obj.n = 1;
-      obj.die = parseInt(str, 10);
-      return forceArray ? [obj] : obj;
-    }
+    if (!forceArray) return this.parseHealth(str);
 
     let dieRegex = /^((\d+)?\()?((\d+)d)?(\d+)?(([+-])(\d+))?\)?([adAD])?$/
 
@@ -64,5 +58,32 @@ export default {
 
     if (forceArray) return resultArray;
     return resultArray.length > 2 ? resultArray : resultArray[0];
+  },
+  parseHealth (str) {
+    let dieRegex = /(\d+)d(\d+)(([+-])(\d+))?/
+
+    let result = dieRegex.exec(str);
+    if (result === null) throw new Error(`Parse error for ${str}`);
+
+    let obj = Object.assign({}, template);
+    let n = parseInt(result[1], 10);
+    obj.n = n > 0 ? n : 1;
+
+    let die = parseInt(result[2], 10);
+    obj.die = die > 1 ? die : 2;
+
+    if (result[3] !== undefined) {
+      let modifier;
+
+      if (result[4] === '-') {
+        modifier = parseInt(`-${result[5]}`, 10);
+      } else {
+        modifier = parseInt(result[5], 10);
+      }
+
+      obj.modifier = modifier;
+    }
+
+    return obj;
   }
 }
