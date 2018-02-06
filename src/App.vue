@@ -176,8 +176,6 @@ export default {
     monsterName () {
       if (!this.showHits) return '';
 
-      if (this.monsters[this.selected].nick && this.monsters[this.selected].showNick) return this.monsters[this.selected].nick;
-
       return this.monsters[this.selected].name;
     }
   },
@@ -223,9 +221,8 @@ export default {
         let i = 1;
         this.monsters.forEach((monster) => {
           if (monster.name === name) {
-            monster.nick = `${name} ${i}`;
+            monster.name = `${name} ${i}`;
             i++;
-            monster.showNick = true;
           }
         });
       });
@@ -241,10 +238,8 @@ export default {
 
       // if a monster is not found it is probably a player at this point
       let monster = this.monsters[index];
-      if (!monster.key && monster.type === this.types.monster && !monster.nick.length) {
+      if (!monster.key && monster.type === this.types.monster) {
         monster.type = this.types.character;
-        monster.nick = monster.name;
-        monster.showNick = true;
       }
 
       this.addMonster();
@@ -260,7 +255,10 @@ export default {
         if (monster.type === this.types.character) return;
 
         this.random.get(20).then(data => {
-          this.initiative.splice(i, 1, data[0] + monster.dex);
+          let mod = parseInt(monster.dex, 10);
+          if (isNaN(mod)) mod = 0;
+
+          this.initiative.splice(i, 1, data[0] + mod);
         });
       });
     },

@@ -6,8 +6,6 @@ export default class Monster {
   constructor (type = TYPE.monster) {
     this.type = type;
     this.name = '';
-    this.nick = '';
-    this.showNick = false;
     this.info = '';
     this.key = '';
     this.health = 0;

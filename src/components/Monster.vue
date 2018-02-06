@@ -12,17 +12,9 @@
     :suggestions="monsterList"
     :index="index"
     v-model="monster.name"
-    v-show="!showInput(monster)"
     @monsterRequest="monsterRequest"
     @monsterKey="monsterKey"
     ></Autocomplete>
-    <input class="ordinary-input"
-    v-model="monster.nick"
-    type="text"
-    v-show="showInput(monster)"
-    placeholder="custom name"
-    @keydown.tab.prevent = "monsterRequest(index)">
-    <div class="name-button" :class="{'name-set': monster.showNick}" @click="setNickname(monster)" title="toggle custom name"><img src="../assets/edit.png" class="icon"></div>
     <div class="delete-button" @click.stop="removeItem(index)">-</div>
   </div>
 </template>
@@ -62,23 +54,13 @@ export default {
       // if we switch to player while name is already set
       // copy it to custom name too
       if (this.types.monster === this.monster.type &&
-        this.monster.name.length && !this.monster.nick.length) {
-        this.monster.nick = this.monster.name;
+        this.monster.name.length) {
       }
 
       this.monster.type ^= 1;
-      this.monster.showNick = true;
     },
     removeItem (index) {
       this.$emit('removeMonster', index);
-    },
-    setNickname (monster) {
-      if (monster.type === this.types.character) return;
-
-      monster.showNick = !monster.showNick;
-    },
-    showInput (monster) {
-      return this.types.character === monster.type || monster.showNick;
     },
     monsterRequest (index) {
       this.$emit('monsterRequest', index);
