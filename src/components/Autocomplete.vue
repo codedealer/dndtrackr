@@ -117,3 +117,17 @@ export default {
 }
 </script>
 
+<style lang="scss">
+.name-counter .form-control {
+  width: 200px;
+  margin: 0;
+  height: 32px;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  box-sizing: border-box;
+  &:focus {
+    background: #ececec;
+  }
+}
+</style>
