@@ -8,6 +8,7 @@
         <a href="#" class="control-button rename-monster" @click.prevent="renameMonsters" v-show="monsters.length" title="rename monster duplicates"><img src="./assets/rename.png" class="icon"></a>
         <a href="#" class="control-button" @click.prevent="generateInitiative" v-show="monsters.length" title="generate monsters' initiative"><img src="./assets/init.png" class="icon"></a>
         <a href="#" class="control-button sort-monster" @click.prevent="sortMonsters" v-show="monsters.length" title="sort by initiative"><img src="./assets/sort.png" class="icon"></a>
+        <a href="#" class="control-button" @click.prevent="resetXp" v-show="monsters.length" title="reset XP counter">XP</a>
       </div>
       <div class="combat-control">
         <dice-roller></dice-roller>
@@ -70,6 +71,7 @@
             :monsterList="monsterList"
             @killMonster="addToRemoved"
             @reviveMonster="cancelRemoved"
+            ref="xp"
         ></Xp>
       </div>
       <div class="info">
@@ -325,6 +327,10 @@ export default {
         this.hitpoints -= mod;
       }
       this.hitMod = '';
+    },
+    resetXp () {
+      this.removedMonsters = [];
+      this.$refs.xp.add = 0;
     }
   },
   components: {

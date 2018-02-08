@@ -1,10 +1,15 @@
 <template>
   <div class="xp-tracker" :class="{'expanded': expanded}">
-    <div class="xp-header" @click="expanded = !expanded">
-      <div class="xp-controls"></div>
-      <div class="xp-counter">
-        <div class="xp-counter-total">{{total}} XP</div>
-        <div class="xp-counter-player">{{xpPerPlayer}} per player</div>
+    <div class="xp-header-wrapper" @click="expanded = !expanded">
+      <div class="xp-header" :class="{'slided': expanded}">
+        <div class="xp-counter">
+          <div class="xp-counter-total">{{total}} XP</div>
+          <div class="xp-counter-player">{{xpPerPlayer}} per player</div>
+        </div>
+        <div class="xp-controls" @click.stop>
+          <input class="xp-mod" v-model.trim="modificator" @keydown.enter="applyMod">
+          <div class="xp-controls-desc">additional xp</div>
+        </div>
       </div>
     </div>
     <div class="xp-body">
@@ -32,15 +37,18 @@ export default {
   props: ['monsters', 'removed', 'monsterList'],
   data () {
     return {
-      expanded: false
+      expanded: false,
+      modificator: '',
+      add: 0,
+      slided: false
     }
   },
   computed: {
     total () {
-      if (!this.removed.length) return 0;
-      if (this.removed.length === 1) return this.removed[0].xp;
+      if (!this.removed.length) return this.add;
+      if (this.removed.length === 1) return this.removed[0].xp + this.add;
 
-      return this.removed.reduce((prev, cur) => cur.xp + prev, 0);
+      return this.removed.reduce((prev, cur) => cur.xp + prev, 0) + this.add;
     },
     xpPerPlayer () {
       if (this.total === 0) return 0;
@@ -92,6 +100,23 @@ export default {
       if (monster.quantity < 1) return;
 
       this.$emit('reviveMonster', monster);
+    },
+    applyMod () {
+      let str = this.modificator;
+      let sign = false;
+
+      if (str[0] === '-') sign = true;
+
+      str = this.modificator.replace(/\D/g, '');
+      str = parseInt(str);
+      if (isNaN(str)) str = 0;
+
+      if (!sign) this.add += str;
+      if (sign) {
+        this.add = this.total - str < 0 ? this.add - this.total : this.add - str;
+      }
+
+      this.modificator = '';
     }
   }
 }
@@ -113,23 +138,52 @@ export default {
     transform: translateY(0);
   }
 }
+.xp-header-wrapper {
+  height: 52px;
+  width: 100%;
+  cursor: pointer;
+  overflow: hidden;
+}
 .xp-header {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  align-items: center;
+  align-items: top;
   height: 52px;
-  cursor: pointer;
+  transform: translateX(101px);
+  transition: all .4s ease-in-out;
+  transition-delay: .4s;
+  &.slided {
+    transform: translateX(0);
+    .xp-counter {
+      background-color: #ebebeb;
+    }
+  }
 }
 .xp-controls,
 .xp-counter {
   flex: 0 1 auto;
+  height: 100%;
+  padding-top: 10px;
+}
+.xp-controls {
+  flex-basis: 100px;
+  border-left: 1px solid #ebebeb;
+  .xp-mod{
+    width: 80%;
+    font-size: 14px;
+  }
+  .xp-controls-desc {
+    font-size: 12px;
+    color: #666;
+    font-style: italic;
+  }
 }
 .xp-counter {
   flex-grow: 1;
   flex-shrink: 0;
   text-align: right;
-  margin-right: 10px;
+  padding-right: 10px;
   .xp-counter-total {
     font-size: 18px;
   }
@@ -138,6 +192,9 @@ export default {
     font-style: italic;
     color: #666;
   }
+  transition: background-color .3s ease-in-out;
+  transition-delay: .4s;
+  cursor: pointer;
 }
 .xp-body {
   border-top: 1px solid #ebebeb;
