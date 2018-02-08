@@ -24,29 +24,10 @@ import Autocomplete from './Autocomplete'
 import types from '../monster-type.json'
 
 export default {
-  props: ['index', 'monster', 'userMonsters', 'monsters', 'selected', 'initiative'],
+  props: ['index', 'monster', 'monsterList', 'selected', 'initiative'],
   data () {
     return {
       types
-    }
-  },
-  computed: {
-    monsterList () {
-      if (!this.userMonsters.length) return this.monsters;
-      if (!this.monsters.length) return this.userMonsters;
-
-      let list = this.monsters.slice();
-
-      for (let i = 0; i < this.userMonsters.length; i++) {
-        for (let j = 0; j < this.monsters.length; j++) {
-          if (this.userMonsters[i].name < this.monsters[j].name) {
-            list.splice(j, 0, this.userMonsters[i]);
-            break;
-          }
-        }
-      }
-
-      return list;
     }
   },
   methods: {

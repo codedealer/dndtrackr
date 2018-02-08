@@ -91,6 +91,28 @@ export default {
       });
     });
   },
+  m () {
+    console.log('bop');
+    this.db.ref('monsters').once('value', snap => {
+      let data = [];
+
+      snap.forEach(monster => {
+        data.push({
+          key: monster.key,
+          monster: monster.val()
+        });
+      });
+      console.log(data.length);
+      let u = {};
+      data.forEach(monster => {
+        const res = /((\d+\s?,?\s?\d+)\s?[xX][pP])/.exec(monster.monster.description);
+        let xp = res === null ? 'UNDEFINED' : res[2];
+        xp = parseInt(xp.replace(/[\s,]/g, ''));
+        u[monster.key] = Object.assign(monster.monster, {xp});
+      });
+      this.db.ref('monsters').update(u);
+    });
+  },
   fetchUserMonsters (uid) {
     return this.fetchNames(`userMonsters/${uid}`);
   },
