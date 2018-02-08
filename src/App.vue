@@ -57,8 +57,7 @@
               <Monster
               :monster="monster"
               :index="index"
-              :userMonsters="user.monsters"
-              :monsters="names"
+              :monsterList="monsterList"
               :selected="selected"
               :initiative="initiative"
               @monsterRequest="onMonsterRequest"
@@ -66,6 +65,12 @@
             </div>
           </div>
         </div>
+        <Xp :monsters="monsters"
+            :removed="removedMonsters"
+            :monsterList="monsterList"
+            @killMonster="addToRemoved"
+            @reviveMonster="cancelRemoved"
+        ></Xp>
       </div>
       <div class="info">
         <div class="dice-tips tips" v-show="monsters.length == 0">
@@ -99,6 +104,7 @@ import AddForm from './components/AddForm'
 import SpellInfo from './components/SpellInfo'
 import Info from './components/Info'
 import diceRoller from './components/dice-roller'
+import Xp from './components/Xp'
 import Server from './server'
 import MonsterClass from './monster'
 import types from './monster-type.json'
@@ -133,6 +139,7 @@ export default {
       currentSpell: '',
       initiative: [],
       monsters: [],
+      removedMonsters: [],
       types,
       random,
       selected: -1,
@@ -172,6 +179,23 @@ export default {
       if (this.monsters[this.selected].name.length === 0) return false;
 
       return true;
+    },
+    monsterList () {
+      if (!this.user.monsters.length) return this.names;
+      if (!this.names.length) return this.user.monsters;
+
+      let list = this.names.slice();
+
+      for (let i = 0; i < this.user.monsters.length; i++) {
+        for (let j = 0; j < this.names.length; j++) {
+          if (this.user.monsters[i].name < this.names[j].name) {
+            list.splice(j, 0, this.user.monsters[i]);
+            break;
+          }
+        }
+      }
+
+      return list;
     },
     monsterName () {
       if (!this.showHits) return '';
@@ -247,8 +271,28 @@ export default {
     },
     onRemoveMonster (index) {
       this.selected = -1;
-      this.monsters.splice(index, 1);
+      let removedMonster = this.monsters.splice(index, 1)[0];
       this.initiative.splice(index, 1);
+
+      if (removedMonster.type === this.types.monster && removedMonster.name.length) {
+        this.addToRemoved(removedMonster);
+      }
+    },
+    addToRemoved (monsterObject) {
+      this.removedMonsters.push({
+        name: monsterObject.name,
+        key: monsterObject.key,
+        xp: monsterObject.xp
+      });
+    },
+    cancelRemoved (monsterObject) {
+      const index = this.removedMonsters.findIndex(o => {
+        if (monsterObject.key) return o.key === monsterObject.key;
+
+        return o.name === monsterObject.name;
+      });
+
+      this.removedMonsters.splice(index, 1);
     },
     generateInitiative () {
       this.monsters.forEach((monster, i) => {
@@ -289,7 +333,8 @@ export default {
     diceRoller,
     Spellfinder,
     SpellInfo,
-    AddForm
+    AddForm,
+    Xp
   }
 }
 </script>
@@ -380,7 +425,7 @@ body {
   left: 0;
   top: 53px;
   width: 320px;
-  height: calc(100vh - 53px);
+  height: calc(100vh - 106px);
 }
 .list-control {
   display: flex;
