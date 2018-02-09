@@ -37,13 +37,16 @@ export default {
 
       return match.sort((a, b) => {
         let names = a.name.toLowerCase().split(' ');
+        let bnames = b.name.toLowerCase().split(' ');
 
         if (names.some(name => name.indexOf(this.value.toLowerCase()) === 0)) {
+          if (bnames.some(name => name.indexOf(this.value.toLowerCase()) === 0)) {
+            return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1;
+          }
+
           return -1;
         } else {
-          names = b.name.toLowerCase().split(' ');
-
-          if (names.some(name => name.indexOf(this.value.toLowerCase()) === 0)) {
+          if (bnames.some(name => name.indexOf(this.value.toLowerCase()) === 0)) {
             return 1;
           }
 
