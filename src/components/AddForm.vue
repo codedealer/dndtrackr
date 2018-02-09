@@ -22,6 +22,10 @@
             <span class="f-w-b"><input v-model.trim="prop.title"></span>
             <span class="m-l-10"><input v-model="prop.content"></span>
           </div>
+          <div>
+            <span class="f-w-b">Challenge</span>
+            <span class="m-l-10"><input v-model.trim="monster.challenge"></span>
+          </div>
         </div>
         <div class="sprops">
           <p>Special Properties <a href="#" @click.prevent="addSProp" class="control-button">+</a></p>
@@ -105,7 +109,8 @@ export default {
         actions: [],
         reactions: [],
         ldescription: '',
-        lactions: []
+        lactions: [],
+        challenge: ''
       },
       working: false
     }
@@ -146,7 +151,8 @@ export default {
         actions: [],
         reactions: [],
         ldescription: '',
-        lactions: []
+        lactions: [],
+        challenge: ''
       }
     },
     submit () {
@@ -169,11 +175,16 @@ export default {
       this.monster.reactions = this.monster.reactions.filter(e => e.title && e.content);
       this.monster.lactions = this.monster.lactions.filter(e => e.title && e.content);
 
+      let xp = /((\d+\s?,?\s?\d+)\s?[xX][pP])/.exec(this.monster.challenge);
+      xp = xp === null ? 0 : parseInt(xp[2].replace(/[\s,]/g, ''));
+      if (isNaN(xp) || xp < 0) xp = 0;
+
       let monsterObj = {
         description: this.monster,
         name: this.monster.name,
         dex: this.getDex(this.monster.attr.dex),
-        hits: this.monster.hits
+        hits: this.monster.hits,
+        xp
       }
 
       this.working = true;

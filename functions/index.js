@@ -40,6 +40,7 @@ const s = (request, response) => {
   monster.ac = sanitizeHtml(request.body.description.ac.trim());
   monster.hits = sanitizeHtml(request.body.description.hits.trim());
   monster.speed = sanitizeHtml(request.body.description.speed.trim());
+  let challenge = sanitizeHtml(request.body.description.challenge.trim());
   monster.ldescription = sanitizeHtml(request.body.description.ldescription.trim());
 
   monster.props = [];
@@ -60,12 +61,15 @@ const s = (request, response) => {
   monster.reactions = request.body.description.reactions.map(sanitize);
   monster.lactions = request.body.description.lactions.map(sanitize);
 
+  monster.props.push(sanitize({content: challenge, title: 'Challenge:'}));
+
   if (!monster.name || !monster.hits || !monster.attr.dex) response.status(200).send({error: 'monster object is invalid'});
 
   let obj = {
     name: monster.name,
     hit: monster.hits,
-    dex: sanitizeHtml(request.body.dex)
+    dex: sanitizeHtml(request.body.dex),
+    xp: sanitizeHtml(request.body.xp)
   }
 
   let description = `<span class="f-s-24 f-w-b">${monster.name}</span>
