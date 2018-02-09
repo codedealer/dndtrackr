@@ -190,10 +190,11 @@ export default {
 
       for (let i = 0; i < this.user.monsters.length; i++) {
         for (let j = 0; j < this.names.length; j++) {
-          if (this.user.monsters[i].name < this.names[j].name) {
+          if (this.user.monsters[i].name.toLowerCase() < this.names[j].name.toLowerCase()) {
             list.splice(j, 0, this.user.monsters[i]);
             break;
           }
+          if (j === this.names.length - 1) list.push(this.user.monsters[i]);
         }
       }
 
