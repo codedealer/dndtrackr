@@ -38,10 +38,12 @@ export default {
       return match.sort((a, b) => {
         let names = a.name.toLowerCase().split(' ');
         let bnames = b.name.toLowerCase().split(' ');
+        let amatch = names.find(name => name.indexOf(this.value.toLowerCase()) === 0);
+        let bmatch = bnames.find(name => name.indexOf(this.value.toLowerCase()) === 0);
 
-        if (names.some(name => name.indexOf(this.value.toLowerCase()) === 0)) {
-          if (bnames.some(name => name.indexOf(this.value.toLowerCase()) === 0)) {
-            return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1;
+        if (amatch !== undefined) {
+          if (bmatch !== undefined) {
+            return amatch.toLowerCase() < bmatch.toLowerCase() ? -1 : 1;
           }
 
           return -1;
