@@ -54,7 +54,7 @@
                 <li>Press dice icon to generate monsters' initiative (taken their dexterity into account if info is available) and then sort it.</li>
               </ul>
             </div>
-            <div v-for="(monster, index) in monsters" @click="selectItem(index)">
+            <div v-for="(monster, index) in monsters" :key="monster.uid" @click="selectItem(index)">
               <Monster
               :monster="monster"
               :index="index"
@@ -89,7 +89,7 @@
         <Info v-for="(monster, index) in monsters"
         :monster="monster"
         :id="monster.key"
-        :key="monster.initiative"
+        :key="monster.uid"
         v-show="index == selected && monster.type === types.monster"
         ></Info>
       </div>

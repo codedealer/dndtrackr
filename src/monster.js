@@ -2,6 +2,8 @@ import TYPE from './monster-type.json'
 import parser from './parser'
 import random from './random'
 
+let uid = 0;
+
 export default class Monster {
   constructor (type = TYPE.monster) {
     this.type = type;
@@ -12,6 +14,7 @@ export default class Monster {
     this.initiative = 0;
     this.dex = 0;
     this.xp = 0;
+    this.uid = uid++;
   }
   setData (data, softReset = false) {
     if (!data.name || !data.hasOwnProperty('description')) throw new Error('Invalid monster data');
