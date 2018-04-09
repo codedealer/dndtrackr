@@ -556,14 +556,18 @@ body {
 }
 .delete-button {
   height: 32px;
-  width: 32px;
+  width: 26px;
   font-size: 24px;
   color: #fff;
   line-height: 32px;
-  background: #ca331a;
+  background: #ccc;
   flex: 1 1 auto;
   cursor: pointer;
   text-align: center;
+  transition: background-color .4s;
+  &:hover {
+    background: #ca331a;
+  }
 }
 .current {
   display: none;

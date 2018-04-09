@@ -1,6 +1,7 @@
 import TYPE from './monster-type.json'
 import parser from './parser'
 import random from './random'
+import COLOR from './color-codes.json'
 
 let uid = 0;
 
@@ -15,6 +16,7 @@ export default class Monster {
     this.dex = 0;
     this.xp = 0;
     this.uid = uid++;
+    this.color = COLOR[0];
   }
   setData (data, softReset = false) {
     if (!data.name || !data.hasOwnProperty('description')) throw new Error('Invalid monster data');

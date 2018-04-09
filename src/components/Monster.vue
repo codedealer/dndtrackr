@@ -15,6 +15,11 @@
     @monsterRequest="monsterRequest"
     @monsterKey="monsterKey"
     ></Autocomplete>
+    <div class="color-picker" :class="monster.color.name">
+      <div class="color-dropdown">
+        <div class="color-item" v-for="(code, index) in COLOR" :class="{[code.name]: true, 'selected': code.name == monster.color.name}" @click.stop="selectColor(index)"></div>
+      </div>
+    </div>
     <div class="delete-button" @click.stop="removeItem(index)">-</div>
   </div>
 </template>
@@ -22,12 +27,14 @@
 <script>
 import Autocomplete from './Autocomplete'
 import types from '../monster-type.json'
+import COLOR from '../color-codes.json'
 
 export default {
   props: ['index', 'monster', 'monsterList', 'selected', 'initiative'],
   data () {
     return {
-      types
+      types,
+      COLOR
     }
   },
   methods: {
@@ -48,6 +55,11 @@ export default {
     },
     monsterKey (key) {
       this.monster.key = key;
+    },
+    selectColor (index) {
+      if (COLOR.hasOwnProperty(index)) {
+        this.monster.color = COLOR[index];
+      }
     }
   },
   components: {
@@ -55,3 +67,66 @@ export default {
   }
 }
 </script>
+
+
+<style lang="scss">
+.color-picker {
+  width: 26px;
+  height: 32px;
+  position: relative;
+  box-sizing: border-box;
+  border-left: 1px solid #ebebeb;
+  border-right: 1px solid #ebebeb;
+  cursor: pointer;
+  .color-dropdown {
+    position: absolute;
+    top: 32px;
+    left: 0;
+    width: 26px;
+    z-index: 101;
+    display: none;
+  }
+  &:hover .color-dropdown {
+    display: block;
+  }
+  .color-item {
+    width: 26px;
+    height: 26px;
+    cursor: pointer;
+    box-sizing: border-box;
+    border: 1px solid #ebebeb;
+    border-bottom: none;
+    &.selected {
+      border-color: #aac;
+      border-bottom: 1px solid #aac;
+    }
+    &.selected + .color-item {
+      border-top: none;
+    }
+  }
+}
+ .white {
+  background-color: #fff;
+ }
+ .red {
+  background-color: #ca331a;
+ }
+ .blue {
+  background-color: #2775c7;
+ }
+ .green {
+  background-color: #1c9e1c;
+ }
+ .orange {
+  background-color: #ca780f;
+ }
+ .purple {
+  background-color: #840fca;
+ }
+ .pink {
+  background-color: #e678b9;
+ }
+ .yellow {
+  background-color: #d8ca11;
+ }
+</style>
