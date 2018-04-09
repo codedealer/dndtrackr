@@ -111,6 +111,7 @@ import Server from './server'
 import MonsterClass from './monster'
 import types from './monster-type.json'
 import random from './random'
+import COLOR from './color-codes.json'
 
 export default {
   name: 'app',
@@ -249,6 +250,9 @@ export default {
         this.monsters.forEach((monster) => {
           if (monster.name === name) {
             monster.name = `${name} ${i}`;
+
+            if (COLOR.hasOwnProperty(i - 1)) monster.color = COLOR[i - 1];
+
             i++;
           }
         });
