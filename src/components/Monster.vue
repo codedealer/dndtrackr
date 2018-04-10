@@ -11,6 +11,7 @@
     <Autocomplete
     :suggestions="monsterList"
     :index="index"
+    :type="monster.type"
     v-model="monster.name"
     @monsterRequest="monsterRequest"
     @monsterKey="monsterKey"

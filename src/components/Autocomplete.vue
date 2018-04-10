@@ -20,8 +20,10 @@
 </template>
 
 <script>
+import TYPES from '../monster-type.json'
+
 export default {
-  props: ['suggestions', 'value', 'index'],
+  props: ['suggestions', 'value', 'index', 'type'],
   data () {
     return {
       open: false,
@@ -57,6 +59,8 @@ export default {
       });
     },
     openSuggestion () {
+      if (this.type === TYPES.character) return false;
+
       return this.value !== '' &&
              this.match.length !== 0 &&
              this.open === true;
