@@ -94,7 +94,8 @@
         :monster="monster"
         :id="monster.key"
         :key="monster.uid"
-        v-show="index == selected && monster.type === types.monster"
+        @requestDiceRoll="onRequestDiceRoll"
+        v-show="index == selected"
         ></Info>
       </div>
       <SpellInfo :id="currentSpell"></SpellInfo>
@@ -341,6 +342,24 @@ export default {
     resetXp () {
       this.removedMonsters = [];
       this.$refs.xp.add = 0;
+    },
+    onRequestDiceRoll (event) {
+      let monsters = [event.monster];
+
+      if (event.all) monsters = this.monsters.filter(monster => monster.type === this.types.character);
+
+      monsters.forEach(monster => this.makeMonsterRoll(monster, event.target));
+    },
+    makeMonsterRoll (monster, target) {
+      if (!monster.meta.hasOwnProperty(target)) return;
+
+      let modifier = parseInt(monster.meta[target]);
+
+      if (isNaN(modifier)) return;
+
+      this.random.get(20, 1).then(data => {
+        monster.meta[`r${target}`] = data[0] + modifier;
+      });
     }
   },
   components: {
@@ -457,7 +476,8 @@ body {
   align-self: auto;
   max-width: 600px;
 }
-.monster-stat {
+.monster-stat,
+.character-meta {
   text-align: left;
   padding: 30px 25px;
   > div:first-of-type {
@@ -465,7 +485,37 @@ body {
     margin-bottom: 20px;
   }
 }
-
+.character-heading {
+  text-align: left;
+  h3 {
+    margin-top: 0;
+  }
+}
+.selected .monster-input-wrapper {
+  background: #ececec;
+}
+.monster-input-wrapper {
+  height: 32px;
+  overflow: hidden;
+  transition: background-color .4s;
+}
+.character-meta-info {
+  height: 12px;
+  overflow: hidden;
+  font-size: 11px;
+  font-style: italic;
+  transition: all .4s;
+  text-align: left;
+  span {
+    margin-left: 4px;
+  }
+}
+.expanded {
+  .name-counter .form-control {
+    height: 20px;
+    font-size: 14px;
+  }
+}
 .attributes {
   display: flex;
   flex-direction: row;
@@ -563,13 +613,30 @@ body {
   width: 165px;
   margin: 3px 2px;
 }
+.character-meta {
+  .form-control {
+    width: 90%;
+    input {
+      margin: 0 10px;
+      width: 60px;
+    }
+    label {
+      display: inline-block;
+      width: 35%;
+    }
+    .control-button {
+      vertical-align: middle;
+      margin-left: 0;
+    }
+  }
+}
 .delete-button {
   height: 32px;
   width: 26px;
   font-size: 24px;
   color: #fff;
   line-height: 32px;
-  background: #ccc;
+  background: #aac;
   flex: 1 1 auto;
   cursor: pointer;
   text-align: center;
