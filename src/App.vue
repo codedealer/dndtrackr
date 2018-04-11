@@ -94,6 +94,7 @@
         :monster="monster"
         :id="monster.key"
         :key="monster.uid"
+        @requestDiceRoll="onRequestDiceRoll"
         v-show="index == selected"
         ></Info>
       </div>
@@ -341,6 +342,24 @@ export default {
     resetXp () {
       this.removedMonsters = [];
       this.$refs.xp.add = 0;
+    },
+    onRequestDiceRoll (event) {
+      let monsters = [event.monster];
+
+      if (event.all) monsters = this.monsters.filter(monster => monster.type === this.types.character);
+
+      monsters.forEach(monster => this.makeMonsterRoll(monster, event.target));
+    },
+    makeMonsterRoll (monster, target) {
+      if (!monster.meta.hasOwnProperty(target)) return;
+
+      let modifier = parseInt(monster.meta[target]);
+
+      if (isNaN(modifier)) return;
+
+      this.random.get(20, 1).then(data => {
+        monster.meta[`r${target}`] = data[0] + modifier;
+      });
     }
   },
   components: {
@@ -599,6 +618,7 @@ body {
     width: 90%;
     input {
       margin: 0 10px;
+      width: 60px;
     }
     label {
       display: inline-block;
@@ -606,6 +626,7 @@ body {
     }
     .control-button {
       vertical-align: middle;
+      margin-left: 0;
     }
   }
 }

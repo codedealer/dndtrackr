@@ -17,7 +17,7 @@
       @monsterKey="monsterKey"
       ></Autocomplete>
       <div class="character-meta-info">
-        <span>S:</span>{{monster.meta.stealth}}
+        <span>S:</span>{{monster.meta.rstealth}}
         <span>AC:</span>{{monster.meta.ac}}
         <span>P:</span>{{monster.meta.perception}}
       </div>

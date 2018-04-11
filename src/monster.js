@@ -20,6 +20,7 @@ export default class Monster {
 
     if (!meta.hasOwnProperty('ac')) meta['ac'] = '';
     if (!meta.hasOwnProperty('stealth')) meta['stealth'] = '';
+    if (!meta.hasOwnProperty('rstealth')) meta['rstealth'] = '';
     if (!meta.hasOwnProperty('perception')) meta['perception'] = '';
     if (!meta.hasOwnProperty('notes')) meta['notes'] = '';
 

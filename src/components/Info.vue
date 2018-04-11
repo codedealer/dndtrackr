@@ -10,8 +10,12 @@
           <label>AC</label><input v-model.trim="monster.meta.ac">
         </div>
         <div class="form-control">
-          <label>Stealth</label><input v-model.trim="monster.meta.stealth">
-          <a href="#" class="control-button"><img src="../assets/init.png" class="icon"></a>
+          <label>Stealth</label><input v-model.trim="monster.meta.stealth" class="raw-stealth-input">
+          <a href="#" class="control-button"
+          @click.exact.prevent="requestDiceRoll('stealth')"
+          @click.ctrl.prevent="requestDiceRoll('stealth', true)"
+          @click.meta.prevent="requestDiceRoll('stealth', true)"><img src="../assets/init.png" class="icon"></a>
+          <input v-model.trim="monster.meta.rstealth" class="result-stealth-input">
         </div>
         <div class="form-control">
           <label>Perception</label><input v-model.trim="monster.meta.perception">
@@ -39,6 +43,14 @@ export default {
       Server.getMonsterData(newId).then(data => {
         this.monster.setData(data);
       });
+    }
+  },
+  methods: {
+    requestDiceRoll (target, all = false) {
+      if (!all && !this.monster.meta.stealth.length) return;
+      if (!this.monster.meta.hasOwnProperty(target)) return;
+
+      this.$emit('requestDiceRoll', { target, all, monster: this.monster });
     }
   }
 }
