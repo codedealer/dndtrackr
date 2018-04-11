@@ -94,7 +94,7 @@
         :monster="monster"
         :id="monster.key"
         :key="monster.uid"
-        v-show="index == selected && monster.type === types.monster"
+        v-show="index == selected"
         ></Info>
       </div>
       <SpellInfo :id="currentSpell"></SpellInfo>
@@ -457,7 +457,8 @@ body {
   align-self: auto;
   max-width: 600px;
 }
-.monster-stat {
+.monster-stat,
+.character-meta {
   text-align: left;
   padding: 30px 25px;
   > div:first-of-type {
@@ -465,7 +466,37 @@ body {
     margin-bottom: 20px;
   }
 }
-
+.character-heading {
+  text-align: left;
+  h3 {
+    margin-top: 0;
+  }
+}
+.selected .monster-input-wrapper {
+  background: #ececec;
+}
+.monster-input-wrapper {
+  height: 32px;
+  overflow: hidden;
+  transition: background-color .4s;
+}
+.character-meta-info {
+  height: 12px;
+  overflow: hidden;
+  font-size: 11px;
+  font-style: italic;
+  transition: all .4s;
+  text-align: left;
+  span {
+    margin-left: 4px;
+  }
+}
+.expanded {
+  .name-counter .form-control {
+    height: 20px;
+    font-size: 14px;
+  }
+}
 .attributes {
   display: flex;
   flex-direction: row;
@@ -569,7 +600,7 @@ body {
   font-size: 24px;
   color: #fff;
   line-height: 32px;
-  background: #ccc;
+  background: #aac;
   flex: 1 1 auto;
   cursor: pointer;
   text-align: center;

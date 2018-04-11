@@ -131,9 +131,7 @@ export default {
   outline: none;
   font-size: 16px;
   box-sizing: border-box;
-  transition: background-color .3s;
-  &:focus {
-    background: #ececec;
-  }
+  transition: all .4s;
+  background: none;
 }
 </style>

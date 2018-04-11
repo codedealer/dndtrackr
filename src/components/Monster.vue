@@ -8,13 +8,20 @@
         <div class="type type-player"><img src="../assets/player.png" class="icon"></div>
       </div>
     </div>
-    <Autocomplete
-    :suggestions="monsterList"
-    :index="index"
-    v-model="monster.name"
-    @monsterRequest="monsterRequest"
-    @monsterKey="monsterKey"
-    ></Autocomplete>
+    <div class="monster-input-wrapper" :class="{'expanded': expanded}">
+      <Autocomplete
+      :suggestions="monsterList"
+      :index="index"
+      v-model="monster.name"
+      @monsterRequest="monsterRequest"
+      @monsterKey="monsterKey"
+      ></Autocomplete>
+      <div class="character-meta-info">
+        <span>S:</span>{{monster.meta.stealth}}
+        <span>AC:</span>{{monster.meta.ac}}
+        <span>P:</span>{{monster.meta.perception}}
+      </div>
+    </div>
     <div class="color-picker" :class="monster.color.name">
       <div class="color-dropdown">
         <div class="color-item" v-for="(code, index) in COLOR" :class="{[code.name]: true, 'selected': code.name == monster.color.name}" @click.stop="selectColor(index)"></div>
@@ -35,6 +42,14 @@ export default {
     return {
       types,
       COLOR
+    }
+  },
+  computed: {
+    expanded () {
+      if (this.selected === this.index) return false;
+      if (this.monster.type !== this.types.character) return false;
+
+      return this.monster.meta.ac.length || this.monster.meta.stealth.length || this.monster.meta.perception.length;
     }
   },
   methods: {

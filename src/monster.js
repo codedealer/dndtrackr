@@ -6,7 +6,7 @@ import COLOR from './color-codes.json'
 let uid = 0;
 
 export default class Monster {
-  constructor (type = TYPE.monster) {
+  constructor (type = TYPE.monster, meta = {}) {
     this.type = type;
     this.name = '';
     this.info = '';
@@ -17,6 +17,13 @@ export default class Monster {
     this.xp = 0;
     this.uid = uid++;
     this.color = COLOR[0];
+
+    if (!meta.hasOwnProperty('ac')) meta['ac'] = '';
+    if (!meta.hasOwnProperty('stealth')) meta['stealth'] = '';
+    if (!meta.hasOwnProperty('perception')) meta['perception'] = '';
+    if (!meta.hasOwnProperty('notes')) meta['notes'] = '';
+
+    this.meta = meta;
   }
   setData (data, softReset = false) {
     if (!data.name || !data.hasOwnProperty('description')) throw new Error('Invalid monster data');
