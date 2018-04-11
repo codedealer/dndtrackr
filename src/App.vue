@@ -594,6 +594,21 @@ body {
   width: 165px;
   margin: 3px 2px;
 }
+.character-meta {
+  .form-control {
+    width: 90%;
+    input {
+      margin: 0 10px;
+    }
+    label {
+      display: inline-block;
+      width: 35%;
+    }
+    .control-button {
+      vertical-align: middle;
+    }
+  }
+}
 .delete-button {
   height: 32px;
   width: 26px;

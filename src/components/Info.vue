@@ -11,12 +11,13 @@
         </div>
         <div class="form-control">
           <label>Stealth</label><input v-model.trim="monster.meta.stealth">
+          <a href="#" class="control-button"><img src="../assets/init.png" class="icon"></a>
         </div>
         <div class="form-control">
           <label>Perception</label><input v-model.trim="monster.meta.perception">
         </div>
         <div class="form-control">
-          <label>Notes</label><textarea rows="20" cols="60" v-model="monster.meta.notes"></textarea>
+          <p>Notes</p><textarea rows="20" cols="55" v-model="monster.meta.notes"></textarea>
         </div>
       </div>
     </div>
