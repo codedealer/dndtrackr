@@ -18,9 +18,9 @@
       @monsterKey="monsterKey"
       ></Autocomplete>
       <div class="character-meta-info">
-        <span>S:</span>{{monster.meta.rstealth}}
-        <span>AC:</span>{{monster.meta.ac}}
-        <span>P:</span>{{monster.meta.perception}}
+        <span v-show="monster.meta.rstealth.length">S:</span>{{monster.meta.rstealth}}
+        <span v-show="monster.meta.ac.length">AC:</span>{{monster.meta.ac}}
+        <span v-show="monster.meta.perception.length">P:</span>{{monster.meta.perception}}
       </div>
     </div>
     <div class="color-picker" :class="monster.color.name">
