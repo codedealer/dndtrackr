@@ -47,10 +47,10 @@ export default {
   },
   computed: {
     expanded () {
-      if (this.selected === this.index) return false;
+      //if (this.selected === this.index) return false;
       if (this.monster.type !== this.types.character) return false;
 
-      return this.monster.meta.ac.length || this.monster.meta.stealth.length || this.monster.meta.perception.length;
+      return this.monster.meta.ac.length || this.monster.meta.rstealth.length || this.monster.meta.perception.length;
     }
   },
   methods: {

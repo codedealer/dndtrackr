@@ -498,6 +498,10 @@ body {
   height: 32px;
   overflow: hidden;
   transition: background-color .4s;
+  .name-counter .form-control:focus {
+    height: 32px;
+    font-size: 16px;
+  }
 }
 .character-meta-info {
   height: 12px;
