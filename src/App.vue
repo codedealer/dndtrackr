@@ -13,6 +13,7 @@
          v-show="monsters.length" title="generate monsters' initiative"><img src="./assets/init.png" class="icon"></a>
         <a href="#" class="control-button sort-monster" @click.prevent="sortMonsters" v-show="monsters.length" title="sort by initiative"><img src="./assets/sort.png" class="icon"></a>
         <a href="#" class="control-button" @click.prevent="resetXp" v-show="monsters.length" title="reset XP counter">XP</a>
+        <a href="#" class="control-button" :class="{'disabled': saveDisabled}" v-if="user.state" v-show="monsters.length" @click.prevent="saveGroup" title="save players"><img src="./assets/group.png" class="icon"></a>
       </div>
       <div class="combat-control">
         <dice-roller></dice-roller>
@@ -154,7 +155,8 @@ export default {
       hitSign: '-',
       hitMod: '',
       showAddForm: 0,
-      showUserMenu: 0
+      showUserMenu: 0,
+      saveDisabled: false
     }
   },
   computed: {
@@ -360,6 +362,20 @@ export default {
       this.random.get(20, 1).then(data => {
         monster.meta[`r${target}`] = data[0] + modifier;
       });
+    },
+    saveGroup () {
+      if (!this.user.state || this.saveDisabled) return;
+
+      this.saveDisabled = true;
+
+      let players = this.monsters.filter(o => o.type === this.types.character && o.name.length);
+
+      try {
+        this.server.saveGroup(this.user, players)
+        .then(() => { this.saveDisabled = false; });
+      } catch (e) {
+        console.error(e.message);
+      }
     }
   },
   components: {
@@ -864,5 +880,9 @@ body {
 }
 .dice-tips li {
   color: #2c3e50;
+}
+.disabled {
+  opacity: .5;
+  cursor: disabled;
 }
 </style>

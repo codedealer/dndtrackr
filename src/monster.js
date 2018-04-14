@@ -16,6 +16,7 @@ export default class Monster {
     this.dex = 0;
     this.xp = 0;
     this.uid = uid++;
+    this.saved = false;
     this.color = COLOR[0];
 
     if (!meta.hasOwnProperty('ac')) meta['ac'] = '';

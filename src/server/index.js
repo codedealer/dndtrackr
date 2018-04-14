@@ -8,8 +8,6 @@ let spellCache = {};
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 export default {
   connect (userState) {
-    if (this.db) return;
-
     let app = firebase.initializeApp(config);
     let uiConfig = {
       callbacks: {
@@ -111,6 +109,32 @@ export default {
         resolve(data);
       });
     });
+  },
+  saveGroup (user, players) {
+    if (!user.state || !user.uid.length) return Promise.resolve();
+
+    const ref = this.db.ref(`userGroups/${user.uid}`);
+    if (!players.length) {
+      ref.set(true);
+      return Promise.resolve();
+    }
+
+    players.forEach(o => { o.info = ''; });
+    let newPlayers = players.filter(o => o.saved === false);
+
+    newPlayers.forEach(p => {
+      let key = ref.push().key;
+      p.uid = key;
+      p.saved = true;
+    });
+
+    let updateObject = {};
+    // get everythings updated in one batch
+    players.forEach(p => {
+      updateObject[p.uid] = p;
+    });
+
+    return ref.update(updateObject);
   },
   getMonsterData (key) {
     if (cache.hasOwnProperty(key)) return Promise.resolve(cache[key]);
