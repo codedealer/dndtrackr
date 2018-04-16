@@ -4,7 +4,7 @@
       <div class="list-control">
         <img src="static/puff.svg" class="icon-loader" v-show="!isNamesLoaded">
         <span class="s-loader" v-show="!isNamesLoaded">Filling bestiary...</span>
-        <a href="#" class="control-button add-monster" @click.prevent="addMonster" v-show="isNamesLoaded" title="add new monster">+</a>
+        <a href="#" class="control-button add-monster" @click.prevent="addMonster()" v-show="isNamesLoaded" title="add new monster">+</a>
         <a href="#" class="control-button rename-monster" @click.prevent="renameMonsters" v-show="monsters.length" title="rename monster duplicates"><img src="./assets/rename.png" class="icon"></a>
         <a href="#" class="control-button"
         @click.exact.prevent="generateInitiative(false)"
@@ -14,6 +14,7 @@
         <a href="#" class="control-button sort-monster" @click.prevent="sortMonsters" v-show="monsters.length" title="sort by initiative"><img src="./assets/sort.png" class="icon"></a>
         <a href="#" class="control-button" @click.prevent="resetXp" v-show="monsters.length" title="reset XP counter">XP</a>
         <a href="#" class="control-button" :class="{'disabled': saveDisabled}" v-if="user.state" v-show="monsters.length" @click.prevent="saveGroup" title="save players"><img src="./assets/group.png" class="icon"></a>
+        <a href="#" class="control-button" :class="{'disabled': loadDisabled}" v-if="user.state" v-show="monsters.length" @click.prevent="loadGroup" title="load players"><img src="./assets/group.png" class="icon"></a>
       </div>
       <div class="combat-control">
         <dice-roller></dice-roller>
@@ -156,7 +157,8 @@ export default {
       hitMod: '',
       showAddForm: 0,
       showUserMenu: 0,
-      saveDisabled: false
+      saveDisabled: false,
+      loadDisabled: false
     }
   },
   computed: {
@@ -215,9 +217,14 @@ export default {
     }
   },
   methods: {
-    addMonster () {
-      this.monsters.push(new MonsterClass());
-      this.initiative.push(0);
+    addMonster (monster = false) {
+      if (!monster) {
+        this.monsters.push(new MonsterClass());
+      } else {
+        this.monsters.push(monster);
+      }
+      let initiative = monster ? monster.initiative : 0;
+      this.initiative.push(initiative);
       this.selected = this.monsters.length - 1;
     },
     selectItem (index) {
@@ -376,6 +383,30 @@ export default {
       } catch (e) {
         console.error(e.message);
       }
+    },
+    loadGroup () {
+      if (!this.user.state || this.loadDisabled) return;
+
+      this.loadDisabled = true;
+
+      try {
+        this.server.loadGroup(this.user)
+        .then(players => {
+          players.forEach(player => {
+            let i = this.monsters.findIndex(o => o.uid === player.uid);
+            if (i === -1) {
+              this.addMonster(player);
+            } else {
+              this.monsters.splice(i, 1, player);
+              this.initiative.splice(i, 1, player.initiative);
+            }
+          });
+
+          this.loadDisabled = false;
+        });
+      } catch (e) {
+        console.error(e.message);
+      }
     }
   },
   components: {
@@ -426,7 +457,7 @@ body {
   background: #f1cea0;
   text-align: center;
   transition: all .6s ease-in-out;
-  margin-left: 15px;
+  margin-left: 10px;
 }
 .add-monster {
   background: #f18a50;

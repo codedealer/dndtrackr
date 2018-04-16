@@ -8,6 +8,8 @@ let spellCache = {};
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 export default {
   connect (userState) {
+    if (this.db) return;
+
     let app = firebase.initializeApp(config);
     let uiConfig = {
       callbacks: {
@@ -135,6 +137,18 @@ export default {
     });
 
     return ref.update(updateObject);
+  },
+  loadGroup (user) {
+    if (!user.state || !user.uid.length) return Promise.resolve();
+
+    return new Promise((resolve, reject) => {
+      this.db.ref(`userGroups/${user.uid}`).once('value').then(snap => {
+        let players = [];
+        snap.forEach(child => { players.push(child.val()); });
+
+        resolve(players);
+      });
+    });
   },
   getMonsterData (key) {
     if (cache.hasOwnProperty(key)) return Promise.resolve(cache[key]);
