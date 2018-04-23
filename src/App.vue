@@ -545,6 +545,13 @@ body {
   height: 32px;
   overflow: hidden;
   transition: background-color .4s;
+  .name-counter {
+    height: 20px;
+    transition: all .4s;
+    &:focus-within {
+      height: 32px;
+    }
+  }
   .name-counter .form-control:focus {
     height: 32px;
     font-size: 16px;
