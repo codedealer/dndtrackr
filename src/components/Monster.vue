@@ -18,7 +18,7 @@
       @monsterKey="monsterKey"
       ></Autocomplete>
       <div class="character-meta-info">
-        <span v-show="monster.meta.rstealth.length">S:</span>{{monster.meta.rstealth}}
+        <span v-show="monster.meta.rstealth">S:</span>{{monster.meta.rstealth}}
         <span v-show="monster.meta.ac.length">AC:</span>{{monster.meta.ac}}
         <span v-show="monster.meta.perception.length">P:</span>{{monster.meta.perception}}
       </div>
