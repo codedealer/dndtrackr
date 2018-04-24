@@ -136,7 +136,7 @@ export default {
       updateObject[p.uid] = p;
     });
 
-    return ref.update(updateObject);
+    return ref.set(updateObject);
   },
   loadGroup (user) {
     if (!user.state || !user.uid.length) return Promise.resolve();
