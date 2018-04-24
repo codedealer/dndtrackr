@@ -390,7 +390,7 @@ export default {
       })
       .catch(e => {
         console.error(e);
-        this.dice = 'error';
+        monster.meta[`r${target}`] = 'error';
       });
     },
     saveGroup () {
