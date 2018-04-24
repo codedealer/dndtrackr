@@ -118,6 +118,7 @@ import Server from './server'
 import MonsterClass from './monster'
 import types from './monster-type.json'
 import random from './random'
+import parser from './parser'
 import COLOR from './color-codes.json'
 
 export default {
@@ -360,14 +361,36 @@ export default {
       monsters.forEach(monster => this.makeMonsterRoll(monster, event.target));
     },
     makeMonsterRoll (monster, target) {
-      if (!monster.meta.hasOwnProperty(target)) return;
+      if (!monster.meta.hasOwnProperty(target) || !monster.meta[target].length) return;
 
-      let modifier = parseInt(monster.meta[target]);
+      let parseResult;
+      try {
+        parseResult = parser.parse(monster.meta[target], true);
+      } catch (e) {
+        console.error(e);
+      }
 
-      if (isNaN(modifier)) return;
+      if (parseResult === undefined) return;
 
-      this.random.get(20, 1).then(data => {
-        monster.meta[`r${target}`] = data[0] + modifier;
+      Promise.all(parseResult.map(o => random.get(o.die, o.n)))
+      .then(dataArray => {
+        let result;
+
+        if (parseResult[0].advantage && dataArray.length > 1) {
+          result = dataArray[0][0] > dataArray[1][0] ? dataArray[0][0] : dataArray[1][0];
+        } else if (parseResult[0].disadvantage && dataArray.length > 1) {
+          result = dataArray[0][0] > dataArray[1][0] ? dataArray[1][0] : dataArray[0][0];
+        } else if (dataArray.length > 0) {
+          result = dataArray[0][0];
+        }
+
+        if (result !== undefined) {
+          monster.meta[`r${target}`] = result + parseResult[0].modifier;
+        }
+      })
+      .catch(e => {
+        console.error(e);
+        this.dice = 'error';
       });
     },
     saveGroup () {
