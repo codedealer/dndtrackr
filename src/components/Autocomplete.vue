@@ -44,13 +44,25 @@ export default {
         let bmatch = bnames.find(name => name.indexOf(this.value.toLowerCase()) === 0);
 
         if (amatch !== undefined) {
+          // some words in a match
           if (bmatch !== undefined) {
+            // some words in b also match
+            if (a.name.toLowerCase().indexOf(this.value.toLowerCase()) === 0) {
+              // a starts with value
+              if (b.name.toLowerCase().indexOf(this.value.toLowerCase()) === 0) {
+                // b also does
+                return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1;
+              }
+
+              return -1;
+            }
+
             return amatch.toLowerCase() < bmatch.toLowerCase() ? -1 : 1;
           }
 
           return -1;
         } else {
-          if (bnames.some(name => name.indexOf(this.value.toLowerCase()) === 0)) {
+          if (bmatch !== undefined) {
             return 1;
           }
 
