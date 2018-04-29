@@ -13,8 +13,8 @@
          v-show="monsters.length" title="generate monsters' initiative"><img src="./assets/init.png" class="icon"></a>
         <a href="#" class="control-button sort-monster" @click.prevent="sortMonsters" v-show="monsters.length" title="sort by initiative"><img src="./assets/sort.png" class="icon"></a>
         <a href="#" class="control-button" @click.prevent="resetXp" v-show="monsters.length" title="reset XP counter">XP</a>
-        <a href="#" class="control-button" :class="{'disabled': saveDisabled}" v-if="user.state" v-show="monsters.length" @click.prevent="saveGroup" title="save players"><img src="./assets/group.png" class="icon"></a>
-        <a href="#" class="control-button" :class="{'disabled': loadDisabled}" v-if="user.state" v-show="monsters.length" @click.prevent="loadGroup" title="load players"><img src="./assets/group.png" class="icon"></a>
+        <a href="#" class="control-button" :class="{'disabled': saveDisabled, 'saved': saveSaved}" v-if="user.state" v-show="monsters.length" @click.prevent="saveGroup" title="save players"><img src="./assets/group.png" class="icon"></a>
+        <a href="#" class="control-button" :class="{'disabled': loadDisabled}" v-if="user.state" @click.prevent="loadGroup" title="load players"><img src="./assets/group-load.png" class="icon"></a>
       </div>
       <div class="combat-control">
         <dice-roller></dice-roller>
@@ -159,6 +159,7 @@ export default {
       showAddForm: 0,
       showUserMenu: 0,
       saveDisabled: false,
+      saveSaved: false,
       loadDisabled: false
     }
   },
@@ -397,12 +398,16 @@ export default {
       if (!this.user.state || this.saveDisabled) return;
 
       this.saveDisabled = true;
+      this.saveSaved = false;
 
       let players = this.monsters.filter(o => o.type === this.types.character && o.name.length);
 
       try {
         this.server.saveGroup(this.user, players)
-        .then(() => { this.saveDisabled = false; });
+        .then(() => {
+          this.saveDisabled = false;
+          this.saveSaved = true;
+        });
       } catch (e) {
         console.error(e.message);
       }
@@ -945,5 +950,33 @@ body {
 .disabled {
   opacity: .5;
   cursor: disabled;
+}
+@keyframes bounce{
+  0% {
+    transform:  translate(0px,0px)  ;
+  }
+  15% {
+    transform:  translate(0px,-25px)  ;
+  }
+  30% {
+    transform:  translate(0px,0px)  ;
+  }
+  45% {
+    transform:  translate(0px,-15px)  ;
+  }
+  60% {
+    transform:  translate(0px,0px)  ;
+  }
+  75% {
+    transform:  translate(0px,-5px)  ;
+  }
+  100% {
+    transform:  translate(0px,0px)  ;
+  }
+}
+.saved {
+  animation: bounce linear 0.8s;
+  animation-iteration-count: 1;
+  transform-origin: 50% 50%;
 }
 </style>
