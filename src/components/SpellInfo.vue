@@ -32,6 +32,8 @@ export default {
   align-self: auto;
   text-align: left;
   padding: 30px 25px;
+  width: 100%;
+  box-sizing: border-box;
   .m-t-10 div {
     column-count: 1 !important;
     width: 100% !important;

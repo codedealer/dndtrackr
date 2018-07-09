@@ -29,6 +29,7 @@ export default {
         userState.displayName = user.displayName;
         userState.uid = user.uid;
         this.fetchUserMonsters(userState.uid).then((names) => { userState.monsters = names });
+        this.fetchUserSpells(userState.uid).then(spells => { userState.spells = spells });
       } else {
         userState.state = 0;
       }
@@ -41,7 +42,7 @@ export default {
     firebase.auth(this.app).signOut();
   },
   addMonster (user, monster) {
-    let url = 'https://us-central1-dndtrackr.cloudfunctions.net/app/sanitize';
+    const url = 'https://us-central1-dndtrackr.cloudfunctions.net/app/monster';
 
     return new Promise((resolve, reject) => {
       firebase.auth(this.app).currentUser.getIdToken().then(token => {
@@ -49,9 +50,13 @@ export default {
           .then(response => {
             if (response.data.error) {
               console.error(response.data.error);
+              reject(new Error(response.data.error));
               return;
             }
-            if (!response.data.key) return;
+            if (!response.data.key) {
+              reject(new Error('No entry key for monster received'));
+              return;
+            }
 
             user.monsters.push({
               key: response.data.key,
@@ -64,12 +69,48 @@ export default {
       });
     });
   },
+  addSpell (user, spell) {
+    const url = 'https://us-central1-dndtrackr.cloudfunctions.net/app/spell';
+
+    return new Promise((resolve, reject) => {
+      firebase.auth(this.app).currentUser.getIdToken().then(token => {
+        axios.post(url, JSON.stringify(spell), {headers: {'Authorization': 'Bearer ' + token}})
+        .then(response => {
+          if (response.data.error) {
+            console.error(response.data.error);
+            reject(new Error(response.data.error));
+            return;
+          }
+          if (!response.data.key) {
+            reject(new Error('No entry key for monster received'));
+            return;
+          }
+
+          user.spells.push({
+            key: response.data.key,
+            name: response.data.name
+          });
+          resolve();
+        })
+        .catch(e => { console.error(e); reject(e) })
+      });
+    });
+  },
   removeMonster (monster) {
     let uid = firebase.auth(this.app).currentUser.uid;
     let updateObject = {};
 
     updateObject[`monsters/${monster.key}`] = null;
     updateObject[`userMonsters/${uid}/${monster.key}`] = null;
+
+    this.db.ref().update(updateObject);
+  },
+  removeSpell (spell) {
+    let uid = firebase.auth(this.app).currentUser.uid;
+    let updateObject = {};
+
+    updateObject[`spells/${spell.key}`] = null;
+    updateObject[`userSpells/${uid}/${spell.key}`] = null;
 
     this.db.ref().update(updateObject);
   },
@@ -93,6 +134,9 @@ export default {
   },
   fetchUserMonsters (uid) {
     return this.fetchNames(`userMonsters/${uid}`);
+  },
+  fetchUserSpells (uid) {
+    return this.fetchNames(`userSpells/${uid}`);
   },
   fetchSpells () {
     if (!this.db) throw new Error('No available connection. Have you forgot to connect()?');

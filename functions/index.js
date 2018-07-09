@@ -14,6 +14,20 @@ function sanitize (obj) {
           </div>`;
 }
 
+function getMod (str) {
+  if (!str.length) return '';
+
+  let d = parseInt(str, 10);
+  if (isNaN(d)) return 0;
+
+  let mod = Math.floor((d - 10) / 2);
+  return mod > 0 ? '+' + mod : mod;
+}
+
+String.prototype.nl2br = function () {
+  return this.replace(/([^>])\n/g, '$1<br/>');
+}
+
 const authorize = (request, response, next) => {
   if (!request.get('authorization') || !request.get('authorization').startsWith('Bearer ')) {
       response.status(403).send('Unauthorized');
@@ -30,7 +44,7 @@ const authorize = (request, response, next) => {
     ;
 }
 
-const s = (request, response) => {
+const addMonster = (request, response) => {
   let monster = {};
   sanitizeHtml.defaults.allowedTags = [];
   sanitizeHtml.defaults.allowedAttributes = [];
@@ -52,7 +66,10 @@ const s = (request, response) => {
 
   ['str', 'dex', 'con', 'intel', 'wis', 'cha'].forEach(val => {
     if (request.body.description.attr[val] === undefined) return;
-    monster['attr'][val] = sanitizeHtml(request.body.description.attr[val].trim());
+
+    let attr = sanitizeHtml(request.body.description.attr[val].trim());
+    attr += ` (${getMod(attr)})`;
+    monster['attr'][val] = attr;
   });
 
   monster.props = request.body.description.props.map(sanitize);
@@ -88,12 +105,12 @@ const s = (request, response) => {
 
     description += monster.props.join('');
     if (monster.sprops.length) description += `<div class="m-t-20">
-        ${monster.sprops.join('')}</div>`;
+        ${monster.sprops.join('').nl2br()}</div>`;
     if (monster.actions.length) description += `<div class="m-t-20">
-        <div class="i f-w-b f-s-18">Actions</div>${monster.actions.join('')}</div>`;
+        <div class="i f-w-b f-s-18">Actions</div>${monster.actions.join('').nl2br()}</div>`;
     if (monster.reactions.length) description += `<div class="m-t-20">
-        <div class="i f-w-b f-s-18">Reactions</div>${monster.reactions.join('')}</div>`;
-    let lactions = monster.lactions.join('');
+        <div class="i f-w-b f-s-18">Reactions</div>${monster.reactions.join('').nl2br()}</div>`;
+    let lactions = monster.lactions.join('').nl2br();
     if (lactions) description += `<div class="m-t-20">
         <div class="i f-w-b f-s-18">Legendary Actions</div>
       <div>${monster.ldescription}</div>
@@ -108,8 +125,50 @@ const s = (request, response) => {
 
   response.status(200).send({key, name: obj.name});
 }
+
+const addSpell = (request, response) => {
+  let spellHtml;
+
+  sanitizeHtml.defaults.allowedTags = [];
+  sanitizeHtml.defaults.allowedAttributes = [];
+
+  const name = sanitizeHtml(request.body.name.trim());
+  const type = sanitizeHtml(request.body.type.trim());
+  const time = sanitizeHtml(request.body.time.trim());
+  const range = sanitizeHtml(request.body.range.trim());
+  const duration = sanitizeHtml(request.body.duration.trim());
+  const components = sanitizeHtml(request.body.components.trim());
+
+  spellHtml = `<div class="p-b-20">
+                 <span class="f-s-24 f-w-b">${name}</span>
+                 <div class="i f-w-b f-s-18">${type}</div>
+                </div>`;
+
+  let props = {time, range, duration, components};
+  for (let prop in props) {
+    spellHtml += `<div class="m-t-10">
+            <span class="f-w-b">${prop.charAt(0).toUpperCase()}${prop.slice(1)}:</span>
+            <span class="m-l-10">${props[prop]}</span>
+          </div>`;
+  }
+
+  spellHtml += request.body.ps.map(paragraph => {
+    return `<div class="m-t-10">
+              <p>${paragraph.content}</p>
+            </div>`;
+  }).join('');
+
+  let ref = admin.database().ref();
+  let key = ref.child(`userSpells/${request.body.user.uid}`).push(name).key;
+
+  ref.child('spells').update({[key]: {name, description: spellHtml}});
+
+  response.status(200).send({key, name});
+}
+
 app.use(cors);
 app.use(authorize);
-app.post('/sanitize', s);
+app.post('/monster', addMonster);
+app.post('/spell', addSpell)
 
 exports.app = functions.https.onRequest(app);

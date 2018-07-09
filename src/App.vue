@@ -31,21 +31,23 @@
         <img src="static/puff.svg" class="icon-loader" v-show="!isSpellsLoaded">
         <span class="s-loader" v-show="!isSpellsLoaded">Fetching spellbooks...</span>
         <Spellfinder
-        :suggestions="spellNames"
+        :suggestions="spellList"
         v-model="currentSpell"
         v-show="isSpellsLoaded"
         ></Spellfinder>
         <div id="ui-container" v-show="!user.state"></div>
         <div class="user-container" v-show="user.state">
           <div class="user-icon" @click.stop="showUserMenu ^= 1">{{userShortName}}</div>
-          <div class="user-menu" v-show="showUserMenu">
-            <div class="user-action" @click.stop="showAddForm ^= 1">Toggle add from</div>
+          <div class="user-menu">
+            <div class="user-action" @click.stop="form = 0">Tracker</div>
+            <div class="user-action" @click.stop="form = 1">Monster form</div>
+            <div class="user-action" @click.stop="form = 2">Spell form</div>
             <div class="user-action" @click.stop="server.signOut">Sign Out</div>
           </div>
         </div>
       </div>
     </div>
-    <div class="monster-container" v-show="!showAddForm">
+    <div class="monster-container" v-show="form == 0">
       <div class="list">
         <div class="list-fix-wrapper">
           <div class="list-fix">
@@ -102,7 +104,8 @@
       </div>
       <SpellInfo :id="currentSpell"></SpellInfo>
     </div>
-    <AddForm v-if="user.state" v-show="showAddForm" :user="user"></AddForm>
+    <AddForm v-if="user.state" v-show="form == 1" :user="user"></AddForm>
+    <SpellForm v-if="user.state" v-show="form == 2" :user="user"></SpellForm>
   </div>
 </template>
 
@@ -120,6 +123,7 @@ import types from './monster-type.json'
 import random from './random'
 import parser from './parser'
 import COLOR from './color-codes.json'
+import SpellForm from './components/SpellForm'
 
 export default {
   name: 'app',
@@ -143,6 +147,7 @@ export default {
         state: 0,
         displayName: '',
         monsters: [],
+        spells: [],
         uid: ''
       },
       names: [],
@@ -156,7 +161,7 @@ export default {
       selected: -1,
       hitSign: '-',
       hitMod: '',
-      showAddForm: 0,
+      form: 0,
       showUserMenu: 0,
       saveDisabled: false,
       saveSaved: false,
@@ -207,6 +212,24 @@ export default {
             break;
           }
           if (j === this.names.length - 1) list.push(this.user.monsters[i]);
+        }
+      }
+
+      return list;
+    },
+    spellList () {
+      if (!this.user.spells.length) return this.spellNames;
+      if (!this.spellNames.length) return this.user.spells;
+
+      let list = this.spellNames.slice();
+
+      for (let i = 0; i < this.user.spells.length; i++) {
+        for (let j = 0; j < this.spellNames.length; j++) {
+          if (this.user.spells[i].name.toLowerCase() < this.spellNames[j].name.toLowerCase()) {
+            list.splice(j, 0, this.user.spells[i]);
+            break;
+          }
+          if (j === this.spellNames.length - 1) list.push(this.user.spells[i]);
         }
       }
 
@@ -444,7 +467,8 @@ export default {
     Spellfinder,
     SpellInfo,
     AddForm,
-    Xp
+    Xp,
+    SpellForm
   }
 }
 </script>
@@ -880,6 +904,8 @@ body {
   @extend #ui-container;
   height: 40px;
   top: 5px;
+  padding-bottom: 8px;
+  padding-left: 70px;
   .user-icon {
     text-align: center;
     font-size: 18px;
@@ -893,6 +919,7 @@ body {
   }
   .user-menu {
     width: 160px;
+    display: none;
     position: absolute;
     top: 48px;
     right: 0;
@@ -904,6 +931,9 @@ body {
       }
       cursor: pointer;
     }
+  }
+  &:hover .user-menu {
+    display: block;
   }
 }
 .tips {

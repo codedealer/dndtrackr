@@ -9,12 +9,30 @@
         <div><span class="f-w-b">Hit Points:</span><span class="m-l-10"><input v-model.trim="monster.hits" placeholder="12d10 + 34 (90)"></span></div>
         <div><span class="f-w-b">Speed:</span><span class="m-l-10"><input v-model.trim="monster.speed"></span></div>
         <div class="attributes">
-          <div class="t-a-c p-5"><div class="f-w-b f-s-14">STR</div><div><input v-model.trim="monster.attr.str" placeholder="12 (+1)"></div></div>
-          <div class="t-a-c p-5"><div class="f-w-b f-s-14">DEX</div><div><input v-model.trim="monster.attr.dex" placeholder="12 (+1)"></div></div>
-          <div class="t-a-c p-5"><div class="f-w-b f-s-14">CON</div><div><input v-model.trim="monster.attr.con" placeholder="12 (+1)"></div></div>
-          <div class="t-a-c p-5"><div class="f-w-b f-s-14">INT</div><div><input v-model.trim="monster.attr.intel" placeholder="12 (+1)"></div></div>
-          <div class="t-a-c p-5"><div class="f-w-b f-s-14">WIS</div><div><input v-model.trim="monster.attr.wis" placeholder="12 (+1)"></div></div>
-          <div class="t-a-c p-5"><div class="f-w-b f-s-14">CHA</div><div><input v-model.trim="monster.attr.cha" placeholder="12 (+1)"></div></div>
+          <div class="t-a-c p-5"><div class="f-w-b f-s-14">STR</div><div>
+          <input v-model.trim="monster.attr.str" placeholder="12">
+          <label class="monster-mod">{{getMod(monster.attr.str)}}</label>
+          </div></div>
+          <div class="t-a-c p-5"><div class="f-w-b f-s-14">DEX</div><div>
+          <input v-model.trim="monster.attr.dex" placeholder="12">
+          <label class="monster-mod">{{getMod(monster.attr.dex)}}</label>
+        </div></div>
+          <div class="t-a-c p-5"><div class="f-w-b f-s-14">CON</div><div>
+          <input v-model.trim="monster.attr.con" placeholder="12">
+          <label class="monster-mod">{{getMod(monster.attr.con)}}</label>
+        </div></div>
+          <div class="t-a-c p-5"><div class="f-w-b f-s-14">INT</div><div>
+          <input v-model.trim="monster.attr.intel" placeholder="12">
+          <label class="monster-mod">{{getMod(monster.attr.intel)}}</label>
+        </div></div>
+          <div class="t-a-c p-5"><div class="f-w-b f-s-14">WIS</div><div>
+          <input v-model.trim="monster.attr.wis" placeholder="12">
+          <label class="monster-mod">{{getMod(monster.attr.wis)}}</label>
+        </div></div>
+          <div class="t-a-c p-5"><div class="f-w-b f-s-14">CHA</div><div>
+          <input v-model.trim="monster.attr.cha" placeholder="12">
+          <label class="monster-mod">{{getMod(monster.attr.cha)}}</label>
+        </div></div>
         </div>
         <div class="props">
           <p>Properties <a href="#" @click.prevent="addProp" class="control-button">+</a></p>
@@ -31,7 +49,7 @@
           <p>Special Properties <a href="#" @click.prevent="addSProp" class="control-button">+</a></p>
           <div class="m-t-10" v-for="prop in monster.sprops">
             <span class="f-w-b"><input v-model.trim="prop.title"></span>
-            <span class="m-l-10 action-wrapper"><textarea class="action-text" v-model="prop.content"></textarea></span>
+            <span class="m-l-10 action-wrapper"><textarea class="action-text" v-model="prop.content" rows="4"></textarea></span>
           </div>
         </div>
         <div class="m-t-20">
@@ -182,7 +200,7 @@ export default {
       let monsterObj = {
         description: this.monster,
         name: this.monster.name,
-        dex: this.getDex(this.monster.attr.dex),
+        dex: this.getMod(this.monster.attr.dex, true),
         hits: this.monster.hits,
         xp
       }
@@ -193,11 +211,18 @@ export default {
         this.working = false;
       });
     },
-    getDex (str) {
+    getMod (str, intType = false) {
+      if (!str.length) return '';
+
       let d = parseInt(str, 10);
       if (isNaN(d)) return 0;
 
-      return Math.floor((d - 10) / 2);
+      if (intType) {
+        return Math.floor((d - 10) / 2);
+      } else {
+        let mod = Math.floor((d - 10) / 2);
+        return mod > 0 ? '+' + mod : mod;
+      }
     },
     remove (monster, index) {
       this.user.monsters.splice(index, 1);
@@ -253,7 +278,11 @@ export default {
 }
 .attributes {
   input {
-    width: 48px;
+    width: 14px;
+  }
+  .monster-mod {
+    font-size: 12px;
+    vertical-align: middle;
   }
 }
 .user-list {
