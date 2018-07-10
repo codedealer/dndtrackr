@@ -88,9 +88,10 @@
         </div>
       </div>
       <div class="form-butttons">
-        <a href="#" @click.prevent="submit" v-show="!working">Save</a>
+        <a href="#" @click.prevent="submitNew" v-show="!working && monster.key.length" class="control-button control-button-new" title="save as new monster">+</a>
+        <a href="#" @click.prevent="submit" v-show="!working" class="control-button" title="save">+</a>
         <span v-show="working">saving...</span>
-        <a href="#" @click.prevent="reset">Reset</a>
+        <a href="#" @click.prevent="reset" class="control-button control-button-reset" title="reset form">Ø</a>
       </div>
     </div>
     <div class="user-list">
@@ -98,6 +99,7 @@
         <span class="user-monster-name">{{monster.name}}</span><span class="edit-button" @click.stop="edit(monster, index)">✍</span><span class="delete-button" @click.stop="remove(monster, index)">-</span>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -175,6 +177,14 @@ export default {
         challenge: ''
       }
     },
+    submitNew () {
+      if (!this.monster.name ||
+        !this.monster.attr.dex ||
+        !this.monster.hits) return;
+
+      this.monster.key = '';
+      this.submit();
+    },
     submit () {
       if (!this.monster.name ||
         !this.monster.attr.dex ||
@@ -184,7 +194,7 @@ export default {
         return monster.name.toLowerCase() === this.monster.name.toLowerCase()
       });
 
-      if (duplicate) {
+      if (duplicate && !this.monster.key) {
         this.monster.name = '!NAME DUPLICATE';
         return;
       }
@@ -209,8 +219,9 @@ export default {
 
       this.working = true;
 
-      Server.addMonster(this.user, monsterObj).then(() => {
+      Server.addMonster(this.user, monsterObj).then((key) => {
         this.working = false;
+        if (key) this.monster.key = key;
       });
     },
     getMod (str, intType = false) {
@@ -246,6 +257,20 @@ export default {
 </script>
 
 <style lang="scss">
+.form-butttons {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  height: 53px;
+  background: #fff;
+  width: 100%;
+  max-width: 500px;
+  padding-top: 10px;
+  box-sizing: border-box;
+}
+.control-button-new {
+  background: #aac;
+}
 .form-container {
   display: flex;
   flex-direction: row;
@@ -263,6 +288,7 @@ export default {
   margin-top: 52px;
   textarea {
     font-size: 11px;
+    resize: vertical;
   }
   input {
     margin-bottom: 3px;
@@ -280,6 +306,7 @@ export default {
   }
   .monster-stat {
     padding-top: 5px;
+    padding-bottom: 60px;
     >div > span.f-w-b {
       display: inline-block;
       width: 110px;

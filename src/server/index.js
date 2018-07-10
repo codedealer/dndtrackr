@@ -69,7 +69,7 @@ export default {
               m.name = response.data.name;
             }
 
-            resolve();
+            resolve(response.data.key);
           })
           .catch(e => { console.error(e); resolve(); })
           ;
