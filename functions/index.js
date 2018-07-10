@@ -14,6 +14,13 @@ function sanitize (obj) {
           </div>`;
 }
 
+function sanitizeProp (obj) {
+  return {
+    title: sanitizeHtml(obj.title.trim()),
+    content: sanitizeHtml(obj.content.trim())
+  }
+}
+
 function getMod (str) {
   if (!str.length) return '';
 
@@ -119,9 +126,47 @@ const addMonster = (request, response) => {
     obj.description = description;
 
   let ref = admin.database().ref();
-  let key = ref.child(`userMonsters/${request.body.user.uid}`).push(obj.name).key;
+  let key;
+  let requestKey = sanitizeHtml(request.body.description.key.trim());
+
+  if (requestKey.length) {
+    key = requestKey;
+    ref.child(`userMonsters/${request.body.user.uid}`).update({[key]: obj.name});
+  } else {
+    key = ref.child(`userMonsters/${request.body.user.uid}`).push(obj.name).key;
+  }
+
+  if (!key) {
+    response.status(500).send({error: 'failed to add monster to database'});
+    return;
+  }
 
   ref.child('monsters').update({[key]: obj});
+
+  let meta = {
+    name: monster.name,
+    key: key,
+    type: monster.type,
+    ac: monster.ac,
+    hits: monster.hits,
+    speed: monster.speed,
+    attr: {
+      str: sanitizeHtml(request.body.description.attr.str),
+      dex: sanitizeHtml(request.body.description.attr.dex),
+      con: sanitizeHtml(request.body.description.attr.con),
+      intel: sanitizeHtml(request.body.description.attr.intel),
+      wis: sanitizeHtml(request.body.description.attr.wis),
+      cha: sanitizeHtml(request.body.description.attr.cha)
+    },
+    props: request.body.description.props.map(sanitizeProp),
+    sprops: request.body.description.sprops.map(sanitizeProp),
+    actions: request.body.description.actions.map(sanitizeProp),
+    reactions: request.body.description.reactions.map(sanitizeProp),
+    ldescription: monster.ldescription,
+    lactions: request.body.description.lactions.map(sanitizeProp),
+    challenge: challenge
+  }
+  ref.child('userMonstersMeta').update({[key]: JSON.stringify(meta)});
 
   response.status(200).send({key, name: obj.name});
 }

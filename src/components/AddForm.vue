@@ -95,7 +95,7 @@
     </div>
     <div class="user-list">
       <div class="user-monster" v-for="(monster, index) in user.monsters">
-        <span class="user-monster-name">{{monster.name}}</span><span class="delete-button" @click.stop="remove(monster, index)">-</span>
+        <span class="user-monster-name">{{monster.name}}</span><span class="edit-button" @click.stop="edit(monster, index)">✍</span><span class="delete-button" @click.stop="remove(monster, index)">-</span>
       </div>
     </div>
   </div>
@@ -110,6 +110,7 @@ export default {
     return {
       monster: {
         name: '',
+        key: '',
         type: '',
         ac: '',
         hits: '',
@@ -152,6 +153,7 @@ export default {
     reset () {
       this.monster = {
         name: '',
+        key: '',
         type: '',
         ac: '',
         hits: '',
@@ -227,6 +229,17 @@ export default {
     remove (monster, index) {
       this.user.monsters.splice(index, 1);
       Server.removeMonster(monster);
+    },
+    edit (monster, index) {
+      Server.editMonster(monster).then(data => {
+        if (data === false) {
+          this.monster.name = '!NO DATA';
+          this.monster.key = '';
+          return;
+        }
+
+        this.monster = data;
+      });
     }
   }
 }
@@ -289,16 +302,37 @@ export default {
   margin-top: 52px;
   max-width: 300px;
   .user-monster {
+    display: flex;
+    flex-direction: row;
     width: 300px;
     background: #aac;
     border-bottom: 1px solid #fff;
   }
   .user-monster-name {
     display: inline-block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     width: 268px;
+    line-height: 32px;
   }
   .delete-button {
     display: inline-block;
+  }
+  .edit-button {
+    display: inline-block;
+    height: 32px;
+    width: 26px;
+    font-size: 24px;
+    color: #fff;
+    background: #bebebe;
+    line-height: 32px;
+    flex: 1 1 auto;
+    cursor: pointer;
+    text-align: center;
+    transition: background-color .4s;
+    &:hover {
+      background: #f1cea0;
+    }
   }
 }
 .action-wrapper {

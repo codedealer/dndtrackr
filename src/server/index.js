@@ -58,10 +58,17 @@ export default {
               return;
             }
 
-            user.monsters.push({
-              key: response.data.key,
-              name: response.data.name
-            });
+            let m = user.monsters.find(o => o.key === response.data.key);
+
+            if (!m) {
+              user.monsters.push({
+                key: response.data.key,
+                name: response.data.name
+              });
+            } else {
+              m.name = response.data.name;
+            }
+
             resolve();
           })
           .catch(e => { console.error(e); resolve(); })
@@ -102,6 +109,7 @@ export default {
 
     updateObject[`monsters/${monster.key}`] = null;
     updateObject[`userMonsters/${uid}/${monster.key}`] = null;
+    updateObject[`userMonstersMeta/${monster.key}`] = null;
 
     this.db.ref().update(updateObject);
   },
@@ -113,6 +121,15 @@ export default {
     updateObject[`userSpells/${uid}/${spell.key}`] = null;
 
     this.db.ref().update(updateObject);
+  },
+  editMonster (monster) {
+    return new Promise((resolve, reject) => {
+      this.db.ref(`userMonstersMeta/${monster.key}`).once('value', snap => {
+        if (!snap.exists()) return resolve(false);
+
+        resolve(JSON.parse(snap.val()));
+      });
+    });
   },
   fetchNames (path = 'name') {
     if (!this.db) throw new Error('No available connection. Have you forgot to connect()?');
