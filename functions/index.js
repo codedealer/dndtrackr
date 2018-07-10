@@ -5,7 +5,7 @@ const cors = require('cors')({origin: true});
 const sanitizeHtml = require('sanitize-html');
 const app = express();
 
-admin.initializeApp(functions.config().firebase);
+admin.initializeApp();
 
 function sanitize (obj) {
   return `<div class="m-t-10">
