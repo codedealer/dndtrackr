@@ -13,7 +13,7 @@ export default {
     let app = firebase.initializeApp(config);
     let uiConfig = {
       callbacks: {
-        signInSuccess () { return false }
+        signInSuccessWithAuthResult (authResult) { console.log(authResult) }
       },
       signInFlow: 'popup',
       signInOptions: [
@@ -22,7 +22,11 @@ export default {
     };
 
     let ui = new firebaseui.auth.AuthUI(firebase.auth(app));
-    ui.start('#ui-container', uiConfig);
+
+    if (ui.isPendingRedirect()) {
+      ui.start('#ui-container', uiConfig);
+    }
+
     firebase.auth(app).onAuthStateChanged(user => {
       if (user) {
         userState.state = 1;
