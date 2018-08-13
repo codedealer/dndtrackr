@@ -1,4 +1,7 @@
-import firebase from 'firebase'
+import firebase from 'firebase/app'
+import 'firebase/auth'
+import 'firebase/database'
+import 'firebase/functions'
 import firebaseui from 'firebaseui'
 import config from './config.json'
 import axios from 'axios'
