@@ -10,7 +10,7 @@ admin.initializeApp();
 function sanitize (obj) {
   return `<div class="m-t-10">
             <span class="f-w-b">${sanitizeHtml(obj.title.trim())}</span>
-            <span class="m-l-10">${sanitizeHtml(obj.content.trim())}</span>
+            <span class="m-l-10" contenteditable="true">${sanitizeHtml(obj.content.trim())}</span>
           </div>`;
 }
 
@@ -96,18 +96,18 @@ const addMonster = (request, response) => {
     xp: sanitizeHtml(request.body.xp)
   }
 
-  let description = `<span class="f-s-24 f-w-b">${monster.name}</span>
+  let description = `<span class="f-s-24 f-w-b" contenteditable="true">${monster.name}</span>
       <div class="f-s-18 i f-w-b">${monster.type}</div>
-      <div><span class="f-w-b">Armor Class:</span><span class="m-l-10">${monster.ac}</span></div>
+      <div><span class="f-w-b">Armor Class:</span><span class="m-l-10" contenteditable="true">${monster.ac}</span></div>
       <div><span class="f-w-b">Hit Points:</span><span class="m-l-10">${monster.hits}</span></div>
-      <div><span class="f-w-b">Speed:</span><span class="m-l-10">${monster.speed}</span></div>
+      <div><span class="f-w-b">Speed:</span><span class="m-l-10" contenteditable="true">${monster.speed}</span></div>
       <div class="attributes">
-        <div class="t-a-c p-5"><div class="f-w-b f-s-14">STR</div><div>${monster.attr.str}</div></div>
-        <div class="t-a-c p-5"><div class="f-w-b f-s-14">DEX</div><div>${monster.attr.dex}</div></div>
-        <div class="t-a-c p-5"><div class="f-w-b f-s-14">CON</div><div>${monster.attr.con}</div></div>
-        <div class="t-a-c p-5"><div class="f-w-b f-s-14">INT</div><div>${monster.attr.intel}</div></div>
-        <div class="t-a-c p-5"><div class="f-w-b f-s-14">WIS</div><div>${monster.attr.wis}</div></div>
-        <div class="t-a-c p-5"><div class="f-w-b f-s-14">CHA</div><div>${monster.attr.cha}</div></div>
+        <div class="t-a-c p-5"><div class="f-w-b f-s-14">STR</div><div contenteditable="true">${monster.attr.str}</div></div>
+        <div class="t-a-c p-5"><div class="f-w-b f-s-14">DEX</div><div contenteditable="true">${monster.attr.dex}</div></div>
+        <div class="t-a-c p-5"><div class="f-w-b f-s-14">CON</div><div contenteditable="true">${monster.attr.con}</div></div>
+        <div class="t-a-c p-5"><div class="f-w-b f-s-14">INT</div><div contenteditable="true">${monster.attr.intel}</div></div>
+        <div class="t-a-c p-5"><div class="f-w-b f-s-14">WIS</div><div contenteditable="true">${monster.attr.wis}</div></div>
+        <div class="t-a-c p-5"><div class="f-w-b f-s-14">CHA</div><div contenteditable="true">${monster.attr.cha}</div></div>
       </div>`;
 
     description += monster.props.join('');
