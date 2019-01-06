@@ -1,6 +1,11 @@
 <template>
   <div class="xp-tracker" :class="{'expanded': expanded}">
     <div class="xp-header-wrapper" @click="expanded = !expanded">
+      <div class="xp-buttons">
+        <a href="#" class="control-button" @click.prevent.stop="resetXp" v-show="monsters.length" title="reset XP counter">XP</a>
+        <a href="#" class="control-button" :class="{'disabled': saveDisabled, 'saved': saveSaved}" v-if="user.state" v-show="monsters.length" @click.prevent.stop="saveGroup" title="save players"><img src="../assets/group.png" class="icon"></a>
+        <a href="#" class="control-button" :class="{'disabled': loadDisabled}" v-if="user.state" @click.prevent.stop="loadGroup" title="load players"><img src="../assets/group-load.png" class="icon"></a>
+      </div>
       <div class="xp-header" :class="{'slided': expanded}">
         <div class="xp-counter">
           <div class="xp-counter-total">{{total}} XP</div>
@@ -34,13 +39,16 @@
 import type from '../monster-type.json'
 
 export default {
-  props: ['monsters', 'removed', 'monsterList'],
+  props: ['monsters', 'removed', 'monsterList', 'user', 'server'],
   data () {
     return {
       expanded: false,
       modificator: '',
       add: 0,
-      slided: false
+      slided: false,
+      saveDisabled: false,
+      saveSaved: false,
+      loadDisabled: false
     }
   },
   computed: {
@@ -101,6 +109,43 @@ export default {
 
       this.$emit('reviveMonster', monster);
     },
+    resetXp () {
+      this.$emit('resetXp');
+      this.add = 0;
+    },
+    saveGroup () {
+      if (!this.user.state || this.saveDisabled) return;
+
+      this.saveDisabled = true;
+      this.saveSaved = false;
+
+      let players = this.monsters.filter(o => o.type === this.types.character && o.name.length);
+
+      try {
+        this.server.saveGroup(this.user, players)
+        .then(() => {
+          this.saveDisabled = false;
+          this.saveSaved = true;
+        });
+      } catch (e) {
+        console.error(e.message);
+      }
+    },
+    loadGroup () {
+      if (!this.user.state || this.loadDisabled) return;
+
+      this.loadDisabled = true;
+
+      try {
+        this.server.loadGroup(this.user)
+        .then(players => {
+          this.$emit('loadPlayers', players);
+          this.loadDisabled = false;
+        });
+      } catch (e) {
+        console.error(e.message);
+      }
+    },
     applyMod () {
       let str = this.modificator;
       let sign = false;
@@ -143,6 +188,14 @@ export default {
   width: 100%;
   cursor: pointer;
   overflow: hidden;
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+}
+.xp-buttons {
+  display: flex;
+  flex: 1 0 auto;
+  align-items: center;
 }
 .xp-header {
   display: flex;

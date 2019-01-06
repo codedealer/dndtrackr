@@ -5,16 +5,13 @@
         <img src="static/puff.svg" class="icon-loader" v-show="!isNamesLoaded">
         <span class="s-loader" v-show="!isNamesLoaded">Filling bestiary...</span>
         <a href="#" class="control-button add-monster" @click.prevent="addMonster()" v-show="isNamesLoaded" title="add new monster">+</a>
-        <a href="#" class="control-button rename-monster" @click.prevent="renameMonsters" v-show="monsters.length" title="rename monster duplicates"><img src="./assets/rename.png" class="icon"></a>
         <a href="#" class="control-button"
         @click.exact.prevent="generateInitiative(false)"
         @click.ctrl.prevent="generateInitiative(true)"
         @click.meta.prevent="generateInitiative(true)"
          v-show="monsters.length" title="generate monsters' initiative"><img src="./assets/init.png" class="icon"></a>
         <a href="#" class="control-button sort-monster" @click.prevent="sortMonsters" v-show="monsters.length" title="sort by initiative"><img src="./assets/sort.png" class="icon"></a>
-        <a href="#" class="control-button" @click.prevent="resetXp" v-show="monsters.length" title="reset XP counter">XP</a>
-        <a href="#" class="control-button" :class="{'disabled': saveDisabled, 'saved': saveSaved}" v-if="user.state" v-show="monsters.length" @click.prevent="saveGroup" title="save players"><img src="./assets/group.png" class="icon"></a>
-        <a href="#" class="control-button" :class="{'disabled': loadDisabled}" v-if="user.state" @click.prevent="loadGroup" title="load players"><img src="./assets/group-load.png" class="icon"></a>
+        <a href="#" class="control-button rename-monster" @click.prevent="renameMonsters" v-show="monsters.length" title="rename monster duplicates"><img src="./assets/rename.png" class="icon"></a>
       </div>
       <div class="combat-control">
         <dice-roller></dice-roller>
@@ -77,9 +74,12 @@
         <Xp :monsters="monsters"
             :removed="removedMonsters"
             :monsterList="monsterList"
+            :user="user"
+            :server="server"
             @killMonster="addToRemoved"
             @reviveMonster="cancelRemoved"
-            ref="xp"
+            @resetXp="resetXp"
+            @loadPlayers="loadPlayers"
         ></Xp>
       </div>
       <div class="info">
@@ -162,10 +162,7 @@ export default {
       hitSign: '-',
       hitMod: '',
       form: 0,
-      showUserMenu: 0,
-      saveDisabled: false,
-      saveSaved: false,
-      loadDisabled: false
+      showUserMenu: 0
     }
   },
   computed: {
@@ -254,6 +251,20 @@ export default {
     },
     selectItem (index) {
       this.selected = index;
+    },
+    resetXp () {
+      this.removedMonsters = [];
+    },
+    loadPlayers (players) {
+      players.forEach(player => {
+        let i = this.monsters.findIndex(o => o.uid === player.uid);
+        if (i === -1) {
+          this.addMonster(player);
+        } else {
+          this.monsters.splice(i, 1, player);
+          this.initiative.splice(i, 1, player.initiative);
+        }
+      });
     },
     sortMonsters () {
       this.monsters.forEach((monster, i) => {
@@ -373,10 +384,6 @@ export default {
       }
       this.hitMod = '';
     },
-    resetXp () {
-      this.removedMonsters = [];
-      this.$refs.xp.add = 0;
-    },
     onRequestDiceRoll (event) {
       let monsters = [event.monster];
 
@@ -416,48 +423,6 @@ export default {
         console.error(e);
         monster.meta[`r${target}`] = 'error';
       });
-    },
-    saveGroup () {
-      if (!this.user.state || this.saveDisabled) return;
-
-      this.saveDisabled = true;
-      this.saveSaved = false;
-
-      let players = this.monsters.filter(o => o.type === this.types.character && o.name.length);
-
-      try {
-        this.server.saveGroup(this.user, players)
-        .then(() => {
-          this.saveDisabled = false;
-          this.saveSaved = true;
-        });
-      } catch (e) {
-        console.error(e.message);
-      }
-    },
-    loadGroup () {
-      if (!this.user.state || this.loadDisabled) return;
-
-      this.loadDisabled = true;
-
-      try {
-        this.server.loadGroup(this.user)
-        .then(players => {
-          players.forEach(player => {
-            let i = this.monsters.findIndex(o => o.uid === player.uid);
-            if (i === -1) {
-              this.addMonster(player);
-            } else {
-              this.monsters.splice(i, 1, player);
-              this.initiative.splice(i, 1, player.initiative);
-            }
-          });
-
-          this.loadDisabled = false;
-        });
-      } catch (e) {
-        console.error(e.message);
-      }
     }
   },
   components: {
