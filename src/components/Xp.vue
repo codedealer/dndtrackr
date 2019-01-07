@@ -208,9 +208,6 @@ export default {
   transition-delay: .4s;
   &.slided {
     transform: translateX(0);
-    .xp-counter {
-      background-color: #ebebeb;
-    }
   }
 }
 .xp-controls,
