@@ -1,5 +1,5 @@
 <template>
-  <div class="list-item" :class="{'selected': index === selected}">
+  <div class="list-item" :class="{'selected': index === selected, 'turn': round.order === index}">
     <span class="current"></span>
     <div class="initiative-counter"><input class="initiative" v-model.number="initiative[index]" type="text" :tabindex="1+index"></div>
     <div class="type-counter" @click="changeType()" title="Change type monster/player">
@@ -38,7 +38,7 @@ import types from '../monster-type.json'
 import COLOR from '../color-codes.json'
 
 export default {
-  props: ['index', 'monster', 'monsterList', 'selected', 'initiative'],
+  props: ['index', 'monster', 'monsterList', 'selected', 'initiative', 'round'],
   data () {
     return {
       types,

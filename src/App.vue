@@ -12,6 +12,11 @@
          v-show="monsters.length" title="generate monsters' initiative"><img src="./assets/init.png" class="icon"></a>
         <a href="#" class="control-button sort-monster" @click.prevent="sortMonsters" v-show="monsters.length" title="sort by initiative"><img src="./assets/sort.png" class="icon"></a>
         <a href="#" class="control-button rename-monster" @click.prevent="renameMonsters" v-show="monsters.length" title="rename monster duplicates"><img src="./assets/rename.png" class="icon"></a>
+        <RoundCounter
+        v-show="monsters.length"
+        :round="round"
+        @nextOrder="nextOrder"
+        ></RoundCounter>
       </div>
       <div class="combat-control">
         <dice-roller></dice-roller>
@@ -66,6 +71,7 @@
               :monsterList="monsterList"
               :selected="selected"
               :initiative="initiative"
+              :round="round"
               @monsterRequest="onMonsterRequest"
               @removeMonster="onRemoveMonster"></Monster>
             </div>
@@ -124,6 +130,7 @@ import random from './random'
 import parser from './parser'
 import COLOR from './color-codes.json'
 import SpellForm from './components/SpellForm'
+import RoundCounter from './components/RoundCounter'
 
 export default {
   name: 'app',
@@ -162,7 +169,22 @@ export default {
       hitSign: '-',
       hitMod: '',
       form: 0,
-      showUserMenu: 0
+      showUserMenu: 0,
+      round: {
+        round: 1,
+        order: 0,
+        reset () {
+          this.round = 1;
+          this.order = 0;
+        },
+        next (limit) {
+          this.order += 1;
+          if (this.order >= limit) {
+            this.order = 0;
+            this.round += 1;
+          }
+        }
+      }
     }
   },
   computed: {
@@ -308,6 +330,11 @@ export default {
         });
       });
     },
+    nextOrder () {
+      this.round.next(this.initiative.length);
+      // select the current monster
+      this.selectItem(this.round.order);
+    },
     tab (index) {
       let next = index + 1;
       let inputs = document.getElementsByClassName('form-control');
@@ -433,7 +460,8 @@ export default {
     SpellInfo,
     AddForm,
     Xp,
-    SpellForm
+    SpellForm,
+    RoundCounter
   }
 }
 </script>
@@ -734,10 +762,31 @@ body {
   .current{
     display: block;
   }
+}
+.initiative-counter {
+  position: relative;
+  overflow: hidden;
+  &:before {
+    display: none;
+    content: '';
+    width: 10px;
+    height: 10px;
+    transform: rotate(45deg);
+    background: #fff;
+    position: absolute;
+    top: 10px;
+    left: -5px;
+  }
+}
+.turn {
   .initiative {
     background: #ecac22;
   }
+  /*.initiative-counter:before {
+    display: block;
+  }*/
 }
+
 .type-counter {
   overflow: hidden;
   cursor: pointer;
