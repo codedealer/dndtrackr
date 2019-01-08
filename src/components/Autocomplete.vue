@@ -96,6 +96,7 @@ export default {
       this.$emit('monsterKey', this.match[this.current].key);
       //this.$refs.input.value = this.match[this.current].name;
       this.open = false;
+      this.current = 0;
     },
 
     // When up arrow pressed while suggestions are open
@@ -130,8 +131,7 @@ export default {
     },
 
     newMonster () {
-      this.current = 0;
-      this.open = false;
+      this.enter();
       this.$emit('monsterRequest', this.index);
     }
   }
