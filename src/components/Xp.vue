@@ -2,7 +2,7 @@
   <div class="xp-tracker" :class="{'expanded': expanded}">
     <div class="xp-header-wrapper" @click="expanded = !expanded">
       <div class="xp-buttons">
-        <a href="#" class="control-button" @click.prevent.stop="resetXp" v-show="monsters.length" title="reset XP counter">XP</a>
+        <a href="#" class="control-button" @click.prevent.stop="resetXp" title="reset XP counter">XP</a>
         <a href="#" class="control-button" :class="{'disabled': saveDisabled, 'saved': saveSaved}" v-if="user.state" v-show="monsters.length" @click.prevent.stop="saveGroup" title="save players"><img src="../assets/group.png" class="icon"></a>
         <a href="#" class="control-button" :class="{'disabled': loadDisabled}" v-if="user.state" @click.prevent.stop="loadGroup" title="load players"><img src="../assets/group-load.png" class="icon"></a>
       </div>
