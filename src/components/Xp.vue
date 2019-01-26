@@ -48,7 +48,8 @@ export default {
       slided: false,
       saveDisabled: false,
       saveSaved: false,
-      loadDisabled: false
+      loadDisabled: false,
+      types: type
     }
   },
   computed: {

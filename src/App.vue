@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" :class="mobileAppClass">
     <div class="controls">
       <div class="list-control">
         <img src="static/puff.svg" class="icon-loader" v-show="!isNamesLoaded">
@@ -112,6 +112,12 @@
     </div>
     <AddForm v-if="user.state" v-show="form == 1" :user="user"></AddForm>
     <SpellForm v-if="user.state" v-show="form == 2" :user="user"></SpellForm>
+    <div class="mobile-nav">
+      <!--div id="#nav-xp" class="mobile-nav-button">XP</div-->
+      <div id="nav-list" class="mobile-nav-button" @click.stop="mobileCurrentTab='nav-list'">L</div>
+      <div id="nav-info" class="mobile-nav-button" @click.stop="mobileCurrentTab='nav-info'">I</div>
+      <div id="nav-spells" class="mobile-nav-button" @click.stop="mobileCurrentTab='nav-spells'">S</div>
+    </div>
   </div>
 </template>
 
@@ -184,10 +190,14 @@ export default {
             this.round += 1;
           }
         }
-      }
+      },
+      mobileCurrentTab: 'nav-list'
     }
   },
   computed: {
+    mobileAppClass () {
+      return {[this.mobileCurrentTab]: true}
+    },
     hitpoints: {
       get () {
         if (this.selected === -1 || this.selected >= this.monsters.length) return 0;
@@ -1022,5 +1032,100 @@ body {
   animation: bounce linear 0.8s;
   animation-iteration-count: 1;
   transform-origin: 50% 50%;
+}
+.mobile-nav {
+  display: none;
+}
+@media (max-width:375px) {
+  body {
+    width: 100%;
+    overflow-x: hidden;
+  }
+  .list, .list-control {
+    flex-basis: 100vw;
+  }
+  .list-fix-wrapper {
+    width: 100vw;
+  }
+  #app .name-counter .form-control {
+    width: 100%;
+  }
+  #app {
+    .monster-input-wrapper {
+      flex: 1 0 auto;
+    }
+  }
+  .monster-container,
+  .controls {
+    transition: transform .4s ease-in-out;
+  }
+  #app.nav-list {
+    #nav-list {background: #ebebeb;}
+  }
+  #app.nav-info {
+    .controls,
+    .monster-container {
+      transform: translateX(-100vw);
+    }
+    #nav-info{background: #ebebeb;}
+  }
+  #app.nav-spells {
+    .controls,
+    .monster-container {
+      transform: translateX(-200vw);
+    }
+    #nav-spells{background: #ebebeb;}
+  }
+  .controls {
+    right: auto;
+  }
+  .list .xp-tracker {
+    transform: translateY(100vh);
+  }
+  .mobile-nav {
+    position: fixed;
+    background: #fff;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    height: 53px;
+    border-top: 1px solid #ebebeb;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    .mobile-nav-button {
+      flex: 1 1 auto;
+      line-height: 53px;
+      transition: all .4s ease-in-out;
+      border-right: 1px solid #ebebeb;
+      &.active {
+        background: #ebebeb;
+      }
+      &:last-child {
+        border-right: none;
+      }
+    }
+  }
+  .list-control,
+  .combat-control,
+  .spell-control {
+    width: 100vw;
+    max-width: 100vw;
+  }
+  .combat-control {
+    justify-content: space-between;
+    .dice-result {
+      margin-right: 10px;
+    }
+    .dice-wrapper {
+      margin-left: 5px;
+    }
+  }
+  .info, .spell-stat {
+    max-width: 100vw !important;
+  }
+  .spell-stat {
+    flex: 1 0 auto !important;
+  }
 }
 </style>
