@@ -183,6 +183,7 @@ export default {
   &.expanded {
     transform: translateY(0);
   }
+  z-index: 100;
 }
 .xp-header-wrapper {
   height: 52px;
