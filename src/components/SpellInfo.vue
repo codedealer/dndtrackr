@@ -1,5 +1,7 @@
 <template>
-  <div class="spell-stat" v-html="info.description"></div>
+  <div class="spell-stat">
+    <div class="spell-stat-inner" v-html="info.description"></div>
+  </div>
 </template>
 <script>
 import Server from '../server'
@@ -25,13 +27,16 @@ export default {
 
 <style lang="scss">
 .spell-stat {
+  overflow-y: scroll;
+  height: 100%;
+  overscroll-behavior: contain;
   order: 0;
-  flex: 1 100 auto;
+  flex: 1 0 0;
   max-width: 500px;
   background: #aac;
   align-self: auto;
   text-align: left;
-  padding: 30px 25px;
+  padding: 30px 0;
   width: 100%;
   box-sizing: border-box;
   .m-t-10 div {
@@ -41,5 +46,8 @@ export default {
   .p-b-20 {
     padding-bottom: 20px;
   }
+}
+.spell-stat-inner {
+  padding: 0 25px;
 }
 </style>

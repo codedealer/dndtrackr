@@ -97,6 +97,7 @@ export default {
   margin-top: 5px;
   position: relative;
   display: inline-block;
+  padding-left: 25px;
 }
 .spell-title {
   margin: 0;

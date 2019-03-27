@@ -538,6 +538,8 @@ body {
 .monster-container {
   margin-top: 53px;
   min-height: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 .list-fix {
   height: 100%;
@@ -558,10 +560,6 @@ body {
 }
 .list-fix-wrapper {
   overflow: hidden;
-  position: fixed;
-  left: 0;
-  top: 53px;
-  width: 320px;
   height: calc(100vh - 106px);
 }
 .list-control {
@@ -574,9 +572,14 @@ body {
 .combat-control {
   background: #ddd;
   order: 0;
-  flex: 0 0 500px;
+  flex: 1 0 0;
   align-self: auto;
-  max-width: 600px;
+  max-width: 500px;
+}
+.info {
+  overflow-y: scroll;
+  height: 100%;
+  overscroll-behavior: contain;
 }
 .monster-stat,
 .character-meta {
@@ -645,14 +648,15 @@ body {
 }
 .spell-control {
   order: 0;
-  flex: 1 1 auto;
+  flex: 1 0 0;
   align-self: auto;
   text-align: left;
-  padding-left: 25px;
   position: relative;
+  box-sizing: border-box;
   .dropdown-menu {
     text-align: center;
   }
+  border-left: 1px solid #ebebeb;
   max-width: 500px;
 }
 .controls {
@@ -665,7 +669,6 @@ body {
 .combat-control {
   background-color: #fff;
   border-left: 1px solid #ebebeb;
-  border-right: 1px solid #ebebeb;
   box-sizing: border-box;
   max-width: 100%;
   display: flex;
