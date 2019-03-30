@@ -26,6 +26,7 @@ function compose (n, min, max) {
 export default {
   queue,
   get (max, n = 1) {
+    if (max === 0 || n === 0) return Promise.resolve([0]);
     if (parseInt(max, 10) <= 1 || isNaN(parseInt(max, 10))) max = 2;
     if (n > sampleSize) n = sampleSize;
 

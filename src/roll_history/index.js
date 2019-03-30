@@ -15,10 +15,10 @@ export default {
     return this.q[this.i + 1];
   },
   next () {
-    if (this.q.length === 0) return { str: '', result: [] };
+    if (this.q.length === 0) return false;
     // skip the first one
     if (this.i === -1) this.i++;
-    if (this.i === this.q.length - 1) return { str: '', result: [] };
+    if (this.i === this.q.length - 1) return false;
 
     this.i++;
     return this.q[this.i];

@@ -6,58 +6,63 @@ let template = {
   disadvantage: false
 }
 
+class DiceParams {
+  constructor () {
+    this.dice = {};
+    this.parsedStr = [];
+    this.advantage = false;
+    this.disadvantage = false
+  }
+  represent (diceRoll) {
+    return Object.assign([], this.parsedStr, diceRoll).join(' ');
+  }
+  eval (diceRoll) {
+    // eslint-disable-next-line no-eval
+    return eval(this.represent(diceRoll));
+  }
+}
+
 export default {
   parse (str, forceArray = false) {
-    let obj;
-
-    //sanitize
+    // sanitize
     str = str.replace(/\s/g, '');
 
     if (!forceArray) return this.parseHealth(str);
 
-    let dieRegex = /^((\d+)?\()?((\d+)d)?(\d+)?(([+-])(\d+))?\)?([adAD])?$/
+    let diceParams = new DiceParams();
 
-    let result = dieRegex.exec(str);
-    if (result === null) throw new Error(`Parse error for ${str}`);
-
-    let resultArray = [];
-    let i = result[2] === undefined ? 1 : parseInt(result[2], 10);
-    if (i < 1 || !forceArray) i = 1;
-    if (result[9]) i = 2;
-
-    while (i--) {
-      obj = Object.assign({}, template);
-      let n = result[4] ? parseInt(result[4], 10) : 1;
-      if (result[9]) n = 1;
-      obj.n = n > 0 ? n : 1;
-
-      let die = result[5] ? parseInt(result[5], 10) : 20;
-      obj.die = die > 1 ? die : 2;
-
-      if (result[6] !== undefined) {
-        let modifier;
-
-        if (result[7] === '-') {
-          modifier = parseInt(`-${result[8]}`, 10);
-        } else {
-          modifier = parseInt(result[8], 10);
-        }
-
-        obj.modifier = modifier;
-      }
-
-      if (result[9] !== undefined) {
-        if (result[9].toLowerCase() === 'a') {
-          obj.advantage = true;
-        } else {
-          obj.disadvantage = true;
-        }
-      }
-      resultArray.push(obj);
+    if (str.endsWith('a')) {
+      str = str.substr(0, str.length - 1);
+      diceParams.advantage = true;
+      if (!str.length) str = '1d20';
+    } else if (str.endsWith('d')) {
+      str = str.substr(0, str.length - 1);
+      diceParams.disadvantage = true;
+      if (!str.length) str = '1d20';
     }
 
-    if (forceArray) return resultArray;
-    return resultArray.length > 2 ? resultArray : resultArray[0];
+    //shortcuts
+    if (/^\d{1,3}$/.test(str)) str = '1d' + str;
+    if (/^[+-]\d+$/.test(str)) str = '1d20' + str;
+
+    // validate and get dice
+    diceParams.parsedStr = str.split(/\b/);
+    diceParams.parsedStr.forEach((item, i) => {
+      // eslint-disable-next-line no-useless-escape
+      if (/^[+\-*\/]$/.test(item)) return;
+      if (/^\d+$/.test(item)) return;
+
+      let dieMatch = /^(\d{1,2})?d(\d{1,3})$/.exec(item);
+
+      if (dieMatch === null) throw new Error('parer validation error');
+
+      diceParams.dice[i] = {
+        die: parseInt(dieMatch[2]),
+        n: (dieMatch[1] ? parseInt(dieMatch[1]) : 1)
+      }
+    });
+
+    return diceParams;
   },
   parseHealth (str) {
     let dieRegex = /(\d+)d(\d+)(([+-])(\d+))?/

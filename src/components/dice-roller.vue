@@ -1,15 +1,15 @@
 <template>
   <div class="control-item control-flex-item">
     <div class="dice-wrapper">
-      <input v-model.trim="dice" placeholder="2(1d20 + 3)" class="dice-roller-input" @keydown.enter.self="roll"
+      <input v-model.trim="dice" placeholder="1d20 + 2d4 + 3" class="dice-roller-input" @keydown.enter.self="roll"
       @keydown.up.self.prevent="prevRoll"
       @keydown.down.self.prevent="nextRoll">
     </div>
     <div class="dice-result" @click.stop="expand">
       {{resultTotal}}
-      <div class="dice-detector" v-show="detected">{{nat}}</div>
+      <div class="dice-detector" v-show="nat.length">{{nat}}</div>
     </div>
-    <expander :resultArray="result" v-show="showExpander"></expander>
+    <expander :result="result" v-show="showExpander"></expander>
   </div>
 </template>
 
@@ -23,46 +23,51 @@ export default {
   data () {
     return {
       dice: '',
-      result: [],
+      result: {diceRolls: [{}, {}], diceParams: {}},
       history,
       showExpander: false
     }
   },
   computed: {
     resultTotal () {
-      if (!this.result.length) return 0;
+      if (Object.entries(this.result.diceParams).length === 0) return 0;
 
-      if (this.result[0].diceParams.advantage || this.result[0].diceParams.disadvantage) return this.compare();
+      let total1 = this.result.diceParams.eval(this.result.diceRolls[0]);
 
-      return this.result.reduce((prev, cur) => {
-        return prev + cur.data.reduce((p, c) => p + c, 0) + cur.diceParams.modifier;
-      }, 0);
-    },
-    detected () {
-      if (!this.result.length) return false;
-      if (this.result[0].diceParams.die !== 20) return false;
-      if (this.result[0].diceParams.advantage || this.result[0].diceParams.disadvantage) return true;
+      if (this.result.diceParams.advantage || this.result.diceParams.disadvantage) {
+        let total2 = this.result.diceParams.eval(this.result.diceRolls[1]);
 
-      return this.result.some(res => {
-        return res.data.some(el => el === 20 || el === 1);
-      });
+        return this.result.diceParams.advantage ? Math.max(total1, total2) : Math.min(total1, total2);
+      }
+
+      return total1;
     },
     nat () {
-      if (!this.detected) return 0;
-      let res, nat;
+      if (Object.entries(this.result.diceParams).length === 0) return 0;
+      let res = '';
 
-      if (this.result[0].diceParams.advantage) res = 'adv';
-      if (this.result[0].diceParams.disadvantage) res = 'd/adv';
+      if (this.result.diceParams.advantage) res = 'adv';
+      if (this.result.diceParams.disadvantage) res = 'd/adv';
 
-      if (res !== undefined) {
-        nat = this.compare() - this.result[0].diceParams.modifier;
-        if (nat === 20 || nat === 1) res = `nat ${nat}`;
-      } else {
-        for (var i = this.result.length - 1; i >= 0; i--) {
-          nat = this.result[i].data.find(el => el === 20 || el === 1);
-          if (nat !== undefined) res = `nat ${nat}`;
+      Object.entries(this.result.diceParams.dice).find(kvPair => {
+        if (kvPair[1].die !== 20 || kvPair[1].n !== 1) return false;
+
+        let nat = this.result.diceRolls[0][kvPair[0]];
+        if (nat === '20' || nat === '1') {
+          res = `nat ${nat}`;
+          return true;
         }
-      }
+
+        if (res !== undefined) {
+          nat = this.result.diceRolls[1][kvPair[0]];
+          if (nat === '20' || nat === '1') {
+            res = `nat ${nat}`;
+            return true;
+          }
+        }
+
+        return false;
+      });
 
       return res;
     }
@@ -81,34 +86,34 @@ export default {
         return;
       }
 
-      Promise.all(diceParams.map(o => random.get(o.die, o.n)))
-        .then(dataArray => {
-          this.result = [];
-          for (let i = 0; i < dataArray.length; i++) {
-            this.result.push({
-              data: dataArray[i],
-              diceParams: diceParams[i]
-            });
-          }
-          this.history.push({
-            str,
-            result: this.result
-          });
-          this.dice = '';
-        })
-        .catch(e => {
-          console.error(e);
-          this.dice = 'error';
+      let diceRolls = [{}, {}];
+      let isDoubleRoll = diceParams.advantage || diceParams.disadvantage;
+
+      let promises = [];
+      Object.entries(diceParams.dice).forEach(kvPair => {
+        let promise = random.get(kvPair[1].die, kvPair[1].n).then((data) => {
+          diceRolls[0][kvPair[0]] = data.join(' + ');
         });
-    },
-    compare () {
-      const first = this.result[0].data[0] + this.result[0].diceParams.modifier;
-      const last = this.result[1].data[0] + this.result[1].diceParams.modifier;
-      if (this.result[0].diceParams.advantage) {
-        return first > last ? first : last;
-      } else {
-        return first > last ? last : first;
-      }
+        promises.push(promise);
+        if (isDoubleRoll) {
+          promise = random.get(kvPair[1].die, kvPair[1].n).then((data) => {
+            diceRolls[1][kvPair[0]] = data.join(' + ');
+          });
+          promises.push(promise);
+        }
+      });
+
+      Promise.all(promises)
+      .then(() => {
+        this.result = {diceRolls, diceParams};
+        this.history.push({str, result: this.result});
+        this.dice = '';
+      })
+      .catch(e => {
+        console.error(e);
+        this.dice = 'error';
+      })
+      ;
     },
     prevRoll () {
       const roll = this.history.prev();
@@ -119,6 +124,11 @@ export default {
     },
     nextRoll () {
       const roll = this.history.next();
+      if (roll === false) {
+        this.dice = '';
+        this.result = {diceParams: {}, diceRolls: [{}, {}]};
+        return;
+      }
 
       this.dice = roll.str;
       this.result = roll.result;
@@ -136,7 +146,7 @@ export default {
 <style lang="scss">
 .dice-roller-input {
   font-size: 16px;
-  width: 110px;
+  width: 140px;
   margin-top: 8px;
 }
 .dice-result {
