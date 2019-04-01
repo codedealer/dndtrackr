@@ -670,7 +670,7 @@ body {
   background-color: #fff;
   border-left: 1px solid #ebebeb;
   box-sizing: border-box;
-  max-width: 100%;
+  max-width: 500px;
   display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
