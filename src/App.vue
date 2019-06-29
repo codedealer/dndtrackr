@@ -92,11 +92,10 @@
         <div class="dice-tips tips" v-show="monsters.length == 0">
           <p>Dice Roller</p>
           <ul>
-            <li>You can roll up to 100 dice at a time with modifiers calculated automatically. You can either roll several dice and add a modifier after that (e.g. <i>4d4+2</i>) or have several independent results (e.g. <i>4(1d4+2)</i>).</li>
+            <li>You can roll up to 100 dice at a time with modifiers calculated automatically.</li>
             <li>Press on the result number to open expanded window which will show how the result is calculated.</li>
-            <li>Most common case for rolling several results is (dis)advantage rolls. For that there's a shorthand: 20+3a. This will make two rolls of d20, add 3 to each and then pick the highest. Add 'd' instead of 'a' for a disadvantage.</li>
-            <li>If you want a simple die roll just type the number of sides (e.g. 10 will roll one d10).</li>
-            <li>On top of that if you omit a die completely it will default to d20. So to reiterate the example above: '+1' will roll d20 and add 1 to the result. Alternatively '+2d' will roll two d20, add 2 to each and pick the lowest (hence disadvantage).</li>
+            <li>You can also roll with (dis)advantage. Add 'a' or 'd' at the end of the line to roll with advantage/disadvantage respectfully.</li>
+            <li>If you want a simple die roll just type the number of sides on the die (e.g. 10 will roll one d10). Another shorthand is rolling d20 with a modifier: just type the modifier (e.g. +3).</li>
             <li>Circle through previous results (up to 100) by pressing up and down arrows while inside the roller field.</li>
           </ul>
         </div>
