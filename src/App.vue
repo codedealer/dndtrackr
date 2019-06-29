@@ -1057,6 +1057,9 @@ body {
       flex: 1 0 auto;
     }
   }
+  .monster-container{
+    overflow: visible;
+  }
   .monster-container,
   .controls {
     transition: transform .4s ease-in-out;
@@ -1123,11 +1126,12 @@ body {
       margin-left: 5px;
     }
   }
-  .info, .spell-stat {
-    max-width: 100vw !important;
-  }
   .spell-stat {
     flex: 1 0 auto !important;
+  }
+  .info, .spell-stat {
+    max-width: 100vw !important;
+    flex-basis: 100vw;
   }
 }
 </style>
