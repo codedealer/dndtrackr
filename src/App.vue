@@ -370,6 +370,11 @@ export default {
       if (removedMonster.type === this.types.monster && removedMonster.name.length) {
         this.addToRemoved(removedMonster);
       }
+
+      // round order fix
+      if (index < this.round.order && this.round.order > 0) {
+        this.round.order--;
+      }
     },
     addToRemoved (monsterObject) {
       this.removedMonsters.push({
