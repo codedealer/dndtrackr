@@ -362,24 +362,22 @@ export default {
     border-bottom: 1px solid #fff;
   }
   .user-monster-name {
-    display: inline-block;
+    flex: 1 1 auto;
     white-space: nowrap;
+    overflow-x: hidden;
     text-overflow: ellipsis;
-    width: 268px;
     line-height: 32px;
   }
   .delete-button {
-    display: inline-block;
+    flex: 0 0 26px;
   }
   .edit-button {
-    display: inline-block;
+    flex: 0 0 26px;
     height: 32px;
-    width: 26px;
     font-size: 24px;
     color: #fff;
     background: #bebebe;
     line-height: 32px;
-    flex: 1 1 auto;
     cursor: pointer;
     text-align: center;
     transition: background-color .4s;
