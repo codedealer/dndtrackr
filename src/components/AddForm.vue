@@ -95,7 +95,8 @@
       </div>
     </div>
     <div class="user-list">
-      <div class="user-monster" v-for="(monster, index) in user.monsters">
+      <input v-model.trim="monsterFilter" class="monster-form-filter" placeholder="filter by name">
+      <div class="user-monster" v-for="(monster, index) in filteredMonsters">
         <span class="user-monster-name">{{monster.name}}</span><span class="edit-button" @click.stop="edit(monster, index)">✍</span><span class="delete-button" @click.stop="remove(monster, index)">-</span>
       </div>
     </div>
@@ -133,7 +134,17 @@ export default {
         lactions: [],
         challenge: ''
       },
-      working: false
+      working: false,
+      monsterFilter: ''
+    }
+  },
+  computed: {
+    filteredMonsters () {
+      if (this.monsterFilter.length === 0) return this.user.monsters.slice();
+
+      return this.user.monsters.filter(monster => {
+        return monster.name.toLowerCase().indexOf(this.monsterFilter.toLowerCase()) > -1;
+      });
     }
   },
   methods: {
@@ -282,8 +293,20 @@ export default {
     width: 80%;
   }
 }
+.monster-form-filter {
+  display: flex;
+  width: 300px;
+  border: none;
+  outline: none;
+  padding: 0 7px;
+  border-right: 1px solid #ebebeb;
+  box-sizing: border-box;
+  font-size: 16px;
+  line-height: 32px;
+}
 .monster-form {
   max-width: 500px;
+  flex-basis: 500px !important;
   background: #ddd;
   margin-top: 52px;
   textarea {
@@ -326,6 +349,9 @@ export default {
   }
 }
 .user-list {
+  max-height: calc(100vh - 52px);
+  overflow-y: scroll;
+  overscroll-behavior: contain;
   margin-top: 52px;
   max-width: 300px;
   .user-monster {
