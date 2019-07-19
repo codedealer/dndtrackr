@@ -97,7 +97,10 @@
     <div class="user-list">
       <input v-model.trim="monsterFilter" class="monster-form-filter" placeholder="filter by name">
       <div class="user-monster" v-for="(monster, index) in filteredMonsters">
-        <span class="user-monster-name">{{monster.name}}</span><span class="edit-button" @click.stop="edit(monster, index)">✍</span><span class="delete-button" @click.stop="remove(monster, index)">-</span>
+        <span class="add-button" @click.stop="add(monster, index)" title="add to encounter list">+</span>
+        <span class="user-monster-name">{{monster.name}}</span>
+        <span class="edit-button" @click.stop="edit(monster, index)">✍</span>
+        <span class="delete-button" @click.stop="remove(monster, index)">-</span>
       </div>
     </div>
 
@@ -262,6 +265,9 @@ export default {
 
         this.monster = data;
       });
+    },
+    add (monster, index) {
+      this.$emit('monsterToList', monster.key);
     }
   }
 }
@@ -370,6 +376,18 @@ export default {
   }
   .delete-button {
     flex: 0 0 26px;
+  }
+  .add-button {
+    flex: 0 0 26px;
+    background: #f1cea0;
+    color: #fff;
+    line-height: 32px;
+    cursor: pointer;
+    font-size: 24px;
+    transition: background-color .4s;
+    &:hover {
+      background: transparent;
+    }
   }
   .edit-button {
     flex: 0 0 26px;

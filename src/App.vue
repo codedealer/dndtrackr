@@ -109,7 +109,7 @@
       </div>
       <SpellInfo :id="currentSpell"></SpellInfo>
     </div>
-    <AddForm v-if="user.state" v-show="form == 1" :user="user"></AddForm>
+    <AddForm v-if="user.state" v-show="form == 1" :user="user" @monsterToList="addMonsterByKey"></AddForm>
     <SpellForm v-if="user.state" v-show="form == 2" :user="user"></SpellForm>
     <div class="mobile-nav">
       <!--div id="#nav-xp" class="mobile-nav-button">XP</div-->
@@ -279,6 +279,17 @@ export default {
       let initiative = monster ? monster.initiative : 0;
       this.initiative.push(initiative);
       this.selected = this.monsters.length - 1;
+    },
+    addMonsterByKey (key) {
+      if (!this.monsterList.some(monster => monster.key === key)) return false;
+
+      let monster = new MonsterClass();
+      monster.key = key;
+
+      Server.getMonsterData(key).then(data => {
+        monster.setData(data);
+        this.addMonster(monster);
+      });
     },
     selectItem (index) {
       this.selected = index;
