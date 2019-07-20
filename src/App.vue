@@ -374,7 +374,6 @@ export default {
       this.$nextTick(() => { this.tab(index) });
     },
     onRemoveMonster (index) {
-      this.selected = -1;
       let removedMonster = this.monsters.splice(index, 1)[0];
       this.initiative.splice(index, 1);
 
