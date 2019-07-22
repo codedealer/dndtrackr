@@ -95,7 +95,10 @@
       </div>
     </div>
     <div class="user-list">
-      <input v-model.trim="monsterFilter" class="monster-form-filter" placeholder="filter by name">
+      <div class="monster-form-filter">
+        <input v-model.trim="monsterFilter" class="monster-form-filter-input" placeholder="filter by name">
+        <button :class="{'monster-form-sort': true, 'selected': sortByName}" @click="sortByName = !sortByName">A-Z</button>
+      </div>
       <div class="user-monster" v-for="(monster, index) in filteredMonsters">
         <span class="add-button" @click.stop="add(monster, index)" title="add to encounter list">+</span>
         <span class="user-monster-name">{{monster.name}}</span>
@@ -138,19 +141,27 @@ export default {
         challenge: ''
       },
       working: false,
-      monsterFilter: ''
+      monsterFilter: '',
+      sortByName: true
     }
   },
   computed: {
     filteredMonsters () {
-      if (this.monsterFilter.length === 0) return this.user.monsters.slice();
+      if (this.monsterFilter.length === 0) return this.sort(this.user.monsters.slice());
 
-      return this.user.monsters.filter(monster => {
+      return this.sort(this.user.monsters.filter(monster => {
         return monster.name.toLowerCase().indexOf(this.monsterFilter.toLowerCase()) > -1;
-      });
+      }));
     }
   },
   methods: {
+    sort (monsters) {
+      if (this.sortByName) {
+        return monsters.sort((a, b) => a.name < b.name ? -1 : 1);
+      } else {
+        return monsters.sort((a, b) => a.key < b.key ? 1 : -1);
+      }
+    },
     addProp () {
       this.monster.props.push({ title: '', content: '' });
     },
@@ -302,13 +313,26 @@ export default {
 .monster-form-filter {
   display: flex;
   width: 300px;
-  border: none;
-  outline: none;
-  padding: 0 7px;
-  border-right: 1px solid #ebebeb;
-  box-sizing: border-box;
-  font-size: 16px;
-  line-height: 32px;
+  .monster-form-filter-input {
+    border: none;
+    outline: none;
+    padding: 0 7px;
+    border-right: 1px solid #ebebeb;
+    box-sizing: border-box;
+    font-size: 16px;
+    line-height: 32px;
+    flex: 1 0 auto;
+  }
+  .monster-form-sort {
+    flex: 0 0 52px;
+    outline: none;
+    background: #ebebeb;
+    border: none;
+    cursor: pointer;
+    &.selected {
+      background: #f1cea0;
+    }
+  }
 }
 .monster-form {
   max-width: 500px;
