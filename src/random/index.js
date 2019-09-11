@@ -5,7 +5,7 @@ import queue from './queue'
 
 let id = 10;
 const sampleSize = 100;
-const url = 'https://api.random.org/json-rpc/1/invoke';
+const url = 'https://api.random.org/json-rpc/2/invoke';
 
 function compose (n, min, max) {
   return {
