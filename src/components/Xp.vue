@@ -169,6 +169,8 @@ export default {
 </script>
 
 <style lang="scss">
+@import '../assets/var';
+
 .xp-tracker {
   position: fixed;
   overflow: hidden;
@@ -176,8 +178,8 @@ export default {
   left: 0;
   height: calc(100vh - 53px);
   width: 320px;
-  background: #fff;
-  border-top: 1px solid #ebebeb;
+  background: $base;
+  border-top: 1px solid $border;
   transition: all .4s ease-in-out;
   transform: translateY(calc(100vh - 106px));
   &.expanded {
@@ -220,14 +222,14 @@ export default {
 }
 .xp-controls {
   flex-basis: 100px;
-  border-left: 1px solid #ebebeb;
+  border-left: 1px solid $border;
   .xp-mod{
     width: 80%;
     font-size: 14px;
   }
   .xp-controls-desc {
     font-size: 12px;
-    color: #666;
+    color: #bbb;
     font-style: italic;
   }
 }
@@ -242,22 +244,22 @@ export default {
   .xp-counter-player {
     font-size: 12px;
     font-style: italic;
-    color: #666;
+    color: #bbb;
   }
   transition: background-color .3s ease-in-out;
   transition-delay: .4s;
   cursor: pointer;
 }
 .xp-body {
-  border-top: 1px solid #ebebeb;
+  border-top: 1px solid $border;
 }
 .xp-desc {
   text-align: right;
   margin-right: 10px;
   font-size: 14px;
-  color: #666;
+  color: #bbb;
   .xp-desc-counter {
-    color: #2c3e50;
+    color: #bbb;
     font-weight: 700;
     font-size: 18px;
   }
@@ -268,10 +270,10 @@ export default {
   flex-wrap: nowrap;
   height: 48px;
   align-items: stretch;
-  border-bottom: 1px solid #ebebeb;
+  border-bottom: 1px solid $border;
   padding: 0 10px 0 0;
   &:first-of-type {
-    border-top: 1px solid #ebebeb;
+    border-top: 1px solid $border;
   }
 }
 .xp-item-name,
@@ -297,14 +299,14 @@ export default {
   right: 0;
   font-size: 11px;
   line-height: normal;
-  color: #666;
+  color: #bbb;
   font-style: italic;
   font-weight: normal;
 }
 .xp-item-controls {
   flex: 0 0 48px;
   height: 100%;
-  background: #aac;
+  background: $tertiary;
   position: relative;
 }
 .xp-plus,

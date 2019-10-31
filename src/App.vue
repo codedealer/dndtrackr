@@ -491,12 +491,15 @@ export default {
 </script>
 
 <style lang="scss">
+@import 'assets/var';
+
 html {
   height: 100%;
 }
 body {
   margin: 0;
   height: calc(100% - 53px);
+  background-color: $base;
 }
 ::-webkit-scrollbar {
   display: none;
@@ -506,7 +509,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: $text;
   height: 100%;
 }
 .icon {
@@ -523,13 +526,13 @@ body {
   border-radius: 50%;
   line-height: 32px;
   font-size: 24px;
-  background: #f1cea0;
+  background: $accent;
   text-align: center;
   transition: all .6s ease-in-out;
   margin-left: 10px;
 }
 .add-monster {
-  background: #f18a50;
+  background: $accent;
 }
 .controls {
   position: fixed;
@@ -538,7 +541,7 @@ body {
   left: 0;
   right: 0;
   z-index: 10;
-  background-color: #fff;
+  background-color: $base;
 }
 .monster-container,
 .controls {
@@ -584,7 +587,7 @@ body {
 }
 .info,
 .combat-control {
-  background: #ddd;
+  background: $secondary;
   order: 0;
   flex: 1 0 0;
   align-self: auto;
@@ -611,11 +614,12 @@ body {
   }
 }
 .selected .monster-input-wrapper {
-  background: #ececec;
+  background: lighten($secondary, 15);
 }
 .monster-input-wrapper {
   height: 32px;
   overflow: hidden;
+  background-color: $secondary;
   transition: background-color .4s;
   .name-counter {
     height: 20px;
@@ -627,6 +631,9 @@ body {
   .name-counter .form-control:focus {
     height: 32px;
     font-size: 16px;
+  }
+  input.form-control {
+    color: $text;
   }
 }
 .character-meta-info {
@@ -670,19 +677,19 @@ body {
   .dropdown-menu {
     text-align: center;
   }
-  border-left: 1px solid #ebebeb;
+  border-left: 1px solid $border;
   max-width: 500px;
 }
 .controls {
-  border-bottom: 1px solid #ebebeb;
+  border-bottom: 1px solid $border;
 }
 .combat-control,
 .list-control {
   padding: 10px 0;
 }
 .combat-control {
-  background-color: #fff;
-  border-left: 1px solid #ebebeb;
+  background-color: $base;
+  border-left: 1px solid $border;
   box-sizing: border-box;
   max-width: 500px;
   display: flex;
@@ -703,11 +710,11 @@ body {
   justify-content: stretch;
   align-content: stretch;
   align-items: stretch;
-  border-bottom: 1px solid #ebebeb;
+  border-bottom: 1px solid $border;
   position: relative;
 }
 .initiative-counter {
-  background: #aac;
+  background: $tertiary;
   flex: 0 0 32px;
 }
 .initiative {
@@ -716,9 +723,10 @@ body {
   line-height: 32px;
   font-size: 24px;
   text-align: center;
-  background: #aac;
+  background: $tertiary;
   border: none;
   padding: 0;
+  color: $text;
 }
 .type-counter,
 .name-button {
@@ -766,13 +774,13 @@ body {
   font-size: 24px;
   color: #fff;
   line-height: 32px;
-  background: #aac;
+  background: $tertiary;
   flex: 1 1 auto;
   cursor: pointer;
   text-align: center;
   transition: background-color .4s;
   &:hover {
-    background: #ca331a;
+    background: $accent;
   }
 }
 .current {
@@ -807,7 +815,7 @@ body {
 }
 .turn {
   .initiative {
-    background: #ecac22;
+    background: $accent;
   }
   /*.initiative-counter:before {
     display: block;
@@ -883,9 +891,9 @@ body {
   li {
     padding: 10px;
     width: 320px;
-    background: #eee;
+    background: $border;
     &.active {
-      background: #bebebe;
+      background: $secondary;
     }
   }
 }
@@ -954,7 +962,7 @@ body {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: #f1cea0;
+    background: $accent;
     color: #fff;
     cursor: pointer;
   }
@@ -964,7 +972,7 @@ body {
     position: absolute;
     top: 48px;
     right: 0;
-    background: #ebebeb;
+    background: $border;
     .user-action {
       padding: 5px 10px;
       &:hover {
@@ -993,7 +1001,7 @@ body {
   li {
     text-align: left;
     font-size: 12px;
-    color: #999;
+    color: #bbb;
     margin-bottom: 10px;
   }
 }
@@ -1016,7 +1024,7 @@ body {
   }
 }
 .dice-tips li {
-  color: #2c3e50;
+  color: #bbb;
 }
 .disabled {
   opacity: .5;
@@ -1080,21 +1088,21 @@ body {
     transition: transform .4s ease-in-out;
   }
   #app.nav-list {
-    #nav-list {background: #ebebeb;}
+    #nav-list {background: $border;}
   }
   #app.nav-info {
     .controls,
     .monster-container {
       transform: translateX(-100vw);
     }
-    #nav-info{background: #ebebeb;}
+    #nav-info{background: $border;}
   }
   #app.nav-spells {
     .controls,
     .monster-container {
       transform: translateX(-200vw);
     }
-    #nav-spells{background: #ebebeb;}
+    #nav-spells{background: $border;}
   }
   .controls {
     right: auto;
@@ -1109,7 +1117,7 @@ body {
     bottom: 0;
     left: 0;
     height: 53px;
-    border-top: 1px solid #ebebeb;
+    border-top: 1px solid $border;
     display: flex;
     flex-wrap: nowrap;
     justify-content: center;
@@ -1117,9 +1125,9 @@ body {
       flex: 1 1 auto;
       line-height: 53px;
       transition: all .4s ease-in-out;
-      border-right: 1px solid #ebebeb;
+      border-right: 1px solid $border;
       &.active {
-        background: #ebebeb;
+        background: $border;
       }
       &:last-child {
         border-right: none;
@@ -1149,4 +1157,19 @@ body {
     flex-basis: 100vw;
   }
 }
+input {
+  background-color: lighten($secondary, 15);
+  color: $text;
+  border: 1px solid $border;
+  outline: none;
+  padding: 2px;
+  &::placeholder {
+    color: darken($text, 25);
+  }
+}
+textarea {
+  background-color: lighten($secondary, 15);
+  color: $text;
+}
+
 </style>

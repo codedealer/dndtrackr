@@ -86,13 +86,15 @@ export default {
 
 
 <style lang="scss">
+@import '../assets/var';
+
 .color-picker {
   width: 26px;
   height: 32px;
   position: relative;
   box-sizing: border-box;
-  border-left: 1px solid #ebebeb;
-  border-right: 1px solid #ebebeb;
+  border-left: 1px solid $border;
+  border-right: 1px solid $border;
   cursor: pointer;
   .color-dropdown {
     position: absolute;
@@ -110,7 +112,7 @@ export default {
     height: 26px;
     cursor: pointer;
     box-sizing: border-box;
-    border: 1px solid #ebebeb;
+    border: 1px solid $border;
     border-bottom: none;
     &.selected {
       border-color: #aac;

@@ -285,19 +285,21 @@ export default {
 </script>
 
 <style lang="scss">
+@import '../assets/var';
+
 .form-butttons {
   position: fixed;
   bottom: 0;
   left: 0;
   height: 53px;
-  background: #fff;
+  background: $base;
   width: 100%;
   max-width: 500px;
   padding-top: 10px;
   box-sizing: border-box;
 }
 .control-button-new {
-  background: #aac;
+  background: $tertiary;
 }
 .form-container {
   display: flex;
@@ -317,7 +319,7 @@ export default {
     border: none;
     outline: none;
     padding: 0 7px;
-    border-right: 1px solid #ebebeb;
+    border-right: 1px solid $border;
     box-sizing: border-box;
     font-size: 16px;
     line-height: 32px;
@@ -326,18 +328,18 @@ export default {
   .monster-form-sort {
     flex: 0 0 52px;
     outline: none;
-    background: #ebebeb;
+    background: $border;
     border: none;
     cursor: pointer;
     &.selected {
-      background: #f1cea0;
+      background: $accent;
     }
   }
 }
 .monster-form {
   max-width: 500px;
   flex-basis: 500px !important;
-  background: #ddd;
+  background: $secondary;
   margin-top: 52px;
   textarea {
     font-size: 11px;
@@ -388,8 +390,8 @@ export default {
     display: flex;
     flex-direction: row;
     width: 300px;
-    background: #aac;
-    border-bottom: 1px solid #fff;
+    background: $tertiary;
+    border-bottom: 1px solid $border;
   }
   .user-monster-name {
     flex: 1 1 auto;
@@ -403,8 +405,8 @@ export default {
   }
   .add-button {
     flex: 0 0 26px;
-    background: #f1cea0;
-    color: #fff;
+    background: $accent;
+    color: $text;
     line-height: 32px;
     cursor: pointer;
     font-size: 24px;
@@ -417,14 +419,14 @@ export default {
     flex: 0 0 26px;
     height: 32px;
     font-size: 24px;
-    color: #fff;
-    background: #bebebe;
+    color: $text;
+    background: $secondary;
     line-height: 32px;
     cursor: pointer;
     text-align: center;
     transition: background-color .4s;
     &:hover {
-      background: #f1cea0;
+      background: $accent;
     }
   }
 }

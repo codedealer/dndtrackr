@@ -26,6 +26,7 @@ export default {
 </script>
 
 <style lang="scss">
+$tertiary: #5f5f71;
 .spell-stat {
   overflow-y: scroll;
   height: 100%;
@@ -33,7 +34,7 @@ export default {
   order: 0;
   flex: 1 0 0;
   max-width: 500px;
-  background: #aac;
+  background: $tertiary;
   align-self: auto;
   text-align: left;
   padding: 30px 0;

@@ -106,6 +106,8 @@ export default {
 </script>
 
 <style lang="scss">
+@import '../assets/var';
+
 .spell-form-title {
   margin-top: 50px;
 }
@@ -126,7 +128,7 @@ export default {
   }
   .user-list {
     .user-spell {
-      background: #ddd;
+      background: $secondary;
     }
   }
 </style>

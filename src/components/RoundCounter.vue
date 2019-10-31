@@ -18,12 +18,14 @@ export default {
 </script>
 
 <style lang="scss">
+@import '../assets/var';
+
 .round-counter {
   display: inline-flex;
   margin-left: 25px;
 }
 .round-counter-label {
-  background: #aac;
+  background: $tertiary;
   height: 32px;
   width: 32px;
   display: inline-block;
@@ -35,14 +37,14 @@ export default {
   display: inline-block;
   width: 32px;
   height: 32px;
-  background-color:  #f1cea0;
+  background-color:  $accent;
   background-repeat: no-repeat;
   background-position: center;
   background-image: url(../assets/next.png);
   cursor: pointer;
   transition: background-color .4s ease-in-out;
   &:hover {
-    background-color: #aac;
+    background-color: $tertiary;
   }
 }
 .control-reset {

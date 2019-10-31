@@ -144,10 +144,20 @@ export default {
 </script>
 
 <style lang="scss">
+@import '../assets/var';
+
 .dice-roller-input {
   font-size: 16px;
   width: 140px;
   margin-top: 8px;
+  background-color: lighten($secondary, 15);
+  color: $text;
+  border: 1px solid $border;
+  outline: none;
+  padding: 2px;
+  &::placeholder {
+    color: darken($text, 25);
+  }
 }
 .dice-result {
   width: 42px;
@@ -157,7 +167,7 @@ export default {
   font-size: 18px;
   line-height: 42px;
   border-radius: 50%;
-  background: #aac;
+  background: $tertiary;
   cursor: pointer;
   position: relative;
   .dice-detector {
@@ -168,8 +178,11 @@ export default {
     font-weight: bold;
     text-align: center;
     font-size: 10px;
-    color: #ee4320;
+    color: lighten($accent, 20);
   }
+}
+.result-expression {
+  color: $tertiary;
 }
 .dice-result,
 .dice-wrapper {
