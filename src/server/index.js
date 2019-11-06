@@ -2,7 +2,7 @@ import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/database'
 import 'firebase/functions'
-import firebaseui from 'firebaseui'
+import * as firebaseui from 'firebaseui'
 import config from './config.json'
 import axios from 'axios'
 
@@ -26,9 +26,7 @@ export default {
 
     let ui = new firebaseui.auth.AuthUI(firebase.auth(app));
 
-    if (ui.isPendingRedirect()) {
-      ui.start('#ui-container', uiConfig);
-    }
+    ui.start('#ui-container', uiConfig);
 
     firebase.auth(app).onAuthStateChanged(user => {
       if (user) {
@@ -40,7 +38,7 @@ export default {
       } else {
         userState.state = 0;
       }
-    })
+    }, error => { console.log(error) });
 
     this.db = firebase.database(app);
     this.app = app;
