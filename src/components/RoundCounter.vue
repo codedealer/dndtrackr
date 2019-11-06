@@ -1,8 +1,12 @@
 <template>
   <div class="round-counter">
     <label class="round-counter-label">{{round.round}}</label>
-    <div class="control-next" @click.stop="$emit('nextOrder')" title="next turn"></div>
-    <div class="control-reset" @click.stop="round.reset" title="reset combat"></div>
+    <div class="control-next" @click.stop="$emit('nextOrder')" title="next turn">
+      <img src="../assets/icon-next.svg" class="icon next">
+    </div>
+    <div class="control-reset" @click.stop="round.reset" title="reset combat">
+      <img src="../assets/icon-reset.svg" class="icon">
+    </div>
   </div>
 </template>
 
@@ -34,21 +38,23 @@ export default {
   font-size: 18px;
 }
 .control-next {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 32px;
   height: 32px;
   background-color:  $accent;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-image: url(../assets/next.png);
   cursor: pointer;
-  transition: background-color .4s ease-in-out;
+  transition: background-color .2s ease-in-out;
   &:hover {
     background-color: $tertiary;
   }
 }
+.next {
+  width: 22px;
+  height: 22px;
+}
 .control-reset {
   @extend .control-next;
-  background-image: url(../assets/reset.png);
 }
 </style>

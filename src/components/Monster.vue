@@ -4,8 +4,8 @@
     <div class="initiative-counter"><input class="initiative" v-model.number="initiative[index]" type="text" :tabindex="1+index"></div>
     <div class="type-counter" @click="changeType()" title="Change type monster/player">
       <div class="type-slider" :class="{'slided': monster.type}">
-        <div class="type"><img src="../assets/monster.png" class="icon"></div>
-        <div class="type type-player"><img src="../assets/player.png" class="icon"></div>
+        <div class="type"><img src="../assets/icon-monster.svg" class="icon"></div>
+        <div class="type type-player"><img src="../assets/icon-player.svg" class="icon"></div>
       </div>
     </div>
     <div class="monster-input-wrapper" :class="{'expanded': expanded}">
@@ -87,7 +87,12 @@ export default {
 
 <style lang="scss">
 @import '../assets/var';
-
+.type {
+  background-color: $secondary;
+}
+.type-player {
+  background-color: $player;
+}
 .color-picker {
   width: 26px;
   height: 32px;

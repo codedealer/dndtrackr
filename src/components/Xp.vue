@@ -2,9 +2,9 @@
   <div class="xp-tracker" :class="{'expanded': expanded}">
     <div class="xp-header-wrapper" @click="expanded = !expanded">
       <div class="xp-buttons">
-        <a href="#" class="control-button" @click.prevent.stop="resetXp" title="reset XP counter">XP</a>
-        <a href="#" class="control-button" :class="{'disabled': saveDisabled, 'saved': saveSaved}" v-if="user.state" v-show="monsters.length" @click.prevent.stop="saveGroup" title="save players"><img src="../assets/group.png" class="icon"></a>
-        <a href="#" class="control-button" :class="{'disabled': loadDisabled}" v-if="user.state" @click.prevent.stop="loadGroup" title="load players"><img src="../assets/group-load.png" class="icon"></a>
+        <a href="#" class="control-button xp-reset" @click.prevent.stop="resetXp" title="reset XP counter">XP</a>
+        <a href="#" class="control-button xp-save" :class="{'disabled': saveDisabled, 'saved': saveSaved}" v-if="user.state" v-show="monsters.length" @click.prevent.stop="saveGroup" title="save players"><img src="../assets/icon-save.svg" class="icon xp-cloud-control"></a>
+        <a href="#" class="control-button xp-load" :class="{'disabled': loadDisabled}" v-if="user.state" @click.prevent.stop="loadGroup" title="load players"><img src="../assets/icon-load.svg" class="icon xp-cloud-control"></a>
       </div>
       <div class="xp-header" :class="{'slided': expanded}">
         <div class="xp-counter">
@@ -213,6 +213,19 @@ export default {
   &.slided {
     transform: translateX(0);
   }
+}
+.xp-reset {
+  font-size: 18px;
+}
+.xp-save {
+  background-color: $player;
+  &:hover {
+    background-color: $accent;
+  }
+}
+.xp-cloud-control {
+  width: 26px;
+  height: 26px;
 }
 .xp-controls,
 .xp-counter {

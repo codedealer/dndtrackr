@@ -9,9 +9,9 @@
         @click.exact.prevent="generateInitiative(false)"
         @click.ctrl.prevent="generateInitiative(true)"
         @click.meta.prevent="generateInitiative(true)"
-         v-show="monsters.length" title="generate monsters' initiative"><img src="./assets/init.png" class="icon"></a>
-        <a href="#" class="control-button sort-monster" @click.prevent="sortMonsters" v-show="monsters.length" title="sort by initiative"><img src="./assets/sort.png" class="icon"></a>
-        <a href="#" class="control-button rename-monster" @click.prevent="renameMonsters" v-show="monsters.length" title="rename monster duplicates"><img src="./assets/rename.png" class="icon"></a>
+         v-show="monsters.length" title="generate monsters' initiative"><img src="./assets/icon-20.svg" class="icon"></a>
+        <a href="#" class="control-button" @click.prevent="sortMonsters" v-show="monsters.length" title="sort by initiative"><img src="./assets/icon-sort.svg" class="icon sort-monster"></a>
+        <a href="#" class="control-button rename-monster" @click.prevent="renameMonsters" v-show="monsters.length" title="rename monster duplicates"><img src="./assets/icon-double.svg" class="icon icon-double"></a>
         <RoundCounter
         v-show="monsters.length"
         :round="round"
@@ -513,12 +513,13 @@ body {
   height: 100%;
 }
 .icon {
-  display: inline-block;
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
 }
 .control-button {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 32px;
   height: 32px;
   text-decoration: none;
@@ -528,8 +529,19 @@ body {
   font-size: 24px;
   background: $accent;
   text-align: center;
-  transition: all .6s ease-in-out;
+  transition: all .2s ease-in-out;
   margin-left: 10px;
+  &:hover {
+    background-color: $tertiary;
+  }
+}
+.sort-monster {
+  width: 19px;
+  height: 19px;
+}
+.icon-double {
+  width: 26px;
+  height: 26px;
 }
 .add-monster {
   background: $accent;
@@ -837,9 +849,6 @@ body {
   .type {
     height: 32px;
   }
-  .type-player {
-    background: #4333ea;
-  }
 }
 .hit-name {
   width: 200px;
@@ -863,7 +872,7 @@ body {
     line-height: 18px;
     padding-bottom: 3px;
     cursor: pointer;
-    background: #f1cea0;
+    background: $accent;
     border-radius: 50%;
     display: inline-block;
     width: 16px;
