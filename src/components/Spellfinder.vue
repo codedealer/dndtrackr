@@ -1,12 +1,14 @@
 <template>
   <div class="spell-finder" v-bind:class="{'open':openSuggestion}">
-    <input class="ordinary-input" type="text" :value="input" @input.stop="updateValue($event.target.value)"
+    <input class="ordinary-input" type="text"
+      placeholder="Spells"
+      :value="input"
+      @input.stop="updateValue($event.target.value)"
       @keydown.enter = 'enter'
       @keydown.down = 'down'
       @keydown.up = 'up'
       @keydown.esc = 'cancel'
     >
-    <p class="spell-title">Spells</p>
     <ul class="dropdown-menu">
         <li v-for="(suggestion, index) in matches"
             v-bind:class="{'active': isActive(index)}"
@@ -94,14 +96,8 @@ export default {
 </script>
 <style lang="scss">
 .spell-finder {
-  margin-top: 5px;
   position: relative;
   display: inline-block;
   padding-left: 25px;
-}
-.spell-title {
-  margin: 0;
-  font-size: 10px;
-  font-style: italic;
 }
 </style>

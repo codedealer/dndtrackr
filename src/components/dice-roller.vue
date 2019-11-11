@@ -149,7 +149,6 @@ export default {
 .dice-roller-input {
   font-size: 16px;
   width: 140px;
-  margin-top: 8px;
   background-color: lighten($secondary, 15);
   color: $text;
   border: 1px solid $border;
@@ -195,5 +194,6 @@ export default {
   flex-wrap: nowrap;
   justify-content: space-between;
   position: relative;
+  align-items: center;
 }
 </style>

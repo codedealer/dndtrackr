@@ -20,7 +20,7 @@
       </div>
       <div class="combat-control">
         <dice-roller></dice-roller>
-        <div class="control-item">
+        <div class="control-item control-flex-item">
           <div class="hits-wrapper" v-show="showHits">
             <input v-model.number="hitpoints" class="hits">
             <span class="hit-modifier" @click.stop="changeSign">{{hitSign}}</span>
@@ -680,6 +680,9 @@ body {
   }
 }
 .spell-control {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   order: 0;
   flex: 1 0 0;
   align-self: auto;
@@ -705,15 +708,17 @@ body {
   box-sizing: border-box;
   max-width: 500px;
   display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: space-around;
-    padding: 5px 0;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: left;
+  padding: 5px 0;
 }
 .control-item {
+  margin-left: 25px;
   flex: 0 1 auto;
   align-self: auto;
   height: 42px;
+  position: relative;
 }
 .list-item {
   display: flex;
@@ -803,7 +808,7 @@ body {
   width: 10px;
   height: 10px;
   transform: rotate(45deg);
-  background: #ddd;
+  background: $secondary;
 }
 .selected {
   .current{
@@ -855,9 +860,11 @@ body {
   font-size: 12px;
   font-style: italic;
   white-space: nowrap;
+  position: absolute;
+  bottom: -4px;
+  left: 0;
 }
 .hits {
-  margin-top: 5px;
   width: 40px;
 }
 .hits-wrapper {
