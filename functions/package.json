@@ -9,11 +9,14 @@
     "logs": "firebase functions:log"
   },
   "dependencies": {
-    "cors": "^2.8.4",
-    "express": "^4.16.2",
-    "firebase-admin": "~6.0.0",
-    "firebase-functions": "^2.0.5",
-    "sanitize-html": "^1.15.0"
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "firebase-admin": "~8.9.2",
+    "firebase-functions": "^3.3.0",
+    "sanitize-html": "^1.21.1"
+  },
+  "engines": {
+    "node": 8
   },
   "private": true
 }
