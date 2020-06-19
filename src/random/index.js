@@ -1,4 +1,3 @@
-import axios from 'axios';
 import queue from './queue';
 import getPacket from './packet';
 import config from '../config';
@@ -42,30 +41,39 @@ class Random {
 
       let response;
       try {
-        const request = axios.post(this.url, JSON.stringify(packet), {
-          headers: { 'Content-Type': 'application/json' }
+        const request = fetch(this.url, {
+          method: 'POST',
+          cache: 'no-cache',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(packet),
         });
+
         this.queue.push(packet, request);
 
         response = await request;
+        if (response.status !== 200) {
+          throw new Error(`Request to remote api server returned ${response.status}`);
+        }
       } catch (e) {
         this.queue.fail(packet);
         return reject('Request to remote api server failed');
       }
 
-      if (response.data.error) {
+      response = await response.json();
+
+      if (response.error) {
         this.queue.fail(packet);
-        return reject(response.data.error);
+        return reject(response.error);
       }
 
-      if (!response.data.result || !response.data.result.random.data.length) {
+      if (!response.result || !response.result.random.data.length) {
         this.queue.fail(packet);
         return reject('Invalid data');
       }
 
       commit('POPULATE_CACHE', {
         die,
-        results: response.data.result.random.data
+        results: response.result.random.data
       });
 
       this.queue.ok(packet);
