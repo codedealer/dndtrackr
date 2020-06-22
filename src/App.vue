@@ -12,32 +12,37 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
+      <Auth />
     </v-app-bar>
 
-    <v-main></v-main>
+    <v-main>
+      <Server />
+    </v-main>
   </v-app>
 </template>
 
 <script>
 import DiceRoller from './components/DiceRoller';
+import Auth from './components/Auth';
+import Server from './components/Server';
 
 export default {
   name: 'DnDBox',
 
   components: {
-    DiceRoller
+    DiceRoller,
+    Auth,
+    Server,
   },
 
   data: () => ({
     //
-  })
+  }),
+
+  methods: {
+    managed () {
+
+    }
+  }
 };
 </script>
