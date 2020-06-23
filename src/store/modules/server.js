@@ -5,7 +5,6 @@ import config from '../../config';
 const state = {
   errorMsg: '',
   error: false,
-  firebase,
 }
 
 const getters = {
@@ -37,10 +36,10 @@ const actions = {
     });
   },
   async signIn ({ state, commit }) {
-    let provider = new state.firebase.auth.GoogleAuthProvider();
+    let provider = new firebase.auth.GoogleAuthProvider();
 
     try {
-      await state.firebase.auth().signInWithPopup(provider);
+      await firebase.auth().signInWithPopup(provider);
     } catch (e) {
       commit('SET_MSG', e.message || 'Error encountered upon signing in.');
       commit('SET_ERROR', true);
@@ -48,7 +47,7 @@ const actions = {
   },
   async signOut ({ state }) {
     try {
-      await state.firebase.auth().signOut();
+      await firebase.auth().signOut();
     } catch (e) {
       commit('SET_MSG', e.message || 'Error encountered upon signing out.');
       commit('SET_ERROR', true);
