@@ -10,10 +10,12 @@
   "dependencies": {
     "firebase": "^7.15.2",
     "firebase-auth-lite": "^0.8.4",
+    "localforage": "^1.7.4",
     "register-service-worker": "^1.7.1",
     "vue": "^2.6.11",
     "vuetify": "^2.2.11",
-    "vuex": "^3.4.0"
+    "vuex": "^3.4.0",
+    "vuex-persist": "^2.2.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-eslint": "~4.4.0",

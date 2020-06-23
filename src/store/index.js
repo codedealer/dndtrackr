@@ -1,10 +1,19 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import VuexPersistence from 'vuex-persist';
+import localForage from 'localforage';
+
 import modules from './modules';
 
 import user from '../model/user';
 
 Vue.use(Vuex);
+
+const vuexLocal = new VuexPersistence({
+  strictMode: process.env.NODE_ENV !== 'production',
+  storage: localForage,
+  asyncStorage: true
+});
 
 export default new Vuex.Store({
   strict: process.env.NODE_ENV !== 'production',
@@ -12,6 +21,7 @@ export default new Vuex.Store({
     user,
   },
   mutations: {
+    RESTORE_MUTATION: vuexLocal.RESTORE_MUTATION,
     UPDATE_USER (state, user) {
       if (!user) {
         state.user.state = false;
@@ -24,5 +34,6 @@ export default new Vuex.Store({
     }
   },
   actions: {},
-  modules: modules
+  modules: modules,
+  plugins: [vuexLocal.plugin]
 });

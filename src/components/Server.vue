@@ -1,5 +1,10 @@
 <template>
-  <v-snackbar v-model="error" bottom centered>{{ errorMsg }}</v-snackbar>
+  <div class="maintenance">
+    <v-overlay :value="loading">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
+    <v-snackbar v-model="error" bottom centered>{{ errorMsg }}</v-snackbar>
+  </div>
 </template>
 
 <script>
@@ -8,8 +13,16 @@ import { createNamespacedHelpers } from 'vuex';
 const { mapGetters, mapActions } = createNamespacedHelpers('server');
 
 export default {
-  mounted () {
-    this.init();
+  async mounted () {
+    await this.$store.restored;
+    await this.init();
+    this.loading = false;
+  },
+
+  data () {
+    return {
+      loading: true,
+    }
   },
 
   computed: {
