@@ -25,7 +25,7 @@
           fab
           depressed
           :loading="loading"
-          color="secondary lighten-1"
+          color="secondary"
           id="dice-result-button"
           class="ml-4 title"
           v-on="on"

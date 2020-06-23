@@ -17,13 +17,13 @@
          <v-btn
           fab
           depressed
-
+          height="48" width="48"
           color="btnColor"
           v-on="on"
           v-bind="attrs"
         >
           <v-icon v-show="!user.photo">mdi-account</v-icon>
-          <v-avatar v-show="user.photo" height="56" width="56">
+          <v-avatar v-show="user.photo" height="48" width="48">
             <img :src="user.photo">
           </v-avatar>
         </v-btn>
