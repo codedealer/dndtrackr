@@ -1,4 +1,7 @@
 import config from '../config';
+import Record from './record';
+import DiceResult from '../parser/diceResult';
+import DiceParams from '../parser/diceParams';
 
 class History {
   constructor(max) {
@@ -7,9 +10,22 @@ class History {
     this.i = 0;
     this.current = false;
   }
-  push(item) {
+  get current () {
+    return this._current;
+  }
+  set current (record) {
+    // can't check class because observer wrapper is returned by localforage
+    if ({}.hasOwnProperty.call(record, 'rolls')) {
+      // convert record back to diceResult
+      this._current = new DiceResult(new DiceParams(record.params), record.rolls);
+    } else {
+      this._current = record;
+    }
+  }
+  push(diceResult) {
     if (this.q.length === this.max) this.q.shift();
-    this.q.push(item);
+
+    this.q.push(new Record(diceResult));
     this.i = this.q.length;
   }
   prev() {
