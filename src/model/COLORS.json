@@ -1,0 +1,10 @@
+[
+  {"code": "secondary", "name": "secondary"},
+  {"code": "#cc0505", "name": "a-red"},
+  {"code": "#2775c7", "name": "a-blue"},
+  {"code": "#1c9e1c", "name": "a-green"},
+  {"code": "#ca780f", "name": "a-orange"},
+  {"code": "#840fca", "name": "a-purple"},
+  {"code": "#e678b9", "name": "a-pink"},
+  {"code": "#d0c037", "name": "a-yellow"}
+]

@@ -19,9 +19,6 @@ const mutations = {
   SET_MSG (state, value) {
     state.errorMsg = value;
   },
-  INIT (state, value) {
-    state.app = value;
-  },
 }
 
 const actions = {
@@ -34,6 +31,16 @@ const actions = {
     firebase.auth().onAuthStateChanged(user => {
       commit('UPDATE_USER', user, { root: true });
     });
+
+    try {
+      const response = await fetch('/data/monster_index.json');
+      const monsterIndex = await response.json();
+
+      commit('data/SET_MONSTER_INDEX', monsterIndex, { root: true });
+    } catch (e) {
+      commit('SET_MSG', 'Error downloading monster index.');
+      commit('SET_ERROR', true);
+    }
   },
   async signIn ({ state, commit }) {
     let provider = new firebase.auth.GoogleAuthProvider();

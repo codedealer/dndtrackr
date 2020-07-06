@@ -12,7 +12,12 @@ Vue.use(Vuex);
 const vuexLocal = new VuexPersistence({
   strictMode: process.env.NODE_ENV !== 'production',
   storage: localForage,
-  asyncStorage: true
+  asyncStorage: true,
+  reducer: (state) => {
+    // filter out data module before saving
+    const { data, ...rest } = state;
+    return rest;
+  },
 });
 
 export default new Vuex.Store({
