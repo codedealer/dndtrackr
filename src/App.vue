@@ -12,7 +12,9 @@
     <v-main>
       <v-container class="py-0 main-container">
         <v-row align="stretch">
-          <Panel></Panel>
+          <Panel>
+            <ActorInfoContainer />
+          </Panel>
         </v-row>
       </v-container>
 
@@ -26,6 +28,7 @@ import DiceRoller from './components/DiceRoller';
 import Auth from './components/Auth';
 import Server from './components/Server';
 import Panel from './components/Panel';
+import ActorInfoContainer from './components/ActorInfoContainer';
 import EncounterDrawer from './components/EncounterDrawer';
 
 export default {
@@ -37,14 +40,12 @@ export default {
     DiceRoller,
     Server,
     Panel,
+    ActorInfoContainer,
   },
 
   data: () => ({
     //
   }),
-
-  methods: {
-  }
 };
 </script>
 
