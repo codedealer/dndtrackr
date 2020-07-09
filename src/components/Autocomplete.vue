@@ -94,6 +94,7 @@ export default {
       if (value.length > 1) {
         this.cursor = 0;
         this.open = true;
+        this.scroll();
       } else {
         this.open = false;
       }
@@ -105,6 +106,7 @@ export default {
       this.open = false;
     },
     scroll () {
+      if (!this.$refs[`item-${this.cursor}`] || !this.$refs[`item-${this.cursor}`].length) return;
       goTo(this.$refs[`item-${this.cursor}`][0], {
         container: this.$refs['dropdownContainer'],
         offset: 0,
