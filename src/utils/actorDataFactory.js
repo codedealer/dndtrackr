@@ -32,6 +32,7 @@ const dataFactory = () => {
     spells: [],
     legendary_desc: '',
     legendary_actions: [],
+    xp: 0,
   }
 }
 

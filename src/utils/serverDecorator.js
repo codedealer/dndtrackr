@@ -1,3 +1,5 @@
+import converter from './crConverter';
+
 const skillIndex = {
   acrobatics: 'Acrobatics',
   handling: 'Animal Handling',
@@ -81,6 +83,9 @@ export default {
         if (p) {
           result[prop] = p;
         }
+      } else if (prop === 'challenge_rating') {
+        result[prop] = data[prop];
+        result['xp'] = converter.crToXp(data[prop]);
       } else {
         result[prop] = data[prop];
       }
