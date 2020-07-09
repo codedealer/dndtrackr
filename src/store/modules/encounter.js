@@ -1,6 +1,9 @@
 import Actor from '../../model/actor';
 import ACTOR_TYPES from '../../model/ACTOR_TYPES';
 import COLORS from '../../model/COLORS';
+import dataFactory from '../../utils/actorDataFactory';
+
+import { merge } from 'lodash-es';
 
 const state = () => ({
   uid: 0,
@@ -43,11 +46,14 @@ const mutations = {
     }
     state.actors.splice(index, 1);
   },
+  RESET_DATA (state, index) {
+    state.actors[index].data = dataFactory();
+  },
   UPDATE_SETTINGS (state, { index, ...settings }) {
-    Object.assign(state.actors[index].settings, settings);
+    merge(state.actors[index].settings, settings);
   },
   UPDATE_DATA (state, { index, ...data }) {
-    Object.assign(state.actors[index].data, data);
+    merge(state.actors[index].data, data);
   },
   ADD_STATUS (state, { index, status }) {
     state.actors[index].status.push(status);

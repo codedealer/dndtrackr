@@ -28,8 +28,7 @@ export default {
     ...mapState(['actors', 'selected']),
     current: {
       get () {
-        let index = this.actors.findIndex(actor => actor.uid === this.selected);
-        return index;
+        return this.actors.findIndex(actor => actor.uid === this.selected);
       },
       set (index) {
         let actor = this.actors[index];

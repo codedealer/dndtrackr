@@ -1,6 +1,8 @@
 import firebase from 'firebase/app';
 import 'firebase/auth';
+import 'firebase/database';
 import config from '../../config';
+import DataDecorator from '../../utils/serverDecorator';
 
 const state = {
   errorMsg: '',
@@ -60,6 +62,24 @@ const actions = {
       commit('SET_ERROR', true);
     }
 
+  },
+  async getActorData ({ commit }, { index, actor }) {
+    try {
+      const snapshot = await firebase.database().ref(`monsters/${actor.key}`).once('value');
+      if (!snapshot.exists()) {
+        commit('SET_MSG', `No data for ${actor.name}`);
+        commit('SET_ERROR', true);
+        return;
+      }
+
+      // reset the data beforehand
+      commit('encounter/RESET_DATA', index, { root: true });
+      const data = DataDecorator.prepare(snapshot.val());
+      commit('encounter/UPDATE_DATA', { index, ...data }, { root: true });
+    } catch (e) {
+      commit('SET_MSG', e.message || 'Cannot get data for ' + actor.name);
+      commit('SET_ERROR', true);
+    }
   }
 }
 

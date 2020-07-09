@@ -43,6 +43,8 @@ import Autocomplete from './Autocomplete';
 import StatusBar from './StatusBar';
 import HitPointWidget from './HitPointWidget';
 
+import TYPES from '../model/ACTOR_TYPES';
+
 import { createNamespacedHelpers } from 'vuex';
 
 const { mapState, mapMutations } = createNamespacedHelpers('encounter');
@@ -95,8 +97,8 @@ export default {
     },
     async onNewKey (key) {
       this.SET_ACTOR_KEY({ index: this.index, value: key });
-      if (this.actor.type === ActorType.monster) {
-        await this.$store.dispatch('server/getActorData', { index: this.index, key });
+      if (this.actor.type === TYPES.monster) {
+        await this.$store.dispatch('server/getActorData', { index: this.index, actor: this.actor });
       }
     }
   },
