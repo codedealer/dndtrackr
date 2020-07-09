@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import VuexPersistence from 'vuex-persist';
 import localForage from 'localforage';
+import { merge } from 'lodash-es';
 
 import modules from './modules';
 
@@ -36,9 +37,16 @@ export default new Vuex.Store({
         state.user.photo = user.photoURL;
         state.user.uid = user.uid;
       }
-    }
+    },
+    UPDATE_USER_SETTINGS (state, settings) {
+      merge(state.user.settings, settings);
+    },
   },
-  actions: {},
+  actions: {
+    updateUserSettings ({ commit }, settings) {
+      commit('UPDATE_USER_SETTINGS', settings);
+    },
+  },
   modules: modules,
   plugins: [vuexLocal.plugin]
 });

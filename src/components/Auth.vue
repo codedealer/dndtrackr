@@ -11,6 +11,7 @@
     <v-menu
       v-if="state"
       offset-y
+      :close-on-content-click="false"
       transition="slide-y-transition"
     >
       <template #activator="{ on, attrs }">
@@ -38,16 +39,22 @@
             <v-list-item-content>
               <v-list-item-title>{{user.displayName}}</v-list-item-title>
             </v-list-item-content>
+            <v-list-item-action>
+              <v-btn icon @click="signOut"><v-icon>mdi-logout</v-icon></v-btn>
+            </v-list-item-action>
           </v-list-item>
-          <v-divider></v-divider>
         </v-list>
 
-        <v-card-actions>
+        <v-divider></v-divider>
 
-          <v-spacer></v-spacer>
-          <v-btn color="primary" @click="signOut">Sign Out</v-btn>
-          <v-spacer></v-spacer>
-        </v-card-actions>
+        <v-list>
+          <v-list-item>
+            <v-list-item-action>
+              <v-switch color="primary" v-model="randomHitpoints"></v-switch>
+            </v-list-item-action>
+            <v-list-item-title>Generate random hitpoints</v-list-item-title>
+          </v-list-item>
+        </v-list>
       </v-card>
     </v-menu>
   </div>
@@ -66,11 +73,23 @@ export default {
   computed: {
     state () { return this.$store.state.user.state; },
     btnColor () { return this.$store.state.user.photo ? 'transparent' : 'primary'},
+    randomHitpoints: {
+      get () { return this.$store.state.user.settings.randomHitpoints; },
+      set (value) {
+        this.updateUserSettings({ randomHitpoints: value });
+      }
+    },
     ...mapState(['user'])
   },
 
   methods: {
-    ...mapActions(['signIn', 'signOut'])
+    ...mapActions([
+      'signIn',
+      'signOut',
+    ]),
+    updateUserSettings (settings) {
+      this.$store.dispatch('updateUserSettings', settings);
+    },
   }
 }
 </script>

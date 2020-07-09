@@ -6,6 +6,9 @@ let user = {
   token: false,
   monsterIndex: [],
   spellIndex: [],
+  settings: {
+    randomHitpoints: false,
+  },
 }
 
 export default user;
