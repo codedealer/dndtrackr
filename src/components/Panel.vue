@@ -21,8 +21,8 @@ export default {
   &::-webkit-scrollbar {
     display: none;
   }
-}
-.col {
-  max-width: 550px;
+  &.col {
+    max-width: 550px;
+  }
 }
 </style>
