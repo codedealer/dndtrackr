@@ -1,4 +1,4 @@
-import random from '../../random';
+import diceRoller from '../../utils/diceRoller';
 import cache from '../../random/cache';
 import history from '../../history';
 import config from '../../config';
@@ -121,27 +121,17 @@ const mutations = {
 
 const actions = {
   async roll({ commit, state }, diceParams) {
-    let promises = [];
-    const rolls = diceParams.isModifiedRoll() ? 2 : 1;
-    for (let i = 0; i < rolls; i++) {
-      let map = Object.values(diceParams.dice).map(dieObj => {
-        return random.get({ commit, state }, dieObj);
-      });
-      promises = [...promises, ...map];
-    }
+    const result = await diceRoller.getRollsResult(state, commit, diceParams);
 
-    let results = await Promise.all(promises);
-
-    const diceRolls = [{}, {}];
-    for (let i = 0; i < rolls; i++) {
-      Object.keys(diceParams.dice).forEach(key => {
-        diceRolls[i][key] = results.shift();
-      });
-    }
-
-    commit('SET_RESULT', new DiceResult(diceParams, diceRolls));
+    commit('SET_RESULT', result);
     commit('PUSH_HISTORY');
     commit('SET_TEXT', '');
+  },
+  async rollHitDice({ state, commit }, { diceParams, index }) {
+    const result = await diceRoller.getRollsResult(state, commit, diceParams);
+
+    const total = result.eval(result.rolls[0]);
+    commit('encounter/UPDATE_DATA', { index, hit_points: total }, { root: true });
   },
   prevRoll({ state, getters, commit }) {
     commit('PREV_HISTORY');

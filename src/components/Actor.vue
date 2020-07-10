@@ -16,7 +16,12 @@
           v-model="name"
           @newKey="onNewKey"
         ></Autocomplete>
-        <HitPointWidget :actor="actor" :index="index" v-if="showHitPointWidget" />
+        <HitPointWidget
+          :actor="actor"
+          :index="index"
+          :loading="hitPointsLoading"
+          v-if="showHitPointWidget"
+        ></HitPointWidget>
       </div>
       <StatusBar :actor="actor" :index="index" />
     </div>
@@ -42,7 +47,7 @@ import ActorType from './ActorType';
 import Autocomplete from './Autocomplete';
 import StatusBar from './StatusBar';
 import HitPointWidget from './HitPointWidget';
-
+import parser from '../parser';
 import TYPES from '../model/ACTOR_TYPES';
 
 import { createNamespacedHelpers } from 'vuex';
@@ -51,10 +56,12 @@ const { mapState, mapMutations } = createNamespacedHelpers('encounter');
 
 export default {
   props: ['actor', 'index'],
-  data: () => ({}),
+  data: () => ({
+    hitPointsLoading: false,
+  }),
   computed: {
     ...mapState([
-      'selected'
+      'selected',
     ]),
     classes () {
       return {
@@ -99,6 +106,28 @@ export default {
       this.SET_ACTOR_KEY({ index: this.index, value: key });
       if (this.actor.type === TYPES.monster) {
         await this.$store.dispatch('server/getActorData', { index: this.index, actor: this.actor });
+
+        // generate hitpoints if applicable
+        if (this.$store.state.user.settings.randomHitpoints && this.actor.data.hit_dice) {
+          this.hitPointsLoading = true;
+
+          let diceParams;
+          try {
+            diceParams = parser.parse(this.actor.data.hit_dice);
+          } catch (e) {
+            console.error(e.message);
+            this.hitPointsLoading = false;
+            return;
+          }
+
+          try {
+            await this.$store.dispatch('diceRoller/rollHitDice', { diceParams, index: this.index });
+          } catch (e) {
+            console.error(e);
+          } finally {
+            this.hitPointsLoading = false;
+          }
+        }
       }
     }
   },

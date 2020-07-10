@@ -63,7 +63,7 @@ const mutations = {
   },
   DELETE_STATUS (state, { actorIndex, statusIndex }) {
     state.actors[actorIndex].status.splice(statusIndex, 1);
-  }
+  },
 }
 
 export default {

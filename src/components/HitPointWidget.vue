@@ -15,6 +15,7 @@
             depressed
             transition="slide-x-transition"
             color="secondary lighten-2"
+            :loading="loading"
             v-bind="attrs"
             v-on="{ ...tooltip, ...menu }"
           >{{ actor.data.hit_points }}</v-btn>
@@ -61,7 +62,7 @@ import { createNamespacedHelpers } from 'vuex';
 const { mapMutations } = createNamespacedHelpers('encounter');
 
 export default {
-  props: ['actor', 'index'],
+  props: ['actor', 'index', 'loading'],
   data: () => ({
     menuState: false,
     damage: '',
