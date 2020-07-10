@@ -10,7 +10,7 @@ class Actor {
     this.name = '';
     this.key = '';
     this.initiative = 0;
-    this.data = Object.assign(dataFactory());
+    this.data = dataFactory();
     this.settings = settings;
     this.status = [];
     this.color = COLORS[0];
