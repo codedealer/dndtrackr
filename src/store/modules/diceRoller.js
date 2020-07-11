@@ -133,6 +133,12 @@ const actions = {
     const total = result.eval(result.rolls[0]);
     commit('encounter/UPDATE_DATA', { index, hit_points: total }, { root: true });
   },
+  async rollInitiative({ state, commit }, { diceParams, index }) {
+    const result = await diceRoller.getRollsResult(state, commit, diceParams);
+
+    const total = result.eval(result.rolls[0]);
+    commit('encounter/SET_ACTOR_INITIATIVE', { index, value: total }, { root: true });
+  },
   prevRoll({ state, getters, commit }) {
     commit('PREV_HISTORY');
     const result = state.history.current;

@@ -20,12 +20,13 @@
           <v-btn
             color="primary lighten-1"
             class="ml-2"
+            :loading="initiativeLoading"
             fab
             height="48" width="48"
             v-bind="attrs" v-on="on"
-            @click.exact="generateInitiative()"
-            @click.ctrl="generateInitiative(true)"
-            @click.meta="generateInitiative(true)"
+            @click.exact="initiative()"
+            @click.ctrl="initiative(true)"
+            @click.meta="initiative(true)"
           >
             <v-icon x-large>mdi-dice-d20-outline</v-icon>
           </v-btn>
@@ -48,14 +49,14 @@
 
 <script>
 import Actor from './Actor';
-import ActorTypes from '../model/ACTOR_TYPES';
-import parser from '../parser';
 import { createNamespacedHelpers } from 'vuex';
 
-const { mapState, mapMutations } = createNamespacedHelpers('encounter');
+const { mapState, mapMutations, mapActions } = createNamespacedHelpers('encounter');
 
 export default {
-  data: () => ({}),
+  data: () => ({
+    initiativeLoading: false,
+  }),
 
   computed: {
     ...mapState(['actors']),
@@ -65,16 +66,19 @@ export default {
     ...mapMutations({
       addActor: 'ADD_ACTOR',
     }),
-    async generateInitiative (force = false) {
-      const eligibleActors = this.actors.filter(actor => {
-        if (actor.type === ActorTypes.player) return false;
-
-        if (force) return true;
-        return !actor.initiative;
-      });
-
-
-    }
+    ...mapActions([
+      'generateInitiative',
+    ]),
+    async initiative(regenerate) {
+      this.initiativeLoading = true;
+      try {
+        await this.generateInitiative(regenerate);
+      } catch (e) {
+        console.error(e.message);
+      } finally {
+        this.initiativeLoading = false;
+      }
+    },
   },
 
   components: {

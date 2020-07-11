@@ -2,6 +2,8 @@ import Actor from '../../model/actor';
 import ACTOR_TYPES from '../../model/ACTOR_TYPES';
 import COLORS from '../../model/COLORS';
 import dataFactory from '../../utils/actorDataFactory';
+import statUtils from '../../utils/statUtils';
+import parser from '../../parser';
 
 import { merge } from 'lodash-es';
 
@@ -66,8 +68,31 @@ const mutations = {
   },
 }
 
+const actions = {
+  async generateInitiative ({ state, dispatch }, regenerate = false) {
+    const results = [];
+    state.actors.forEach((actor, index) => {
+      if (actor.type === ACTOR_TYPES.player) return false;
+      if (!regenerate && actor.initiative) return false;
+
+      let mod = statUtils.getModifier(actor.data.attributes.dexterity);
+      let str = 'd20';
+      if (mod !== 0) {
+        str += mod > 0 ? '+' + mod : '' + mod;
+      }
+
+      let diceParams = parser.parse(str);
+
+      results.push(dispatch('diceRoller/rollInitiative', { diceParams, index }, { root: true }));
+    });
+
+    await Promise.all(results);
+  }
+}
+
 export default {
   namespaced: true,
   state,
   mutations,
+  actions,
 }
