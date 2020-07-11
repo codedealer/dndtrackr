@@ -72,7 +72,7 @@ const actions = {
   async generateInitiative ({ state, dispatch }, regenerate = false) {
     const results = [];
     state.actors.forEach((actor, index) => {
-      if (actor.type === ACTOR_TYPES.player) return false;
+      if (actor.type === ACTOR_TYPES.character) return false;
       if (!regenerate && actor.initiative) return false;
 
       let mod = statUtils.getModifier(actor.data.attributes.dexterity);
