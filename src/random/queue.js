@@ -1,15 +1,20 @@
 const queue = {
   q: [],
-  push(packet, request) {
+  push(packet) {
     if (this.has(packet.id))
       throw new Error(`trying to push the request ${packet.id} twice`);
 
-    this.q.push({
+    const request = {
       id: packet.id,
       max: packet.params.max,
       pending: true,
-      request
-    });
+      resolver: false,
+      promise: false,
+    }
+
+    request.promise = new Promise((resolve, reject) => { request.resolver = resolve });
+
+    this.q.push(request);
   },
   has(id) {
     return this.q.some(req => req.id === id);
@@ -27,6 +32,7 @@ const queue = {
       return;
     }
 
+    req.resolver();
     req.pending = false;
   },
   fail(packet) {
@@ -36,7 +42,7 @@ const queue = {
     return this.q.some(req => req.pending && req.max === max);
   },
   waitFor(max) {
-    return this.q.find(req => req.pending && req.max === max).request;
+    return this.q.find(req => req.pending && req.max === max).promise;
   }
 };
 

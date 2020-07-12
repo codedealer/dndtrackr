@@ -14,7 +14,7 @@ class Random {
     this.sampleSize = config.randomSampleSize || 100;
     this.url = config.randomApiUrl;
   }
-  get({ commit, state }, { die, n }) {
+  async get({ commit, state }, { die, n }) {
     if (die === 0 || n === 0) return Promise.resolve([0]);
     if (parseInt(die, 10) <= 1 || isNaN(parseInt(die, 10))) die = 2;
     if (n > this.sampleSize) n = this.sampleSize;
@@ -28,49 +28,49 @@ class Random {
       // fallback to local generator
       return Promise.resolve(this.local(die, n));
     }
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve, reject) => {
-      if (this.queue.pending(die)) {
-        await this.queue.waitFor(die);
-        let data = await this.get({ commit, state }, { die, n });
-        resolve(data);
-        return;
+
+    // check if there are already requests with that
+    if (this.queue.pending(die)) {
+      await this.queue.waitFor(die);
+      return this.get({ commit, state }, { die, n });
+    }
+
+    // build request
+    const packet = getPacket(n, 1, die);
+
+    let response;
+    try {
+      const request = fetch(this.url, {
+        method: 'POST',
+        cache: 'no-cache',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(packet),
+      });
+
+      this.queue.push(packet);
+
+      response = await request;
+      if (response.status !== 200) {
+        throw new Error(`Request to remote api server returned ${response.status}`);
       }
+    } catch (e) {
+      this.queue.fail(packet);
+      throw new Error('Request to remote api server failed');
+    }
 
-      const packet = getPacket(n, 1, die);
+    response = await response.json();
 
-      let response;
-      try {
-        const request = fetch(this.url, {
-          method: 'POST',
-          cache: 'no-cache',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(packet),
-        });
+    if (response.error) {
+      this.queue.fail(packet);
+      throw new Error(response.error);
+    }
 
-        this.queue.push(packet, request);
+    if (!response.result || !response.result.random.data.length) {
+      this.queue.fail(packet);
+      throw new Error('Invalid data');
+    }
 
-        response = await request;
-        if (response.status !== 200) {
-          throw new Error(`Request to remote api server returned ${response.status}`);
-        }
-      } catch (e) {
-        this.queue.fail(packet);
-        return reject('Request to remote api server failed');
-      }
-
-      response = await response.json();
-
-      if (response.error) {
-        this.queue.fail(packet);
-        return reject(response.error);
-      }
-
-      if (!response.result || !response.result.random.data.length) {
-        this.queue.fail(packet);
-        return reject('Invalid data');
-      }
-
+    return new Promise((resolve, reject) => {
       commit('POPULATE_CACHE', {
         die,
         results: response.result.random.data
