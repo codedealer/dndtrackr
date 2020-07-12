@@ -6,10 +6,12 @@
     <v-window-item
       v-for="(actor, index) in actors"
       :key="actor.uid"
+      :value="index"
     >
       <ActorInfo
         :actor="actor"
         :index="index"
+        :key="actor.uid"
       ></ActorInfo>
     </v-window-item>
   </v-window>

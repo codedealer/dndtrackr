@@ -34,6 +34,22 @@
         <p class="mb-1">Generate initiative<br>Hold ctrl to re-generate everyone's<br>initiative (players ignored)</p>
       </v-tooltip>
 
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            color="primary lighten-1"
+            class="ml-2"
+            fab
+            height="48" width="48"
+            v-bind="attrs" v-on="on"
+            @click.exact="sortActors()"
+          >
+            <v-icon x-large>mdi-sort-variant</v-icon>
+          </v-btn>
+        </template>
+        <span>Sort by initiative</span>
+      </v-tooltip>
+
     </v-toolbar>
 
     <v-slide-x-transition group tag="div" class="encounter-list">
@@ -65,6 +81,7 @@ export default {
   methods: {
     ...mapMutations({
       addActor: 'ADD_ACTOR',
+      sortActors: 'SORT_ACTORS',
     }),
     ...mapActions([
       'generateInitiative',

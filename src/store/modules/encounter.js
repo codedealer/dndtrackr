@@ -29,6 +29,20 @@ const mutations = {
 
     state.actors[index].initiative = value;
   },
+  SORT_ACTORS (state) {
+    state.actors.sort((a, b) => {
+      if (a.initiative === 0 || a.initiative === '') return 1;
+
+      if (a.initiative === b.initiative) {
+        // check dex modifier
+        let modA = statUtils.getModifier(a.data.attributes.dexterity);
+        let modB = statUtils.getModifier(b.data.attributes.dexterity);
+        return modA > modB ? -1 : 1;
+      }
+
+      return a.initiative > b.initiative ? -1 : 1;
+    });
+  },
   CHANGE_ACTOR_TYPE (state, index) {
     state.actors[index].type = (state.actors[index].type + 1) % 2;
   },
