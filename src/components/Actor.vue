@@ -63,9 +63,13 @@ export default {
     ...mapState([
       'selected',
     ]),
+    isTurn () {
+      return this.index === this.$store.state.roundCounter.order;
+    },
     classes () {
       return {
         selected: this.actor.uid === this.selected,
+        ['is-turn']: this.index === this.$store.state.roundCounter.order,
       }
     },
     initiative: {
@@ -179,6 +183,22 @@ export default {
   transition: background-color .2s ease-in-out;
   &:hover {
     background-color: #616161;
+  }
+}
+.is-turn .initiative {
+  background: linear-gradient(180deg, #424242, #e73c7e);
+  background-size: 100% 200%;
+  animation: gradient 5s ease infinite;
+}
+@keyframes gradient {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 0% 0%;
   }
 }
 .actor-info-container {

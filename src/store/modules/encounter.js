@@ -43,6 +43,31 @@ const mutations = {
       return a.initiative > b.initiative ? -1 : 1;
     });
   },
+  RENAME_ACTORS (state) {
+    const duplicates = [];
+
+    state.actors.forEach((monster, index, arr) => {
+      if (!monster.name.length || monster.type === ACTOR_TYPES.character) return;
+      if (duplicates.includes(monster.name)) return;
+
+      arr.forEach((m, i) => {
+        if (monster.name === m.name && index !== i) duplicates.push(monster.name);
+      });
+    });
+
+    duplicates.forEach((name) => {
+      let i = 1;
+      state.actors.forEach((monster) => {
+        if (monster.name === name) {
+          monster.name = `${name} ${i}`;
+
+          if (COLORS.length > i - 1) monster.color = COLORS[i - 1];
+
+          i++;
+        }
+      });
+    });
+  },
   CHANGE_ACTOR_TYPE (state, index) {
     state.actors[index].type = (state.actors[index].type + 1) % 2;
   },
