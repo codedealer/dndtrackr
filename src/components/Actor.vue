@@ -3,7 +3,13 @@
     <v-tooltip bottom>
       <template v-slot:activator="{ on, attrs }">
         <div class="initiative-counter" v-bind="attrs" v-on="on">
-          <input type="text" class="initiative" v-model.number="initiative" @click="initiativeHelper()">
+          <input
+            type="text"
+            class="initiative"
+            v-model.number="initiative"
+            @click="initiativeHelper()"
+            :tabindex="1+index"
+          >
         </div>
       </template>
       <span>Initiative</span>
@@ -15,6 +21,7 @@
           :list="monsterIndex"
           v-model="name"
           @newKey="onNewKey"
+          @traverse="onTraverse"
         ></Autocomplete>
         <HitPointWidget
           :actor="actor"
@@ -33,7 +40,7 @@
       min-width="32"
       tile
       depressed
-      @click.stop="REMOVE_ACTOR(index)"
+      @click.stop="removeActor(index)"
       >
         <v-icon>mdi-skull-crossbones</v-icon>
       </v-btn>
@@ -52,7 +59,7 @@ import TYPES from '../model/ACTOR_TYPES';
 
 import { createNamespacedHelpers } from 'vuex';
 
-const { mapState, mapMutations } = createNamespacedHelpers('encounter');
+const { mapState, mapMutations, mapActions } = createNamespacedHelpers('encounter');
 
 export default {
   props: ['actor', 'index'],
@@ -94,16 +101,34 @@ export default {
 
   methods: {
     ...mapMutations([
-      'REMOVE_ACTOR',
+      'ADD_ACTOR',
       'SELECT_ACTOR',
       'SET_ACTOR_INITIATIVE',
       'SET_ACTOR_NAME',
       'SET_ACTOR_KEY',
     ]),
+    ...mapActions([
+      'removeActor',
+    ]),
     initiativeHelper () {
       // if initiative is not set (0) empty the field
       if (this.initiative === 0) {
         this.SET_ACTOR_INITIATIVE({ index: this.index, value: '' });
+      }
+    },
+    moveNext () {
+      const nextIndex = this.index + 1;
+      const inputs = document.querySelectorAll('.actor-input');
+      if (nextIndex < inputs.length) inputs[nextIndex].focus();
+    },
+    onTraverse () {
+      if (this.$store.state.encounter.actors.length - 1 > this.index) {
+        // if not last element advance focus
+        this.moveNext();
+        return;
+      } else {
+        this.ADD_ACTOR();
+        this.$nextTick(() => { this.moveNext(); });
       }
     },
     async onNewKey (key) {

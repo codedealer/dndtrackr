@@ -11,6 +11,9 @@ const mutations = {
       state.round++;
     }
   },
+  PREV (state) {
+    state.order > 0 && state.order--;
+  },
   RESET (state) {
     state.order = 0;
     state.round = 1;
@@ -27,6 +30,13 @@ const actions = {
   reset ({ commit }) {
     commit('RESET');
   },
+  onRemoveActor ({ state, commit, rootState }, index) {
+    if (index < state.order && state.order > 0) {
+      commit('PREV');
+    } else if (index === rootState.encounter.actors.length - 1 && index === state.order) {
+      commit('NEXT', rootState.encounter.actors.length);
+    }
+  }
 }
 
 export default {

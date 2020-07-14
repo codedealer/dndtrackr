@@ -13,6 +13,10 @@ const state = () => ({
   actors: [],
 });
 
+const getters = {
+  characters: state => state.actors.filter(a => a.type === ACTOR_TYPES.character),
+}
+
 const mutations = {
   ADD_ACTOR (state) {
     state.actors.push(new Actor(state.uid++));
@@ -126,12 +130,19 @@ const actions = {
     });
 
     await Promise.all(results);
+  },
+  removeActor ({ state, commit, dispatch }, index) {
+    const actor = state.actors[index];
+    dispatch('xpTracker/addRecord', actor, { root: true });
+    dispatch('roundCounter/onRemoveActor', index, { root: true });
+    commit('REMOVE_ACTOR', index);
   }
 }
 
 export default {
   namespaced: true,
   state,
+  getters,
   mutations,
   actions,
 }

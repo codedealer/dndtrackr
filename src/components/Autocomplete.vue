@@ -8,6 +8,7 @@
       @keydown.down = 'down'
       @keydown.esc = 'cancel'
       @keydown.enter = 'enter'
+      @keydown.tab.prevent = 'traverse'
     >
     <ul class="autocomplete-list" :ref="'dropdownContainer'" v-show="isOpened">
       <li
@@ -137,6 +138,10 @@ export default {
       this.open = false;
       this.$emit('newKey', this.match[index].key);
       this.$emit('input', this.match[index].name);
+    },
+    traverse () {
+      this.enter(); // auto approve the current suggestion
+      this.$emit('traverse');
     }
   }
 }
