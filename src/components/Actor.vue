@@ -56,6 +56,7 @@ import StatusBar from './StatusBar';
 import HitPointWidget from './HitPointWidget';
 import parser from '../parser';
 import TYPES from '../model/ACTOR_TYPES';
+import Status from '../model/status';
 
 import { createNamespacedHelpers } from 'vuex';
 
@@ -106,6 +107,7 @@ export default {
       'SET_ACTOR_INITIATIVE',
       'SET_ACTOR_NAME',
       'SET_ACTOR_KEY',
+      'ADD_STATUS',
     ]),
     ...mapActions([
       'removeActor',
@@ -133,29 +135,41 @@ export default {
     },
     async onNewKey (key) {
       this.SET_ACTOR_KEY({ index: this.index, value: key });
-      if (this.actor.type === TYPES.monster) {
-        await this.$store.dispatch('server/getActorData', { index: this.index, actor: this.actor });
 
-        // generate hitpoints if applicable
-        if (this.$store.state.user.settings.randomHitpoints && this.actor.data.hit_dice) {
-          this.hitPointsLoading = true;
+      await this.$store.dispatch('server/getActor', { index: this.index, actor: this.actor });
 
-          let diceParams;
-          try {
-            diceParams = parser.parse(this.actor.data.hit_dice);
-          } catch (e) {
-            console.error(e.message);
-            this.hitPointsLoading = false;
-            return;
-          }
+      // set armor class status automatically
+      if (this.actor.data.armor_class && !this.actor.status.length) {
+        this.ADD_STATUS({
+          index: this.index,
+          status: new Status({
+            name: this.actor.data.armor_class,
+            showInBar: true,
+            deletable: false,
+            icon: 'mdi-shield',
+          }),
+        });
+      }
 
-          try {
-            await this.$store.dispatch('diceRoller/rollHitDice', { diceParams, index: this.index });
-          } catch (e) {
-            console.error(e);
-          } finally {
-            this.hitPointsLoading = false;
-          }
+      // generate hitpoints if applicable
+      if (this.$store.state.user.settings.randomHitpoints && this.actor.data.hit_dice) {
+        this.hitPointsLoading = true;
+
+        let diceParams;
+        try {
+          diceParams = parser.parse(this.actor.data.hit_dice);
+        } catch (e) {
+          console.error(e.message);
+          this.hitPointsLoading = false;
+          return;
+        }
+
+        try {
+          await this.$store.dispatch('diceRoller/rollHitDice', { diceParams, index: this.index });
+        } catch (e) {
+          console.error(e);
+        } finally {
+          this.hitPointsLoading = false;
         }
       }
     }

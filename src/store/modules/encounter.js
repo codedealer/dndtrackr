@@ -5,6 +5,7 @@ import dataFactory from '../../utils/actorDataFactory';
 import statUtils from '../../utils/statUtils';
 import parser from '../../parser';
 
+import Vue from 'vue'
 import { merge } from 'lodash-es';
 
 const state = () => ({
@@ -21,6 +22,9 @@ const mutations = {
   ADD_ACTOR (state) {
     state.actors.push(new Actor(state.uid++));
     state.selected = state.uid - 1;
+  },
+  LOAD_ACTOR (state, { index, actor }) {
+    state.actors.splice(index, 1, actor);
   },
   SELECT_ACTOR (state, uid) {
     state.selected = uid;
@@ -85,6 +89,9 @@ const mutations = {
     if (!value) value = '';
     state.actors[index].key = value;
   },
+  SET_ACTOR_NOTES (state, { index, value }) {
+    state.actors[index].notes = value;
+  },
   REMOVE_ACTOR (state, index) {
     if (state.selected === state.actors[index].uid) {
       state.selected = false;
@@ -99,6 +106,18 @@ const mutations = {
   },
   UPDATE_DATA (state, { index, ...data }) {
     merge(state.actors[index].data, data);
+  },
+  PUSH_DATA_ARRAY (state, { index, propertyName, ...data }) {
+    state.actors[index].data[propertyName].push(data);
+  },
+  UPDATE_DATA_ARRAY (state, { index, propertyName, i, ...data }) {
+    merge(state.actors[index].data[propertyName][i], data);
+  },
+  REMOVE_DATA_ARRAY (state, { index, propertyName, i }) {
+    state.actors[index].data[propertyName].splice(i, 1);
+  },
+  REMOVE_SKILL (state, { index, skill }) {
+    Vue.delete(state.actors[index].data.skills, skill);
   },
   ADD_STATUS (state, { index, status }) {
     state.actors[index].status.push(status);

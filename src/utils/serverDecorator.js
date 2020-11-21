@@ -92,5 +92,22 @@ export default {
     }
 
     return result;
+  },
+  getActorIndex (actor, uid, key) {
+    return {
+      name: actor.name,
+      type: actor.data.type,
+      subtype: actor.data.subtype,
+      challenge_rating: actor.data.challenge_rating,
+      tag: uid,
+      actor_type: actor.type,
+      key,
+    }
+  },
+  getActorPayload (actor, k) {
+    const { uid, key, ...result } = actor;
+    result.key = k;
+
+    return result;
   }
 }

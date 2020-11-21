@@ -16,6 +16,9 @@
           class="px-1 mr-1 status-pill"
           label
           small
+          filter
+          :input-value="status.icon.length > 0"
+          :filter-icon="status.icon"
           v-bind="attrs"
           v-on="{ ...tooltip, ...menu }"
         >{{ status.name }}</v-chip>
@@ -79,5 +82,10 @@ export default {
   height: 23px !important;
   flex: 0 0 auto;
   cursor: pointer;
+  .v-icon.v-chip__filter {
+    font-size: 15px;
+    margin-left: 0;
+    margin-right: 3px;
+  }
 }
 </style>

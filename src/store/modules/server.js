@@ -2,7 +2,10 @@ import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/database';
 import config from '../../config';
+import ActorClass from '../../model/actor';
 import DataDecorator from '../../utils/serverDecorator';
+
+import { merge } from 'lodash-es';
 
 const state = {
   errorMsg: '',
@@ -30,8 +33,26 @@ const actions = {
     firebase.initializeApp(config.firebaseConfig);
 
     // hookup user listener
-    firebase.auth().onAuthStateChanged(user => {
+    firebase.auth().onAuthStateChanged(async (user) => {
       commit('UPDATE_USER', user, { root: true });
+      if (user.uid) {
+        // get user indexes
+        try {
+          const snapshot = await firebase.database().ref(`userIndex/${user.uid}`).once('value');
+          if (!snapshot.exists()) {
+            console.log('No user data found');
+          } else {
+            const userData = snapshot.val();
+            if (userData.actors) {
+              // build actor index
+              commit('data/SET_USER_INDEX', Object.values(userData.actors), { root: true });
+            }
+          }
+        } catch (e) {
+          commit('SET_MSG', 'Error downloading user index.');
+          commit('SET_ERROR', true);
+        }
+      }
     });
 
     try {
@@ -61,7 +82,6 @@ const actions = {
       commit('SET_MSG', e.message || 'Error encountered upon signing out.');
       commit('SET_ERROR', true);
     }
-
   },
   async getActorData ({ commit }, { index, actor }) {
     try {
@@ -80,7 +100,86 @@ const actions = {
       commit('SET_MSG', e.message || 'Cannot get data for ' + actor.name);
       commit('SET_ERROR', true);
     }
-  }
+  },
+  async getActor ({ state, rootState, commit, dispatch }, { index, actor }) {
+    if (rootState.data._userMonsterIndex.some(a => a.key === actor.key)) {
+      // actor belongs to the user
+      // full object will be retrieved
+      try {
+        const snap = await firebase
+                    .database()
+                    .ref(`userData/${rootState.user.uid}/actors/${actor.key}`)
+                    .once('value');
+        if (!snap.exists()) {
+          commit('SET_MSG', `No data for ${actor.name}`);
+          commit('SET_ERROR', true);
+          return;
+        }
+
+        const serverActorData = snap.val();
+        // data normalization
+        const newActor = new ActorClass(actor.uid, serverActorData.type);
+        merge(newActor, serverActorData);
+
+        commit('encounter/LOAD_ACTOR', { index, actor: newActor }, { root: true });
+      } catch (e) {
+        commit('SET_MSG', e.message || 'Cannot get data for ' + actor.name);
+        commit('SET_ERROR', true);
+      }
+    } else {
+      // this is a public actor, only data object will be retrieved
+      await dispatch('getActorData', { index, actor });
+    }
+  },
+  async saveActor ({ state, rootState, commit }, { index, actor }) {
+    let key = actor.key;
+    let isNew = false;
+    if (!key) {
+      // new stuff
+      isNew = true;
+      const indexRef = firebase.database().ref(`userIndex/${rootState.user.uid}/actors`).push();
+      key = indexRef.key;
+    }
+    const actorIndex = DataDecorator.getActorIndex(actor, rootState.user.uid, key);
+    const actorPayload = DataDecorator.getActorPayload(actor, key);
+
+    const rootRef = firebase.database().ref();
+    const updatePayload = {
+      [`userIndex/${rootState.user.uid}/actors/${key}`]: actorIndex,
+      [`userData/${rootState.user.uid}/actors/${key}`]: actorPayload,
+    }
+
+    await rootRef.update(updatePayload);
+
+    commit('encounter/SET_ACTOR_KEY', { index, value: key }, { root: true });
+    if (isNew) {
+      // add the new actor to the index
+      commit('data/PUSH_USER_INDEX', actorIndex, { root: true });
+    }
+
+    commit('SET_MSG', 'Saved.');
+    commit('SET_ERROR', true);
+  },
+  async forkActor ({ commit, dispatch }, { index, actor }) {
+    // remove the key and save as the new actor
+    commit('encounter/SET_ACTOR_KEY', { index, value: '' }, { root: true });
+    await dispatch('saveActor', { index, actor });
+  },
+  async removeActor ({ state, rootState, commit }, { index, actor }) {
+    let key = actor.key;
+    const rootRef = firebase.database().ref();
+    const updatePayload = {
+      [`userIndex/${rootState.user.uid}/actors/${key}`]: null,
+      [`userData/${rootState.user.uid}/actors/${key}`]: null,
+    }
+
+    await rootRef.update(updatePayload);
+
+    commit('encounter/SET_ACTOR_KEY', { index, value: '' }, { root: true });
+
+    commit('SET_MSG', 'Removed from the cloud.');
+    commit('SET_ERROR', true);
+  },
 }
 
 export default {
