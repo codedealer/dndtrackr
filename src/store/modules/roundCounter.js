@@ -31,6 +31,9 @@ const actions = {
     commit('RESET');
   },
   onRemoveActor ({ state, commit, rootState }, index) {
+    // don't commit if that's the last actor
+    if (rootState.encounter.actors.length === 1) return ;
+
     if (index < state.order && state.order > 0) {
       commit('PREV');
     } else if (index === rootState.encounter.actors.length - 1 && index === state.order) {

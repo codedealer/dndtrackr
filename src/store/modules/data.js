@@ -27,6 +27,16 @@ const mutations = {
   PUSH_USER_INDEX (state, el) {
     state._userMonsterIndex.push(el);
   },
+  UPDATE_USER_INDEX (state, el) {
+    const i = state._userMonsterIndex.findIndex(m => m.key === el.key);
+    if (i < 0) throw new Error('Trying to update non-existing user index');
+    state._userMonsterIndex.splice(i, 1, el);
+  },
+  REMOVE_USER_INDEX (state, el) {
+    const i = state._userMonsterIndex.findIndex(m => m.key === el.key);
+    if (i < 0) return;
+    state._userMonsterIndex.splice(i, 1);
+  },
 }
 
 export default {

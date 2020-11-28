@@ -2,7 +2,6 @@
   <div class="actor-abilities-container">
     <Skills
       :index="index"
-      :skills="actor.data.skills"
     />
     <TextArea
       property="damage_vulnerabilities"
@@ -28,8 +27,18 @@
       label="Condition Immunities"
       :editOverride="editOverride"
     />
-    <TextField property="senses" :index="index" label="Senses" />
-    <TextField property="languages" :index="index" label="Languages" />
+    <TextArea
+      property="senses"
+      :index="index"
+      label="Senses"
+      :editOverride="editOverride"
+    />
+    <TextArea
+      property="languages"
+      :index="index"
+      label="Languages Immunities"
+      :editOverride="editOverride"
+    />
      <CompositeTextField
         :propertyMap="xpComposite"
         :index="index"

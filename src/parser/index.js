@@ -25,7 +25,10 @@ export default {
     let parsedStr = str.split(/\b/);
     for (let i = parsedStr.length - 1; i >= 0; i--) {
       // eslint-disable-next-line no-useless-escape
-      if (/^[+\-*\/]$/.test(parsedStr[i])) continue;
+      if (/^[+\-*\/]$/.test(parsedStr[i])) {
+        if (i == parsedStr.length - 1) return 'String ends with a sign';
+        continue;
+      }
       if (/^\d+$/.test(parsedStr[i])) continue;
 
       if (/^(\d{1,2})?d(\d{1,3})$/.test(parsedStr[i]) === false) {

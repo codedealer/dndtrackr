@@ -6,8 +6,8 @@
         small
         class="actor-label-text-btn"
         @click="startEdit()"
-      >{{ label }}</v-btn>
-      {{ p }}
+        v-if="label"
+      >{{ label }}</v-btn>{{ p }}
     </div>
     <div class="textarea-input-wrapper" v-show="edit">
       <v-textarea

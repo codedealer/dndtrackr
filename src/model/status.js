@@ -4,6 +4,7 @@ class Status {
     this.showInBar = showInBar;
     this.deletable = deletable;
     this.icon = icon;
+    this.uid = Math.random();
   }
 }
 

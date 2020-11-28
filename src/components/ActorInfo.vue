@@ -22,7 +22,7 @@
 
         <StatusButton
           v-for="(status, i) in actor.status"
-          :key="status.icon + status.name"
+          :key="status.uid"
           :actor="actor"
           :index="index"
           :statusIndex="i"
@@ -65,7 +65,8 @@
             <span v-on="on">
               <v-btn
                 icon
-                :disabled="!saveState.canSave"
+                :disabled="!blockControls && !saveState.canSave"
+                :color="saveCloudColor"
                 v-bind="attrs"
                 @click="saveActorToCloud"
               >
@@ -81,7 +82,7 @@
             <span v-on="on">
               <v-btn
                 icon
-                :disabled="!saveState.canFork"
+                :disabled="!blockControls && !saveState.canFork"
                 v-bind="attrs"
                 @click="forkActor"
               >
@@ -121,6 +122,12 @@
                 </v-list-item-action>
                 <v-list-item-title>Collapse Notes</v-list-item-title>
               </v-list-item>
+              <v-list-item>
+                <v-list-item-action>
+                  <v-switch color="primary" v-model="setAttributes"></v-switch>
+                </v-list-item-action>
+                <v-list-item-title>Show Attributes</v-list-item-title>
+              </v-list-item>
             </v-list>
 
             <v-divider></v-divider>
@@ -129,7 +136,7 @@
               <v-list-item>
                 <v-list-item-content>
                   <v-btn
-                    :disabled="!saveState.canDelete"
+                    :disabled="!blockControls && !saveState.canDelete"
                     color="error"
                     @click="removeFromCloud"
                   >
@@ -160,6 +167,7 @@ export default {
   props: ['actor', 'index'],
   data: () => ({
     editMode: false,
+    blockControls: false,
   }),
 
   computed: {
@@ -206,6 +214,10 @@ export default {
       return state;
     },
     editColor () { return this.editMode ? 'primary' : '' },
+    saveCloudColor () {
+      if (!this.isOwned) return '';
+      return this.saveState.canSave && this.isSynced ? '' : 'primary';
+    },
     setWidget: {
       get () { return this.actor.settings.showHitPointWidget },
       set (value) {
@@ -224,26 +236,41 @@ export default {
         });
       }
     },
+    setAttributes: {
+      get () { return this.actor.settings.showAttributes },
+      set (value) {
+        this.$store.commit('encounter/UPDATE_SETTINGS', {
+          index: this.index,
+          showAttributes: value,
+        });
+      }
+    },
   },
 
   methods: {
-    saveActorToCloud () {
-      this.$store.dispatch('server/saveActor', {
+    async saveActorToCloud () {
+      this.blockControls = true;
+      await this.$store.dispatch('server/saveActor', {
         index: this.index,
         actor: this.actor,
       });
+      this.blockControls = false;
     },
-    removeFromCloud () {
-      this.$store.dispatch('server/removeActor', {
+    async removeFromCloud () {
+      this.blockControls = true;
+      await this.$store.dispatch('server/removeActor', {
         index: this.index,
         actor: this.actor,
       });
+      this.blockControls = false;
     },
-    forkActor () {
-      this.$store.dispatch('server/forkActor', {
+    async forkActor () {
+      this.blockControls = true;
+      await this.$store.dispatch('server/forkActor', {
         index: this.index,
         actor: this.actor,
       });
+      this.blockControls = false;
     },
   },
 

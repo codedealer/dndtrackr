@@ -15,8 +15,9 @@
       <v-text-field
         dense
         v-model="skill"
+        placeholder="Skill: value"
         :error-messages="errors"
-        @keydown.enter = 'addSkill'
+        @keydown.enter = 'addSkills'
       ></v-text-field>
       <v-chip
         v-for="(skillValue, skillName) in skills"
@@ -64,14 +65,19 @@ export default {
     stopEdit () {
       this.edit = false;
     },
-    addSkill () {
-      if (!(/\w+\s*\:\s*.+/.test(this.skill))) {
+    addSkills () {
+      let skills = this.skill.split(',');
+      skills.forEach(s => { this.addSkill(s.trim()) });
+      this.skill = '';
+    },
+    addSkill (skill) {
+      if (!(/\w+\s*\:\s*.+/.test(skill))) {
         this.errors.push('hint: Skill: value');
         return;
       }
 
       this.errors = [];
-      let s = this.skill.split(':');
+      let s = skill.split(':');
       const skillName = s[0].trim();
       const skillValue = s[1].trim();
 
@@ -81,7 +87,6 @@ export default {
           [skillName]: skillValue,
         }
       });
-      this.skill = '';
     },
     removeSkill (skillName) {
       this.deleteSkill({ index: this.index, skill: skillName });

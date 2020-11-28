@@ -13,7 +13,7 @@ class Actor {
     this.data = dataFactory();
     this.settings = settings || settingsFactory();
     this.status = [];
-    this.color = COLORS[0];
+    this.color = Object.assign({}, COLORS[0]);
     this.notes = '';
   }
 }

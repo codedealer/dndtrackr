@@ -35,7 +35,7 @@ const actions = {
     // hookup user listener
     firebase.auth().onAuthStateChanged(async (user) => {
       commit('UPDATE_USER', user, { root: true });
-      if (user.uid) {
+      if (user && user.uid) {
         // get user indexes
         try {
           const snapshot = await firebase.database().ref(`userIndex/${user.uid}`).once('value');
@@ -89,6 +89,7 @@ const actions = {
       if (!snapshot.exists()) {
         commit('SET_MSG', `No data for ${actor.name}`);
         commit('SET_ERROR', true);
+        commit('encounter/SET_ACTOR_KEY', { index, value: '' }, { root: true });
         return;
       }
 
@@ -99,6 +100,7 @@ const actions = {
     } catch (e) {
       commit('SET_MSG', e.message || 'Cannot get data for ' + actor.name);
       commit('SET_ERROR', true);
+      throw e;
     }
   },
   async getActor ({ state, rootState, commit, dispatch }, { index, actor }) {
@@ -113,6 +115,7 @@ const actions = {
         if (!snap.exists()) {
           commit('SET_MSG', `No data for ${actor.name}`);
           commit('SET_ERROR', true);
+          commit('encounter/SET_ACTOR_KEY', { index, value: '' }, { root: true });
           return;
         }
 
@@ -125,6 +128,7 @@ const actions = {
       } catch (e) {
         commit('SET_MSG', e.message || 'Cannot get data for ' + actor.name);
         commit('SET_ERROR', true);
+        throw e;
       }
     } else {
       // this is a public actor, only data object will be retrieved
@@ -132,6 +136,8 @@ const actions = {
     }
   },
   async saveActor ({ state, rootState, commit }, { index, actor }) {
+    commit('encounter/UPDATE_SETTINGS', { index, dirty: false }, { root: true });
+
     let key = actor.key;
     let isNew = false;
     if (!key) {
@@ -149,12 +155,23 @@ const actions = {
       [`userData/${rootState.user.uid}/actors/${key}`]: actorPayload,
     }
 
-    await rootRef.update(updatePayload);
+    try {
+      await rootRef.update(updatePayload);
+    } catch (e) {
+      commit('SET_MSG', e.message || 'Error. Couldn\'t save.');
+      console.error(e);
+      commit('SET_ERROR', true);
+      commit('encounter/UPDATE_SETTINGS', { index, dirty: true }, { root: true });
+      return;
+    }
 
     commit('encounter/SET_ACTOR_KEY', { index, value: key }, { root: true });
     if (isNew) {
       // add the new actor to the index
       commit('data/PUSH_USER_INDEX', actorIndex, { root: true });
+    } else {
+      // update index information
+      commit('data/UPDATE_USER_INDEX', actorIndex, { root: true });
     }
 
     commit('SET_MSG', 'Saved.');
@@ -173,8 +190,16 @@ const actions = {
       [`userData/${rootState.user.uid}/actors/${key}`]: null,
     }
 
-    await rootRef.update(updatePayload);
+    try {
+      await rootRef.update(updatePayload);
+    } catch (e) {
+      commit('SET_MSG', e.message || 'Error. Couldn\'t remove.');
+      console.error(e);
+      commit('SET_ERROR', true);
+      return;
+    }
 
+    commit('data/REMOVE_USER_INDEX', actor, { root: true });
     commit('encounter/SET_ACTOR_KEY', { index, value: '' }, { root: true });
 
     commit('SET_MSG', 'Removed from the cloud.');

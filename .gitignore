@@ -3,6 +3,8 @@ node_modules
 /dist
 /src/config
 /src/managed
+.firebase
+/functions/
 
 # local env files
 .env.local

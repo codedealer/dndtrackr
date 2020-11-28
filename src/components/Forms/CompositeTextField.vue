@@ -34,7 +34,7 @@ export default {
 
   computed: {
     showLabel () {
-      return !this.edit && !this.editOverride && this.label;
+      return !this.edit && !this.editOverride && !!this.label;
     },
   },
 

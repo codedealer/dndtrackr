@@ -136,7 +136,12 @@ export default {
     async onNewKey (key) {
       this.SET_ACTOR_KEY({ index: this.index, value: key });
 
-      await this.$store.dispatch('server/getActor', { index: this.index, actor: this.actor });
+      try {
+        await this.$store.dispatch('server/getActor', { index: this.index, actor: this.actor });
+      } catch (e) {
+        console.error(e);
+        return;
+      }
 
       // set armor class status automatically
       if (this.actor.data.armor_class && !this.actor.status.length) {

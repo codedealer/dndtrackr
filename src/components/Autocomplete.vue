@@ -1,5 +1,5 @@
 <template>
-  <div class="actor-input-container autocomplete-container">
+  <div class="actor-input-container autocomplete-container" v-click-outside="cancel">
     <input
       class="actor-input"
       :value="value"

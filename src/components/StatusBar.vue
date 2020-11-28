@@ -3,7 +3,7 @@
     <div class="actor-status-list">
       <StatusButton
         v-for="(status, i) in barStatuses"
-        :key="status.icon + status.name"
+        :key="status.uid"
         :actor="actor"
         :index="index"
         :statusIndex="i"
@@ -17,6 +17,7 @@
           label
           small
           filter
+          :class="status.deletable ? 'primary lighten-1' : ''"
           :input-value="status.icon.length > 0"
           :filter-icon="status.icon"
           v-bind="attrs"
@@ -86,6 +87,15 @@ export default {
     font-size: 15px;
     margin-left: 0;
     margin-right: 3px;
+  }
+}
+.status-icon-selector.v-text-field.v-text-field--enclosed {
+  max-width: 120px;
+  margin-top: -8px;
+}
+.actor-status-name {
+  > .v-input__control {
+    max-width: 150px;
   }
 }
 </style>

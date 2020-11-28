@@ -78,12 +78,18 @@ const mutations = {
   },
   CHANGE_ACTOR_TYPE (state, index) {
     state.actors[index].type = (state.actors[index].type + 1) % 2;
+
+    state.actors[index].settings.dirty = true;
   },
   CHANGE_ACTOR_COLOR (state, { actorIndex, colorIndex }) {
     state.actors[actorIndex].color = COLORS[colorIndex];
+
+    state.actors[index].settings.dirty = true;
   },
   SET_ACTOR_NAME (state, { index, value }) {
     state.actors[index].name = value;
+
+    state.actors[index].settings.dirty = true;
   },
   SET_ACTOR_KEY (state, { index, value }) {
     if (!value) value = '';
@@ -91,6 +97,8 @@ const mutations = {
   },
   SET_ACTOR_NOTES (state, { index, value }) {
     state.actors[index].notes = value;
+
+    state.actors[index].settings.dirty = true;
   },
   REMOVE_ACTOR (state, index) {
     if (state.selected === state.actors[index].uid) {
@@ -106,27 +114,43 @@ const mutations = {
   },
   UPDATE_DATA (state, { index, ...data }) {
     merge(state.actors[index].data, data);
+
+    state.actors[index].settings.dirty = true;
   },
   PUSH_DATA_ARRAY (state, { index, propertyName, ...data }) {
     state.actors[index].data[propertyName].push(data);
+
+    state.actors[index].settings.dirty = true;
   },
   UPDATE_DATA_ARRAY (state, { index, propertyName, i, ...data }) {
     merge(state.actors[index].data[propertyName][i], data);
+
+    state.actors[index].settings.dirty = true;
   },
   REMOVE_DATA_ARRAY (state, { index, propertyName, i }) {
     state.actors[index].data[propertyName].splice(i, 1);
+
+    state.actors[index].settings.dirty = true;
   },
   REMOVE_SKILL (state, { index, skill }) {
     Vue.delete(state.actors[index].data.skills, skill);
+
+    state.actors[index].settings.dirty = true;
   },
   ADD_STATUS (state, { index, status }) {
     state.actors[index].status.push(status);
+
+    state.actors[index].settings.dirty = true;
   },
   EDIT_STATUS (state, { actorIndex, statusIndex, status }) {
     state.actors[actorIndex].status.splice(statusIndex, 1, status);
+
+    state.actors[index].settings.dirty = true;
   },
   DELETE_STATUS (state, { actorIndex, statusIndex }) {
     state.actors[actorIndex].status.splice(statusIndex, 1);
+
+    state.actors[index].settings.dirty = true;
   },
 }
 

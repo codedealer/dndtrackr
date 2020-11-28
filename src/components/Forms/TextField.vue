@@ -5,6 +5,7 @@
     v-model="p"
     :placeholder="placeholder"
     class="actor-text-field"
+    @focus="$emit('focus')"
   >
     <template v-slot:prepend>
       <strong v-if="label && label.length">{{ label }} </strong>

@@ -20,19 +20,19 @@
     </div>
 
     <v-expansion-panels class="actor-notes-container" v-model="notesPanel">
-    <v-expansion-panel>
-      <v-expansion-panel-header>
-        Notes
-      </v-expansion-panel-header>
-      <v-expansion-panel-content>
-        <v-textarea
-          filled
-          auto-grow
-          class="notes-textarea"
-          v-model="notes"
-        ></v-textarea>
-      </v-expansion-panel-content>
-    </v-expansion-panel>
+      <v-expansion-panel>
+        <v-expansion-panel-header>
+          Notes
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <v-textarea
+            filled
+            auto-grow
+            class="notes-textarea"
+            v-model="notes"
+          ></v-textarea>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
     </v-expansion-panels>
 
     <div class="actor-divider primary"></div>
@@ -56,7 +56,7 @@
 
     <div class="actor-divider primary"></div>
 
-    <div class="actor-attributes-container">
+    <div class="actor-attributes-container" v-if="actor.settings.showAttributes">
       <Attribute
         v-for="(attribute, attributeName) in actor.data.attributes"
         :attributeName="attributeName"
@@ -66,7 +66,7 @@
       />
     </div>
 
-    <div class="actor-divider primary"></div>
+    <div class="actor-divider primary" v-if="actor.settings.showAttributes"></div>
 
     <Abilities :index="index" :actor="actor" :editOverride="editMode" />
 
@@ -103,7 +103,7 @@
       <TextArea
         :index="index"
         property="legendary_desc"
-        label="Description"
+        label=""
         :editOverride="editMode"
       />
     </ArrayBlock>
@@ -118,6 +118,7 @@ import Abilities from './Forms/Abilities';
 import ArrayBlock from './Forms/ArrayBlock';
 import CompositeTextField from './Forms/CompositeTextField';
 import Parser from '../parser';
+import DiceResult from '../parser/diceResult';
 import { createNamespacedHelpers } from 'vuex';
 const { mapMutations } = createNamespacedHelpers('encounter');
 
@@ -182,11 +183,21 @@ export default {
     hpComposite () { return { hit_points: 'Hit Points', hit_dice: 'Hit Dice' } },
     hpLabel () {
       if (!this.actor.data.hit_dice.length) return this.actor.data.hit_points;
-      return `${this.actor.data.hit_points} (${this.actor.data.hit_dice})`;
+      let hd = this.actor.data.hit_dice;
+      if (this.hpAvg) {
+        hd = `(${hd} / ${this.hpAvg})`;
+      }
+      return `${this.actor.data.hit_points} ${hd}`;
     },
     hpAvg () {
-      // TODO: calculate averages
-      return '';
+      const dice = this.actor.data.hit_dice;
+      if (!dice) return '';
+      if (Parser.test(dice) !== true) return '';
+
+      const diceParams = Parser.parse(dice);
+      const diceResult = new DiceResult(diceParams);
+
+      return diceResult.average();
     },
   },
 
@@ -239,7 +250,8 @@ export default {
     justify-content: space-around;
     padding-bottom: 10px;
   }
-  .v-btn.actor-label-text-btn {
+  .v-btn.actor-label-text-btn,
+  .v-btn.actor-label-btn {
     text-transform: none;
     padding-left: 0px;
     padding-right: 2px;
@@ -251,6 +263,7 @@ export default {
     letter-spacing: normal;
     height: 24px;
     vertical-align: inherit;
+    justify-content: flex-start;
   }
 }
 .actor-textarea-wrapper {
