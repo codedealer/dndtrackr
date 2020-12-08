@@ -24,7 +24,7 @@
           <v-window-item
             value="1"
           >
-            <v-btn text>+ {{ latestXp }}XP</v-btn>
+            <v-btn text @click="expanded = !expanded">+ {{ latestXp }}XP</v-btn>
             <v-btn color="error" icon @click="dismiss">
               <v-icon>mdi-delete</v-icon>
             </v-btn>

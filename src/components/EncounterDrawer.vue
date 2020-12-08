@@ -4,6 +4,7 @@
     left
     disable-route-watcher
     width="min(350px, 100%)"
+    v-hotkey.stop="keymap"
   >
     <v-toolbar dark flat>
       <v-btn
@@ -98,8 +99,16 @@ export default {
   }),
 
   computed: {
-    ...mapState(['actors']),
+    ...mapState(['actors', 'selected']),
     showButtons () { return this.actors.length },
+    keymap () {
+      return {
+        down: this.down,
+        up: this.up,
+        'delete': this.remove,
+        backspace: this.remove,
+      }
+    }
   },
 
   methods: {
@@ -107,9 +116,11 @@ export default {
       addActor: 'ADD_ACTOR',
       sortActors: 'SORT_ACTORS',
       renameDuplicates: 'RENAME_ACTORS',
+      selectActor: 'SELECT_ACTOR',
     }),
     ...mapActions([
       'generateInitiative',
+      'removeActor',
     ]),
     async initiative(regenerate) {
       this.initiativeLoading = true;
@@ -120,6 +131,37 @@ export default {
       } finally {
         this.initiativeLoading = false;
       }
+    },
+    down () {
+      if (!this.actors.length) return;
+      if (this.selected === false) this.selectActor(this.actors[0].uid);
+
+      const i = this.actors.findIndex(a => a.uid === this.selected);
+      if (i === -1) return;
+      if (i === this.actors.length - 1) {
+        this.selectActor(this.actors[0].uid);
+      } else {
+        this.selectActor(this.actors[i + 1].uid);
+      }
+    },
+    up () {
+      if (!this.actors.length) return;
+      if (this.selected === false) this.selectActor(this.actors[0].uid);
+
+      const i = this.actors.findIndex(a => a.uid === this.selected);
+      if (i === -1) return;
+      if (i === 0) {
+        this.selectActor(this.actors[this.actors.length - 1].uid);
+      } else {
+        this.selectActor(this.actors[i - 1].uid);
+      }
+    },
+    remove () {
+      if (!this.actors.length || this.selected === false) return;
+
+      const i = this.actors.findIndex(a => a.uid === this.selected);
+      if (i === -1) return;
+      this.removeActor(i);
     },
   },
 

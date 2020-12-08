@@ -19,10 +19,20 @@
         <ActorType :actor="actor" :index="index" />
         <Autocomplete
           :list="monsterIndex"
+          classInput="actor-input"
+          classWrapper="actor-input-container"
           v-model="name"
-          @newKey="onNewKey"
+          @choice="onNewKey"
           @traverse="onTraverse"
-        ></Autocomplete>
+          v-slot="{ item }"
+        >
+          <div class="autocomplete-item-title">{{ item.name }}</div>
+          <div class="autocomplete-item-subtitle">
+            <v-chip x-small class="mr-1" color="purple darken-4">{{ item.type }}</v-chip>
+            <v-chip x-small class="mr-1" color="red darken-3">CR {{ item.challenge_rating }}</v-chip>
+            <v-chip x-small>{{ sourceIcon(item.tag) }}</v-chip>
+          </div>
+        </Autocomplete>
         <HitPointWidget
           :actor="actor"
           :index="index"
@@ -57,19 +67,24 @@ import HitPointWidget from './HitPointWidget';
 import parser from '../parser';
 import TYPES from '../model/ACTOR_TYPES';
 import Status from '../model/status';
+import sourceParser from '../utils/sourceParser';
 
 import { createNamespacedHelpers } from 'vuex';
 
 const { mapState, mapMutations, mapActions } = createNamespacedHelpers('encounter');
 
 export default {
+  mixins: [sourceParser],
   props: ['actor', 'index'],
+
   data: () => ({
     hitPointsLoading: false,
   }),
+
   computed: {
     ...mapState([
       'selected',
+      'keyMessagePipe',
     ]),
     isTurn () {
       return this.index === this.$store.state.roundCounter.order;
@@ -108,6 +123,7 @@ export default {
       'SET_ACTOR_NAME',
       'SET_ACTOR_KEY',
       'ADD_STATUS',
+      'SET_KEY_MESSAGE',
     ]),
     ...mapActions([
       'removeActor',
@@ -133,7 +149,8 @@ export default {
         this.$nextTick(() => { this.moveNext(); });
       }
     },
-    async onNewKey (key) {
+    async onNewKey (item) {
+      const key = item.key;
       this.SET_ACTOR_KEY({ index: this.index, value: key });
 
       try {
@@ -178,6 +195,16 @@ export default {
         }
       }
     }
+  },
+
+  watch: {
+    keyMessagePipe (value) {
+      if (!value) return;
+      if (this.actor.uid !== this.selected) return;
+
+      this.onNewKey({ key: value });
+      this.SET_KEY_MESSAGE('');
+    },
   },
 
   components: {

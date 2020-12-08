@@ -1,8 +1,9 @@
 <template>
-  <div class="d-flex align-center dice-roller-wrapper">
+  <div class="d-flex align-center dice-roller-wrapper" v-hotkey.stop="keymap">
     <v-text-field
       filled
       placeholder="1d20 + 2d4 + 3"
+      id="dice-roller-input"
       dense
       hide-details
       color="#fff"
@@ -115,6 +116,11 @@ export default {
         this.$store.commit('diceRoller/SET_TEXT', value);
       }
     },
+    keymap () {
+      return {
+        d: this.activate,
+      }
+    },
     ...mapGetters([
       'resultEmpty',
       'resultTotal',
@@ -151,6 +157,11 @@ export default {
       } finally {
         this.loading = false;
       }
+    },
+    activate (e) {
+      e.preventDefault();
+      const input = document.getElementById('dice-roller-input');
+      input.focus();
     },
     ...mapActions(['prevRoll', 'nextRoll'])
   }

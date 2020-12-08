@@ -8,6 +8,10 @@ let user = {
   spellIndex: [],
   settings: {
     randomHitpoints: false,
+    actorsOrderBy: 'name',
+    actorsOrderAsc: true,
+    spellsOrderBy: 'name',
+    spellsOrderAsc: true,
   },
 }
 

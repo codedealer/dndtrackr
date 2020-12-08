@@ -3,8 +3,13 @@ const sourceParser = {
     sourceCache: new Map(),
   }),
 
+  computed: {
+    userProxy () { return this.$store.state.user },
+  },
+
   methods: {
     sourceIcon (tag) {
+      if (tag === this.userProxy.uid) return 'self';
       if (this.sourceCache.has(tag)) {
         return this.sourceCache.get(tag);
       }

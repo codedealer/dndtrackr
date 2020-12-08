@@ -1,7 +1,24 @@
 <template>
-  <div class="actor-input-container autocomplete-container" v-click-outside="cancel">
+  <div class="autocomplete-container" :class="classWrapper" v-click-outside="cancel">
+    <v-text-field
+      v-if="defaultInput !== undefined"
+      hide-details
+      class="py-0"
+      filled
+      dense
+      autocomplete="off"
+      :placeholder="placeholder"
+      :value="value"
+      @input="onInput"
+      @keydown.up = 'up'
+      @keydown.down = 'down'
+      @keydown.esc = 'cancel'
+      @keydown.enter = 'enter'
+      @keydown.tab.prevent = 'traverse'
+    ></v-text-field>
     <input
-      class="actor-input"
+      :placeholder="placeholder"
+      :class="classInput"
       :value="value"
       @input="onInput($event.target.value)"
       @keydown.up = 'up'
@@ -9,6 +26,7 @@
       @keydown.esc = 'cancel'
       @keydown.enter = 'enter'
       @keydown.tab.prevent = 'traverse'
+      v-else
     >
     <ul class="autocomplete-list" :ref="'dropdownContainer'" v-show="isOpened">
       <li
@@ -18,24 +36,24 @@
         :ref="`item-${index}`"
         @click.stop="choose(index)"
       >
-        <div class="autocomplete-item-title">{{ item.name }}</div>
-        <div class="autocomplete-item-subtitle">
-          <v-chip x-small class="mr-1" color="purple darken-4">{{ item.type }}</v-chip>
-          <v-chip x-small class="mr-1" color="red darken-3">CR {{ item.challenge_rating }}</v-chip>
-          <v-chip x-small>{{ sourceIcon(item.tag) }}</v-chip>
-        </div>
+        <slot v-bind="{item, index}"></slot>
       </li>
     </ul>
   </div>
 </template>
 
 <script>
-import sourceParser from '../utils/sourceParser';
 import goTo from 'vuetify/es5/services/goto';
 
 export default {
-  mixins: [sourceParser],
-  props: ['value', 'list'],
+  props: [
+    'value',
+    'list',
+    'classInput',
+    'classWrapper',
+    'defaultInput',
+    'placeholder'
+  ],
 
   data: () => ({
     open: false,
@@ -130,13 +148,13 @@ export default {
     enter () {
       if (!this.match.length || !this.isOpened) return;
       this.open = false;
-      this.$emit('newKey', this.match[this.cursor].key);
+      this.$emit('choice', this.match[this.cursor]);
       this.$emit('input', this.match[this.cursor].name);
       this.cursor = 0;
     },
     choose (index) {
       this.open = false;
-      this.$emit('newKey', this.match[index].key);
+      this.$emit('choice', this.match[index]);
       this.$emit('input', this.match[index].name);
     },
     traverse () {

@@ -3,6 +3,7 @@ import 'firebase/auth';
 import 'firebase/database';
 import config from '../../config';
 import ActorClass from '../../model/actor';
+import SpellClass from '../../model/spell';
 import DataDecorator from '../../utils/serverDecorator';
 
 import { merge } from 'lodash-es';
@@ -10,6 +11,7 @@ import { merge } from 'lodash-es';
 const state = {
   errorMsg: '',
   error: false,
+  userLoading: false,
 }
 
 const getters = {
@@ -24,6 +26,9 @@ const mutations = {
   SET_MSG (state, value) {
     state.errorMsg = value;
   },
+  SET_USER_LOADING (state, value) {
+    state.userLoading = value;
+  },
 }
 
 const actions = {
@@ -35,8 +40,10 @@ const actions = {
     // hookup user listener
     firebase.auth().onAuthStateChanged(async (user) => {
       commit('UPDATE_USER', user, { root: true });
+
       if (user && user.uid) {
         // get user indexes
+        commit('SET_USER_LOADING', true);
         try {
           const snapshot = await firebase.database().ref(`userIndex/${user.uid}`).once('value');
           if (!snapshot.exists()) {
@@ -47,11 +54,16 @@ const actions = {
               // build actor index
               commit('data/SET_USER_INDEX', Object.values(userData.actors), { root: true });
             }
+            if (userData.spells) {
+              commit('data/SET_USER_SPELL_INDEX', Object.values(userData.spells), { root: true });
+            }
           }
         } catch (e) {
           commit('SET_MSG', 'Error downloading user index.');
           commit('SET_ERROR', true);
         }
+
+        commit('SET_USER_LOADING', false);
       }
     });
 
@@ -62,6 +74,15 @@ const actions = {
       commit('data/SET_MONSTER_INDEX', monsterIndex, { root: true });
     } catch (e) {
       commit('SET_MSG', 'Error downloading monster index.');
+      commit('SET_ERROR', true);
+    }
+    try {
+      const response = await fetch('/data/spell_index.json');
+      const spellIndex = await response.json();
+
+      commit('data/SET_SPELL_INDEX', spellIndex, { root: true });
+    } catch (e) {
+      commit('SET_MSG', 'Error downloading spell index.');
       commit('SET_ERROR', true);
     }
   },
@@ -205,6 +226,144 @@ const actions = {
     commit('SET_MSG', 'Removed from the cloud.');
     commit('SET_ERROR', true);
   },
+  async getSpell ({ rootState, commit, dispatch }, item) {
+    if (rootState.data._userSpellIndex.some(a => a.key === item.key)) {
+      try{
+        const snap = await firebase
+                    .database()
+                    .ref(`userData/${rootState.user.uid}/spells/${item.key}`)
+                    .once('value');
+        if (!snap.exists()) {
+          commit('SET_MSG', `No data for ${item.name}`);
+          commit('SET_ERROR', true);
+          return;
+        }
+
+        const spellData = snap.val();
+        // data normalization
+        const spell = merge(new SpellClass(), spellData);
+        commit('spells/SET_SPELL', spell, { root: true });
+      } catch (e) {
+        commit('SET_MSG', e.message || 'Cannot get data for ' + item.name);
+        commit('SET_ERROR', true);
+        return;
+      }
+    } else {
+      await dispatch('getSpellRemote', item);
+    }
+  },
+  async getSpellRemote ({ state, rootState, commit }, item) {
+    let results;
+    try {
+      results = await open5eAPI('spells', { name__iexact: item.name });
+    } catch (e) {
+      commit('SET_MSG', e.message || 'Cannot get data for ' + item.name);
+      commit('SET_ERROR', true);
+      return;
+    }
+
+    if (!results.length) {
+      commit('SET_MSG', 'No data for ' + item.name);
+      commit('SET_ERROR', true);
+      return;
+    }
+
+    const spellData = results[0];
+    // data normalization
+    spellData['dnd_class'] = spellData.dnd_class.split(',').map(t => t.trim());
+    const spell = merge(new SpellClass(), { data: spellData });
+    spell.key = 'open5eAPI';
+    commit('spells/SET_SPELL', spell, { root: true });
+  },
+  async saveSpell ({ state, rootState, commit }, spell) {
+    if (!spell.data.name.length) {
+      commit('SET_MSG', 'Name cannot be empty.');
+      commit('SET_ERROR', true);
+      return;
+    }
+    commit('spells/SET_DIRTY', false, { root: true });
+
+    let key = spell.key;
+    let isNew = false;
+    if (!key) {
+      // new stuff
+      isNew = true;
+      const indexRef = firebase.database().ref(`userIndex/${rootState.user.uid}/spells`).push();
+      key = indexRef.key;
+    }
+
+    const spellIndex = DataDecorator.getSpellIndex(spell, rootState.user.uid, key);
+    const spellPayload = DataDecorator.getSpellPayload(spell, key);
+    const rootRef = firebase.database().ref();
+    const updatePayload = {
+      [`userIndex/${rootState.user.uid}/spells/${key}`]: spellIndex,
+      [`userData/${rootState.user.uid}/spells/${key}`]: spellPayload,
+    }
+
+    try {
+      await rootRef.update(updatePayload);
+    } catch (e) {
+      commit('SET_MSG', e.message || 'Error. Couldn\'t save.');
+      console.error(e);
+      commit('SET_ERROR', true);
+      commit('spells/SET_DIRTY', true, { root: true });
+      return;
+    }
+
+    commit('spells/SET_KEY', key, { root: true });
+    if (isNew) {
+      // add the new actor to the index
+      commit('data/PUSH_USER_SPELL_INDEX', spellIndex, { root: true });
+    } else {
+      // update index information
+      commit('data/UPDATE_USER_SPELL_INDEX', spellIndex, { root: true });
+    }
+
+    commit('SET_MSG', 'Saved.');
+    commit('SET_ERROR', true);
+  },
+  async removeSpell ({ state, rootState, commit }, spell) {
+    const key = spell.key;
+    const rootRef = firebase.database().ref();
+    const updatePayload = {
+      [`userIndex/${rootState.user.uid}/spells/${key}`]: null,
+      [`userData/${rootState.user.uid}/spells/${key}`]: null,
+    }
+
+    try {
+      await rootRef.update(updatePayload);
+    } catch (e) {
+      commit('SET_MSG', e.message || 'Error. Couldn\'t remove.');
+      console.error(e);
+      commit('SET_ERROR', true);
+      return;
+    }
+
+    commit('data/REMOVE_USER_SPELL_INDEX', spell, { root: true });
+    commit('spells/SET_SPELL', false, { root: true });
+
+    commit('SET_MSG', 'Removed from the cloud.');
+    commit('SET_ERROR', true);
+  },
+}
+
+async function open5eAPI (path, params) {
+  const url = new URL(path, 'https://api.open5e.com');
+  const searchParams = new URLSearchParams(params);
+  const dest = `${url.toString()}?${searchParams.toString()}`;
+
+  const response = await fetch(dest, {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  });
+
+  if (!response.ok) throw new Error('Fetch to remote api failed');
+
+  const data = await response.json();
+
+  return data.results;
 }
 
 export default {

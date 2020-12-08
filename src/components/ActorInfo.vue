@@ -205,8 +205,8 @@ export default {
         }
       } else {
         // 3rd party actor
-        state.text = 'You don\'t have permission to edit. Changes will be saved locally.';
-        state.icon = 'mdi-cloud-outline';
+        state.text = 'You don\'t have permission to save. Changes will be saved locally.';
+        state.icon = 'mdi-cloud-off-outline';
         state.canSave = false;
         state.canDelete = false;
         state.canFork = this.isLoggedIn;

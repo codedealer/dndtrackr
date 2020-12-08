@@ -3,6 +3,7 @@
     :close-on-content-click="false"
     offset-y
     v-model="menuState"
+    v-hotkey.stop="keymap"
   >
     <template v-slot:activator="{ on: menu, attrs }">
       <v-tooltip bottom>
@@ -74,7 +75,12 @@ export default {
       set (value) {
         this.UPDATE_SETTINGS({ index: this.index, showHitPointWidget: value });
       }
-    }
+    },
+    keymap () {
+      return {
+        q: this.hotKeyShow,
+      }
+    },
   },
 
   methods: {
@@ -100,7 +106,12 @@ export default {
       }
 
       this.UPDATE_DATA({ index: this.index, hit_points: newHitpoints });
-    }
+    },
+    hotKeyShow () {
+      if (this.loading) return;
+      if (this.actor.uid !== this.$store.state.encounter.selected) return;
+      this.menuState = true;
+    },
   }
 }
 </script>

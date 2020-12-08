@@ -1,5 +1,5 @@
 <template>
-  <div class="actor-status-container">
+  <div class="actor-status-container" v-hotkey.stop="keymap">
     <div class="actor-status-list">
       <StatusButton
         v-for="(status, i) in barStatuses"
@@ -41,6 +41,7 @@
         transition="slide-x-transition"
         v-bind="attrs"
         v-on="{ ...tooltip, ...menu }"
+        ref="addStatusButton"
       ><v-icon small>mdi-plus</v-icon></v-btn>
     </StatusButton>
   </div>
@@ -51,6 +52,7 @@ import StatusButton from './StatusButton';
 import StatusMixin from '../utils/statusMixin';
 
 export default {
+  name: 'StatusBar',
   mixins: [StatusMixin],
   props: ['actor', 'index'],
 
@@ -59,7 +61,20 @@ export default {
   computed: {
     barStatuses () {
       return this.actor.status.filter(s => s.showInBar);
+    },
+    keymap () {
+      return {
+        s: this.addStatus,
+      }
     }
+  },
+
+  methods: {
+    addStatus () {
+      if (this.actor.uid !== this.$store.state.encounter.selected) return;
+
+      this.$refs.addStatusButton.$el.click();
+    },
   },
 
   components: {

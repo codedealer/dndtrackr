@@ -3,6 +3,7 @@
     hide-details
     dense
     v-model="p"
+    autocomplete="off"
     :placeholder="placeholder"
     class="actor-text-field"
     @focus="$emit('focus')"

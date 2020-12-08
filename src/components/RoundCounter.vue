@@ -1,5 +1,5 @@
 <template>
-  <v-btn-toggle class="mr-3">
+  <v-btn-toggle class="mr-3" v-hotkey.stop="keymap">
     <v-btn @click="next"><v-icon>mdi-chevron-right</v-icon></v-btn>
     <v-btn @click="reset"><v-icon>mdi-reload</v-icon></v-btn>
     <v-tooltip top>
@@ -22,6 +22,12 @@ export default {
 
   computed: {
     ...mapState(['round']),
+    keymap () {
+      return {
+        right: this.next,
+        r: this.reset,
+      }
+    },
   },
 
   methods: {

@@ -104,8 +104,24 @@ export default {
       key,
     }
   },
+  getSpellIndex: (spell, uid, key) => ({
+    concentration: spell.data.concentration,
+    dnd_class: spell.data.dnd_class.slice(),
+    key,
+    level: spell.data.level_int,
+    name: spell.data.name,
+    ritual: spell.data.ritual,
+    school: spell.data.school,
+    tag: uid,
+  }),
   getActorPayload (actor, k) {
     const { uid, key, ...result } = actor;
+    result.key = k;
+
+    return result;
+  },
+  getSpellPayload (spell, k) {
+    const { key, ...result } = spell;
     result.key = k;
 
     return result;

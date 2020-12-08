@@ -25,6 +25,7 @@ export default new Vuex.Store({
   strict: process.env.NODE_ENV !== 'production',
   state: {
     user,
+    secondaryMenu: 'SpellInfo',
   },
   mutations: {
     RESTORE_MUTATION: vuexLocal.RESTORE_MUTATION,
@@ -40,6 +41,9 @@ export default new Vuex.Store({
     },
     UPDATE_USER_SETTINGS (state, settings) {
       merge(state.user.settings, settings);
+    },
+    SET_MENU (state, value) {
+      state.secondaryMenu = value ? value : 'SpellInfo';
     },
   },
   actions: {

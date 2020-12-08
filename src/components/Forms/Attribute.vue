@@ -83,7 +83,7 @@ export default {
 
 <style lang="scss">
 .attribute {
-  margin: 10px 8px;
+  margin: 10px 3px;
   .attribute-main-field {
     width: 70px;
   }

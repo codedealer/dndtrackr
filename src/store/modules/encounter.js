@@ -12,6 +12,7 @@ const state = () => ({
   uid: 0,
   selected: false,
   actors: [],
+  keyMessagePipe: '',
 });
 
 const getters = {
@@ -145,12 +146,15 @@ const mutations = {
   EDIT_STATUS (state, { actorIndex, statusIndex, status }) {
     state.actors[actorIndex].status.splice(statusIndex, 1, status);
 
-    state.actors[index].settings.dirty = true;
+    state.actors[actorIndex].settings.dirty = true;
   },
   DELETE_STATUS (state, { actorIndex, statusIndex }) {
     state.actors[actorIndex].status.splice(statusIndex, 1);
 
-    state.actors[index].settings.dirty = true;
+    state.actors[actorIndex].settings.dirty = true;
+  },
+  SET_KEY_MESSAGE (state, value) {
+    state.keyMessagePipe = value;
   },
 }
 

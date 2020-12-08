@@ -22,6 +22,7 @@
           color="btnColor"
           v-on="on"
           v-bind="attrs"
+          :loading="$store.state.server.userLoading"
         >
           <v-icon v-show="!user.photo">mdi-account</v-icon>
           <v-avatar v-show="user.photo" height="48" width="48">
@@ -43,6 +44,24 @@
               <v-btn icon @click="signOut"><v-icon>mdi-logout</v-icon></v-btn>
             </v-list-item-action>
           </v-list-item>
+
+          <v-divider></v-divider>
+
+          <v-list-item-group
+            v-model="m"
+            active-class=""
+          >
+            <v-list-item value="UserActors">
+              <v-list-item-content>
+                <v-list-item-title>Actors</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item value="UserSpells">
+              <v-list-item-content>
+                <v-list-item-title>Spells</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-item-group>
         </v-list>
 
         <v-divider></v-divider>
@@ -66,9 +85,7 @@ import { createNamespacedHelpers, mapState } from 'vuex';
 const { mapActions } = createNamespacedHelpers('server');
 
 export default {
-  data: () => ({
-    //
-  }),
+  data: () => ({}),
 
   computed: {
     state () { return this.$store.state.user.state; },
@@ -77,6 +94,12 @@ export default {
       get () { return this.$store.state.user.settings.randomHitpoints; },
       set (value) {
         this.updateUserSettings({ randomHitpoints: value });
+      }
+    },
+    m: {
+      get () { return this.$store.state.secondaryMenu },
+      set (value) {
+        this.$store.commit('SET_MENU', value);
       }
     },
     ...mapState(['user'])

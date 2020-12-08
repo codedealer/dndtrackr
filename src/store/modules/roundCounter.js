@@ -22,6 +22,7 @@ const mutations = {
 
 const actions = {
   next ({ state, commit, rootState }) {
+    if (rootState.encounter.actors.length === 0) return;
     commit('NEXT', rootState.encounter.actors.length);
 
     const uid = rootState.encounter.actors[state.order].uid;
