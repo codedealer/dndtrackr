@@ -7,7 +7,7 @@
         class="actor-label-text-btn"
         @click="startEdit()"
       >{{ name }}</v-btn>
-      {{ desc }}
+      <vue-markdown class="markdown-area" :source="desc"></vue-markdown>
     </div>
     <div class="textarea-input-wrapper" v-show="edit">
       <v-text-field
@@ -51,6 +51,7 @@
 </template>
 
 <script>
+import VueMarkdown from 'vue-markdown'
 import { createNamespacedHelpers } from 'vuex';
 const { mapMutations } = createNamespacedHelpers('encounter');
 
@@ -101,5 +102,9 @@ export default {
       this.e = false;
     },
   },
+
+  components: {
+    VueMarkdown,
+  }
 }
 </script>

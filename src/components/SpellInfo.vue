@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-card>
+    <v-card class="sticky-card">
       <v-overlay
         absolute
         :value="loading"
@@ -79,22 +79,37 @@
               <span>{{ saveState.text }}</span>
             </v-tooltip>
 
-            <v-tooltip bottom>
-              <template v-slot:activator="{ on, attrs }">
-                <span v-on="on">
-                  <v-btn
+            <v-menu
+              offset-y
+              :close-on-content-click="false"
+              transition="slide-y-transition"
+            >
+              <template #activator="{ on, attrs }">
+                 <v-btn
                     icon
-                    :disabled="!saveState.canDelete"
-                    color="error"
                     v-bind="attrs"
-                    @click="removeSpell"
+                    v-on="on"
                   >
-                    <v-icon>mdi-delete</v-icon>
+                    <v-icon>mdi-cog</v-icon>
                   </v-btn>
-                </span>
               </template>
-              <span>Remove spell</span>
-            </v-tooltip>
+
+              <v-card>
+                <v-list>
+                  <v-list-item>
+                    <v-list-item-content>
+                      <v-btn
+                        :disabled="!saveState.canDelete"
+                        color="error"
+                        @click="removeSpell"
+                      >
+                        Remove from cloud
+                      </v-btn>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list>
+              </v-card>
+            </v-menu>
           </v-col>
         </v-row>
       </v-container>
@@ -233,5 +248,9 @@ export default {
 </script>
 
 <style lang="scss">
-
+.sticky-card {
+  position: sticky;
+  top: -12px;
+  z-index: 2;
+}
 </style>

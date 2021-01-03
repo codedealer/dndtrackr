@@ -6,6 +6,7 @@
 
       <v-spacer></v-spacer>
 
+      <SecondaryMenu />
       <Auth />
     </v-app-bar>
 
@@ -34,6 +35,7 @@ import Panel from './components/Panel';
 import ActorInfoContainer from './components/ActorInfoContainer';
 import SecondaryInfoContainer from './components/SecondaryInfoContainer';
 import EncounterDrawer from './components/EncounterDrawer';
+import SecondaryMenu from './components/SecondaryMenu';
 
 export default {
   name: 'DnDBox',
@@ -46,6 +48,7 @@ export default {
     Panel,
     ActorInfoContainer,
     SecondaryInfoContainer,
+    SecondaryMenu,
   },
 
   data: () => ({

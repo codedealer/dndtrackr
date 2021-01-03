@@ -1,6 +1,6 @@
 <template>
 <div class="actor-info-content">
-  <v-card>
+  <v-card class="sticky-card">
     <v-row>
       <v-col>
         <StatusButton
@@ -255,6 +255,8 @@ export default {
         actor: this.actor,
       });
       this.blockControls = false;
+
+      this.editMode = false;
     },
     async removeFromCloud () {
       this.blockControls = true;
@@ -288,5 +290,10 @@ export default {
     margin-right: 3px;
     font-size: 18px;
   }
+}
+.sticky-card {
+  position: sticky;
+  top: -12px;
+  z-index: 2;
 }
 </style>

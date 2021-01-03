@@ -36,7 +36,7 @@
     <TextArea
       property="languages"
       :index="index"
-      label="Languages Immunities"
+      label="Languages"
       :editOverride="editOverride"
     />
      <CompositeTextField
