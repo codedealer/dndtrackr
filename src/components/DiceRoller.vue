@@ -147,6 +147,8 @@ export default {
         this.error = true;
         this.errorMsg = e.message;
         return;
+      } finally {
+        this.loading = false;
       }
 
       try {
