@@ -6,6 +6,7 @@
 
       <v-spacer></v-spacer>
 
+      <Help />
       <SecondaryMenu />
       <Auth />
     </v-app-bar>
@@ -30,6 +31,7 @@
 <script>
 import DiceRoller from './components/DiceRoller';
 import Auth from './components/Auth';
+import Help from './components/Help';
 import Server from './components/Server';
 import Panel from './components/Panel';
 import ActorInfoContainer from './components/ActorInfoContainer';
@@ -43,6 +45,7 @@ export default {
   components: {
     EncounterDrawer,
     Auth,
+    Help,
     DiceRoller,
     Server,
     Panel,
