@@ -153,6 +153,9 @@ const mutations = {
 
     state.actors[actorIndex].settings.dirty = true;
   },
+  RESET_STATUS (state, index) {
+    state.actors[index].status = [];
+  },
   SET_KEY_MESSAGE (state, value) {
     state.keyMessagePipe = value;
   },

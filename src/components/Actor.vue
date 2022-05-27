@@ -123,6 +123,7 @@ export default {
       'SET_ACTOR_NAME',
       'SET_ACTOR_KEY',
       'ADD_STATUS',
+      'RESET_STATUS',
       'SET_KEY_MESSAGE',
     ]),
     ...mapActions([
@@ -160,8 +161,11 @@ export default {
         return;
       }
 
+      // reset status of a newly created actor
+      this.RESET_STATUS(this.index);
+
       // set armor class status automatically
-      if (this.actor.data.armor_class && !this.actor.status.length) {
+      if (this.actor.data.armor_class) {
         this.ADD_STATUS({
           index: this.index,
           status: new Status({
