@@ -114,7 +114,10 @@ export default {
 
   computed: {
     name: {
-      get () { return this.spell.data.name },
+      get () {
+        this.checkCollisions(this.spell.data.name);
+        return this.spell.data.name;
+      },
       set (value) {
         this.checkCollisions(value);
         this.updateData({ name: value });
@@ -122,9 +125,9 @@ export default {
     },
     index () { return this.$store.getters['data/spellIndex']; },
     nameCollisionMsg () {
-      if (!this.collision) return '';
+      if (!this.collision || !this.editMode) return '';
 
-      let msg = `There is a spell from ${this.collision.tag} source with the same name!`;
+      let msg = `There is a spell from ${this.collision.tag} source with the name ${this.spell.data.name}!`;
       return msg;
     },
     headerLabel () {
@@ -165,6 +168,7 @@ export default {
 
       const result = this.index.find(s => {
         return s.name.toLowerCase() === name.toLowerCase()
+               && s.key !== this.spell.key;
       });
 
       this.collision = result === undefined ? false : result;
