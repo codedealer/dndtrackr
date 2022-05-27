@@ -30,7 +30,7 @@ export default {
       return this.$store.state.user.settings[this.fieldAsc];
     },
     sortIcon () {
-      const order = this.orderAsc ? 'ascending' : 'descending';
+      const order = !this.orderAsc ? 'ascending' : 'descending';
       const icon = this.orderBy === 'name' ? 'sort-alphabetical' : 'sort-clock';
       return `mdi-${icon}-${order}`;
     },
