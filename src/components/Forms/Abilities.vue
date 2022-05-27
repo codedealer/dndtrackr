@@ -61,8 +61,8 @@ export default {
   computed: {
     xpComposite () {
       return {
-        xp: 'XP',
         challenge_rating: 'Challenge rating',
+        xp: 'XP',
       }
     },
     xpLabel () {
