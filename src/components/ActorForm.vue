@@ -2,7 +2,8 @@
   <div class="actor-form-container">
     <h1>
       <v-text-field
-        hide-details
+        placeholder="Actor name"
+        :messages="nameCollisionMsg"
         dense
         v-model="name"
         height="46"
@@ -119,6 +120,7 @@ import ArrayBlock from './Forms/ArrayBlock';
 import CompositeTextField from './Forms/CompositeTextField';
 import Parser from '../parser';
 import DiceResult from '../parser/diceResult';
+import { debounce } from 'lodash-es';
 import { createNamespacedHelpers } from 'vuex';
 const { mapMutations } = createNamespacedHelpers('encounter');
 
@@ -127,14 +129,26 @@ export default {
 
   data: () => ({
     n: [],
+    collision: false,
   }),
 
   computed: {
     name: {
-      get () { return this.actor.name },
+      get () {
+        this.checkCollisions(this.actor.name);
+        return this.actor.name;
+      },
       set (value) {
+        this.checkCollisions(value);
         this.updateName({ index: this.index, value });
       },
+    },
+    monsterIndex () { return this.$store.getters['data/monsterIndex']; },
+    nameCollisionMsg () {
+      if (!this.collision || !this.editMode) return '';
+
+      let msg = `There is an actor from ${this.collision.tag} source with the name ${this.actor.name}!`;
+      return msg;
     },
     notes: {
       get () { return this.actor.notes },
@@ -207,6 +221,23 @@ export default {
       updateNotes: 'SET_ACTOR_NOTES',
       updateSettings: 'UPDATE_SETTINGS',
     }),
+    checkCollisions: debounce(function (name) {
+      if (!name) {
+        this.collision = false;
+        return;
+      }
+      if (!Array.isArray(this.monsterIndex) || this.monsterIndex.length === 0) {
+        this.collision = false;
+        return;
+      }
+
+      const result = this.monsterIndex.find(s => {
+        return s.name.toLowerCase() === name.toLowerCase()
+               && s.key !== this.actor.key;
+      });
+
+      this.collision = result === undefined ? false : result;
+    }, 250),
   },
 
   components: {
