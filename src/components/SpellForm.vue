@@ -1,13 +1,14 @@
 <template>
   <div class="actor-form-container">
     <h1 class="spell-header">
-      <SpellTextField
-        property="name"
+      <v-text-field
         placeholder="Spell name"
-        addClass="actor-form-name"
-        inline
-        :editOverride="editMode"
-      />
+        dense
+        :messages="nameCollisionMsg"
+        v-model="name"
+        height="46"
+        class="actor-form-name"
+      ></v-text-field>
     </h1>
     <div class="actor-subheader">
       <CompositeSpellTextField
@@ -96,6 +97,7 @@ import CompositeSpellTextField from './Forms/CompositeSpellTextField';
 import SpellMeta from './Forms/SpellMeta';
 import strToBool from '../utils/strToBool';
 import { createNamespacedHelpers } from 'vuex';
+import { debounce } from 'lodash-es';
 
 const { mapMutations } = createNamespacedHelpers('spells');
 
@@ -103,6 +105,7 @@ export default {
   props: ['spell', 'editMode'],
 
   data: () => ({
+    collision: false,
     headerComposite: {
       level_int: 'Level (0 for cantrips)',
       school: 'School',
@@ -110,6 +113,20 @@ export default {
   }),
 
   computed: {
+    name: {
+      get () { return this.spell.data.name },
+      set (value) {
+        this.checkCollisions(value);
+        this.updateData({ name: value });
+      },
+    },
+    index () { return this.$store.getters['data/spellIndex']; },
+    nameCollisionMsg () {
+      if (!this.collision) return '';
+
+      let msg = `There is a spell from ${this.collision.tag} source with the same name!`;
+      return msg;
+    },
     headerLabel () {
       let school = this.spell.data.school;
       let level = this.spell.data.level_int;
@@ -136,6 +153,22 @@ export default {
       this.updateData({ concentration: !this.concentration })
     },
     strToBool,
+    checkCollisions: debounce(function (name) {
+      if (!name) {
+        this.collision = false;
+        return;
+      }
+      if (!Array.isArray(this.index) || this.index.length === 0) {
+        this.collision = false;
+        return;
+      }
+
+      const result = this.index.find(s => {
+        return s.name.toLowerCase() === name.toLowerCase()
+      });
+
+      this.collision = result === undefined ? false : result;
+    }, 250),
   },
 
   components: {
