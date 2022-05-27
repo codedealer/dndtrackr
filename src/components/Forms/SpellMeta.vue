@@ -59,18 +59,19 @@ export default {
 
   methods: {
     ...mapMutations({
-      updateData: 'UPDATE_DATA',
+      updateMeta: 'UPDATE_META',
     }),
     addClass () {
-      let newClasses = this.classModel.split(',').map(c => c.trim());
+      let newClasses = this.classModel.replace(' ', ',').split(',').map(c => c.trim());
       let classes = [...this.spell.data.dnd_class, ...newClasses];
 
-      this.updateData({ dnd_class: classes });
+      this.updateMeta(classes);
       this.classModel = '';
     },
     removeClass (index) {
-      let classes = this.spell.data.dnd_class.split(index, 1);
-      this.updateData({ dnd_class: classes });
+      let classes = this.spell.data.dnd_class.slice();
+      classes.splice(index, 1);
+      this.updateMeta(classes);
     },
   },
 }

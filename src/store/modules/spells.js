@@ -20,6 +20,10 @@ const mutations = {
 
     state.spell.settings.dirty = true;
   },
+  UPDATE_META (state, arr) {
+    if (!Array.isArray(arr)) arr = [];
+    state.spell.data.dnd_class = arr;
+  },
   SET_DIRTY (state, value) {
     state.spell.settings.dirty = value;
   },
