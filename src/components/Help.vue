@@ -27,6 +27,16 @@
         </v-list-item>
         <v-list-item>
           <v-list-item-content>
+            <v-list-item-title>Right advances the initiative cycle</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-content>
+            <v-list-item-title>R resets the combat round counter</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-content>
             <v-list-item-title>Del/Backspace remove the current actor</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
