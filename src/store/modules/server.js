@@ -312,7 +312,7 @@ const actions = {
 
     commit('spells/SET_KEY', key, { root: true });
     if (isNew) {
-      // add the new actor to the index
+      // add the new spell to the index
       commit('data/PUSH_USER_SPELL_INDEX', spellIndex, { root: true });
     } else {
       // update index information
@@ -321,6 +321,11 @@ const actions = {
 
     commit('SET_MSG', 'Saved.');
     commit('SET_ERROR', true);
+  },
+  async forkSpell ({ commit, dispatch }, spell) {
+    // reset the key and save as a new spell
+    commit('spells/SET_KEY', '', { root: true });
+    await dispatch('saveSpell', spell);
   },
   async removeSpell ({ state, rootState, commit }, spell) {
     const key = spell.key;

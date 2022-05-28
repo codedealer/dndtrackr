@@ -79,6 +79,22 @@
               <span>{{ saveState.text }}</span>
             </v-tooltip>
 
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <span v-on="on">
+                  <v-btn
+                    icon
+                    :disabled="loading || !saveState.canFork"
+                    v-bind="attrs"
+                    @click="forkSpell"
+                  >
+                    <v-icon>mdi-source-branch</v-icon>
+                  </v-btn>
+                </span>
+              </template>
+              <span>Fork: save a copy to the cloud</span>
+            </v-tooltip>
+
             <v-menu
               offset-y
               :close-on-content-click="false"
@@ -166,6 +182,7 @@ export default {
       if (!this.spell) {
         state.canSave = false;
         state.canDelete = false;
+        state.canFork = false;
         state.text = 'Add new spell to save';
         return state;
       }
@@ -176,9 +193,11 @@ export default {
         if (!this.isLoggedIn) state.text += ' (account sign in required)';
         state.canSave = this.isLoggedIn;
         state.canDelete = false;
+        state.canFork = false;
       } else if (this.isLoggedIn && this.isOwned) {
         // spell belongs to the user
         state.canSave = true;
+        state.canFork = true;
         state.canDelete = true;
         if (this.isSynced) {
           state.text = 'Saved in the cloud.';
@@ -190,9 +209,10 @@ export default {
       } else {
         // 3rd party spell
         state.text = 'You don\'t have permission to save changes.';
-        state.icon = 'mdi-cloud-outline';
+        state.icon = 'mdi-cloud-off-outline';
         state.canSave = false;
         state.canDelete = false;
+        state.canFork = this.isLoggedIn;
       }
       return state;
     },
@@ -238,6 +258,15 @@ export default {
       this.loading = false;
       this.editMode = false;
     },
+    async forkSpell () {
+      if (this.loading) return;
+      this.loading = true;
+
+      await this.$store.dispatch('server/forkSpell', this.spell);
+
+      this.loading = false;
+      this.editMode = false;
+    }
   },
 
   components: {
