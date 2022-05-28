@@ -61,6 +61,12 @@
           <v-list-item-subtitle>
             <v-chip x-small class="mr-1" color="purple darken-4" v-if="actor.type">{{ actor.type }}</v-chip>
             <v-chip x-small class="mr-1" color="red darken-3" v-if="actor.challenge_rating">CR {{ actor.challenge_rating }}</v-chip>
+            <v-chip
+              v-if="Array.isArray(actor.actor_tags)"
+              v-for="tag in actor.actor_tags"
+              x-small
+              class="mr-1"
+            >{{ tag }}</v-chip>
           </v-list-item-subtitle>
         </v-list-item-content>
 

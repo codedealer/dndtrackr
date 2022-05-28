@@ -18,7 +18,7 @@
       >
         <v-chip
           v-for="(c, i) in tags"
-          class="mr-2"
+          class="mr-2 mb-1"
           small
           :close="edit"
           @click:close="removeTag(i)"
@@ -41,7 +41,7 @@ export default {
     addTag () {
       if (this.tagModel.length < 1) return;
 
-      let newTags = this.tagModel.replace(' ', ',').split(',').map(c => c.trim());
+      let newTags = this.tagModel.replaceAll(' ', ',').split(',').map(c => c.trim());
       this.$emit('update', [...this.tags, ...newTags]);
       this.tagModel = '';
     },
