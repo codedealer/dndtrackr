@@ -23,7 +23,7 @@
                 <v-chip x-small class="mr-1" color="purple darken-4">lvl {{ item.level }}</v-chip>
                 <v-chip x-small class="mr-1" color="red darken-3" v-if="strToBool(item.concentration)">con.</v-chip>
                 <v-chip x-small class="mr-1" color="orange darken-3" v-if="strToBool(item.ritual)">ritual</v-chip>
-                <v-chip x-small>{{ sourceIcon(item.tag) }}</v-chip>
+                <v-chip x-small :color="sourceIconColor(item.tag)">{{ sourceIcon(item.tag) }}</v-chip>
               </div>
             </Autocomplete>
           </v-col>
@@ -229,6 +229,7 @@ export default {
     sourceIcon (tag) {
       return tag === 'srd' ? tag : 'self';
     },
+    sourceIconColor (tag) { return tag !== 'srd' ? 'indigo darken-4' : '' },
     async onChoice (item) {
       if (this.loading) return;
       this.editMode = false;
