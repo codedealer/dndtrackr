@@ -23,6 +23,8 @@ const mutations = {
   UPDATE_META (state, arr) {
     if (!Array.isArray(arr)) arr = [];
     state.spell.data.dnd_class = arr;
+
+    state.spell.settings.dirty = true;
   },
   SET_DIRTY (state, value) {
     state.spell.settings.dirty = value;

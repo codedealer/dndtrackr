@@ -159,6 +159,11 @@ const mutations = {
   SET_KEY_MESSAGE (state, value) {
     state.keyMessagePipe = value;
   },
+  UPDATE_TAGS (state, { index, tags }) {
+    state.actors[index].tags = tags;
+
+    state.actors[index].settings.dirty = true;
+  },
 }
 
 const actions = {

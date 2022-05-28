@@ -87,14 +87,21 @@
       :editOverride="editMode"
     />
 
-    <SpellMeta :editOverride="editMode" />
+    <TagForm
+      placeholder="Class"
+      :tags="spell.data.dnd_class"
+      :edit="editMode"
+      @update="updateClasses"
+      v-show="showClasses"
+      v-if="Array.isArray(spell.data.dnd_class)"
+    ></TagForm>
   </div>
 </template>
 
 <script>
 import SpellTextField from './Forms/SpellTextField';
 import CompositeSpellTextField from './Forms/CompositeSpellTextField';
-import SpellMeta from './Forms/SpellMeta';
+import TagForm from './Forms/TagForm';
 import strToBool from '../utils/strToBool';
 import { createNamespacedHelpers } from 'vuex';
 import { debounce } from 'lodash-es';
@@ -130,6 +137,11 @@ export default {
       let msg = `There is a spell from ${this.collision.tag} source with the name ${this.spell.data.name}!`;
       return msg;
     },
+    showClasses () {
+      return (Array.isArray(this.spell.data.dnd_class)
+             && this.spell.data.dnd_class.length > 0)
+             || this.editMode;
+    },
     headerLabel () {
       let school = this.spell.data.school;
       let level = this.spell.data.level_int;
@@ -146,6 +158,7 @@ export default {
   methods: {
     ...mapMutations({
       updateData: 'UPDATE_DATA',
+      updateClasses: 'UPDATE_META',
     }),
     updateRitual () {
       if (!this.editMode) return;
@@ -178,7 +191,7 @@ export default {
   components: {
     SpellTextField,
     CompositeSpellTextField,
-    SpellMeta,
+    TagForm,
   }
 }
 </script>

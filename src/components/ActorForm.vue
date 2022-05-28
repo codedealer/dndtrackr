@@ -108,6 +108,17 @@
         :editOverride="editMode"
       />
     </ArrayBlock>
+
+    <div class="actor-divider primary" v-show="showTags"></div>
+
+    <TagForm
+      placeholder="Tag"
+      :tags="actor.tags"
+      :edit="editMode"
+      @update="onUpdateTags"
+      v-show="showTags"
+      v-if="Array.isArray(actor.tags)"
+    ></TagForm>
   </div>
 </template>
 
@@ -117,6 +128,7 @@ import TextArea from './Forms/TextArea';
 import Attribute from './Forms/Attribute';
 import Abilities from './Forms/Abilities';
 import ArrayBlock from './Forms/ArrayBlock';
+import TagForm from './Forms/TagForm';
 import CompositeTextField from './Forms/CompositeTextField';
 import Parser from '../parser';
 import DiceResult from '../parser/diceResult';
@@ -213,6 +225,10 @@ export default {
 
       return diceResult.average();
     },
+    showTags () {
+      return (Array.isArray(this.actor.tags) && this.actor.tags.length > 0)
+             || this.editMode;
+    }
   },
 
   methods: {
@@ -220,7 +236,11 @@ export default {
       updateName: 'SET_ACTOR_NAME',
       updateNotes: 'SET_ACTOR_NOTES',
       updateSettings: 'UPDATE_SETTINGS',
+      updateTags: 'UPDATE_TAGS',
     }),
+    onUpdateTags (tags) {
+      this.updateTags({ index: this.index, tags });
+    },
     checkCollisions: debounce(function (name) {
       if (!name) {
         this.collision = false;
@@ -247,6 +267,7 @@ export default {
     Abilities,
     ArrayBlock,
     TextArea,
+    TagForm,
   }
 }
 </script>

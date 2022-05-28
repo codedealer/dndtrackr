@@ -100,6 +100,7 @@ export default {
       subtype: actor.data.subtype,
       challenge_rating: actor.data.challenge_rating,
       tag: uid,
+      actor_tags: actor.tags.slice(),
       actor_type: actor.type,
       key,
     }
