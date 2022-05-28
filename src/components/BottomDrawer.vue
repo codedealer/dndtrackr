@@ -24,10 +24,12 @@
           <v-window-item
             value="1"
           >
-            <v-btn text @click="expanded = !expanded">+ {{ latestXp }}XP</v-btn>
-            <v-btn color="error" icon @click="dismiss">
-              <v-icon>mdi-delete</v-icon>
-            </v-btn>
+            <div class="latest-kill-container">
+              <v-btn text @click="expanded = !expanded">+ {{ latestXp }}XP</v-btn>
+              <v-btn color="error" icon @click="dismiss">
+                <v-icon>mdi-delete</v-icon>
+              </v-btn>
+            </div>
           </v-window-item>
         </v-window>
       </v-toolbar>
@@ -227,5 +229,11 @@ export default {
 .xp-per-player {
   text-transform: none;
   font-size: 10px;
+}
+.latest-kill-container {
+  white-space: nowrap;
+  > .v-btn:first-child {
+    max-width: 65%;
+  }
 }
 </style>
