@@ -61,6 +61,7 @@ export default {
 </script>
 
 <style lang="scss">
+$panel-text-color: #dbd8df;
 .main-container {
   height: 100%;
   > .row {
@@ -73,6 +74,7 @@ export default {
 }
 .actor-form-container {
   padding: 0 5px;
+  color: $panel-text-color;
   .actor-form-name {
     font-size: 32px;
     input {
@@ -91,9 +93,9 @@ export default {
     display: flex;
     font-style: italic;
     color: #bebebe;
-    .actor-text-field.v-input > .v-input__control input {
+    /*.actor-text-field.v-input > .v-input__control input {
       color: #bebebe;
-    }
+    }*/
   }
   .actor-attributes-container {
     display: flex;
