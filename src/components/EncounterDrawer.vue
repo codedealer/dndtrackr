@@ -69,6 +69,41 @@
         </v-tooltip>
       </div>
 
+      <v-menu
+        offset-y
+        :close-on-content-click="false"
+        transition="slide-y-transition"
+      >
+        <template #activator="{ on, attrs }">
+           <v-btn
+            fab
+            height="48" width="48"
+            v-on="on"
+            v-bind="attrs"
+            color="primary lighten-1"
+            class="ml-2"
+          >
+            <v-icon>mdi-help</v-icon>
+          </v-btn>
+        </template>
+
+        <v-card>
+          <v-list>
+            <v-list-item>
+              <v-list-item-content>
+                <v-list-item-title>Use special symbols (without spaces) to look for actors</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item v-for="message in helpMessages">
+              <v-list-item-content>
+                <v-list-item-title>{{ message }}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-card>
+
+      </v-menu>
+
     </v-toolbar>
 
     <v-slide-x-transition group tag="div" class="encounter-list">
@@ -97,18 +132,34 @@ const { mapState, mapMutations, mapActions } = createNamespacedHelpers('encounte
 
 export default {
   mounted () {
-    this.queryParser.add('#', 'actor_tags')
-                    .add('@=', 'challenge_rating', { intSearch: 'eq' })
-                    .add('@>', 'challenge_rating', { intSearch: 'gt' })
-                    .add('@<', 'challenge_rating', { intSearch: 'lt' })
-                    .add('!t', 'type', { fullSearch: true })
-                    .add('!s', 'subtype', { fullSearch: true })
-                    ;
+    this.queryParser.add('#', 'actor_tags', { msg: 'Search by custom tag' })
+                    .add('@=', 'challenge_rating', {
+                      intSearch: 'eq',
+                      msg: 'Search by challenge rating (exactly)'
+                    })
+                    .add('@>', 'challenge_rating', {
+                      intSearch: 'gt',
+                      msg: 'Search by challenge rating (greater than)'
+                    })
+                    .add('@<', 'challenge_rating', {
+                      intSearch: 'lt',
+                      msg: 'Search by challenge rating (less than)'
+                    })
+                    .add('!t', 'type', {
+                      fullSearch: true,
+                      msg: 'Search by actor type'
+                    })
+                    .add('!s', 'subtype', {
+                      fullSearch: true,
+                      msg: 'Search by actor subtype'
+                    });
+    this.helpMessages = this.queryParser.getHelpArray();
   },
 
   data: () => ({
     initiativeLoading: false,
     queryParser: new QueryParser(),
+    helpMessages: [],
   }),
 
   computed: {
