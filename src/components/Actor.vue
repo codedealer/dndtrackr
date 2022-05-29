@@ -19,6 +19,7 @@
         <ActorType :actor="actor" :index="index" />
         <Autocomplete
           :list="monsterIndex"
+          :filter="filteredInput"
           classInput="actor-input"
           classWrapper="actor-input-container"
           v-model="name"
@@ -30,7 +31,13 @@
           <div class="autocomplete-item-subtitle">
             <v-chip x-small class="mr-1" color="purple darken-4">{{ item.type }}</v-chip>
             <v-chip x-small class="mr-1" color="red darken-3">CR {{ item.challenge_rating }}</v-chip>
-            <v-chip x-small>{{ sourceIcon(item.tag) }}</v-chip>
+            <v-chip x-small class="mr-1">{{ sourceIcon(item.tag) }}</v-chip>
+            <v-chip
+              v-if="Array.isArray(item.actor_tags)"
+              v-for="tag in item.actor_tags"
+              x-small
+              class="mr-1"
+            >{{ tag }}</v-chip>
           </div>
         </Autocomplete>
         <HitPointWidget
@@ -75,7 +82,7 @@ const { mapState, mapMutations, mapActions } = createNamespacedHelpers('encounte
 
 export default {
   mixins: [sourceParser],
-  props: ['actor', 'index'],
+  props: ['actor', 'index', 'queryParser'],
 
   data: () => ({
     hitPointsLoading: false,
@@ -107,8 +114,14 @@ export default {
         this.SET_ACTOR_NAME({ index: this.index, value });
       }
     },
+    filteredInput () {
+      return this.queryParser.getFilteredValue(this.name);
+    },
+    queryParameters () {
+      return this.queryParser.getQueryParameters(this.name);
+    },
     monsterIndex () {
-      return this.$store.getters['data/monsterIndex'];
+      return this.queryParser.filter(this.$store.getters['data/monsterIndex'], this.queryParameters);
     },
     showHitPointWidget () {
       return {}.hasOwnProperty.call(this.actor.data, 'hit_points') && this.actor.settings.showHitPointWidget;

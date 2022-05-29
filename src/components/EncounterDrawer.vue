@@ -75,6 +75,7 @@
       <Actor
         :actor="actor"
         :index="i"
+        :queryParser="queryParser"
         v-for="(actor, i) in actors"
         :key="actor.uid"
       ></Actor>
@@ -89,13 +90,25 @@
 <script>
 import Actor from './Actor';
 import BottomDrawer from './BottomDrawer';
+import QueryParser from '../utils/QueryParser';
 import { createNamespacedHelpers } from 'vuex';
 
 const { mapState, mapMutations, mapActions } = createNamespacedHelpers('encounter');
 
 export default {
+  mounted () {
+    this.queryParser.add('#', 'actor_tags')
+                    .add('@=', 'challenge_rating', { intSearch: 'eq' })
+                    .add('@>', 'challenge_rating', { intSearch: 'gt' })
+                    .add('@<', 'challenge_rating', { intSearch: 'lt' })
+                    .add('!t', 'type', { fullSearch: true })
+                    .add('!s', 'subtype', { fullSearch: true })
+                    ;
+  },
+
   data: () => ({
     initiativeLoading: false,
+    queryParser: new QueryParser(),
   }),
 
   computed: {

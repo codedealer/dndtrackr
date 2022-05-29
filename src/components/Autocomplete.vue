@@ -48,6 +48,7 @@ import goTo from 'vuetify/es5/services/goto';
 export default {
   props: [
     'value',
+    'filter',
     'list',
     'classInput',
     'classWrapper',
@@ -65,25 +66,26 @@ export default {
       return this.value !== '' &&
              this.open;
     },
+    v () { return this.filter === undefined ? this.value : this.filter },
     match () {
       this.cursor = 0;
       let match = this.list.filter(obj => {
-        return obj.name.toLowerCase().indexOf(this.value.toLowerCase()) >= 0;
+        return obj.name.toLowerCase().indexOf(this.v.toLowerCase()) >= 0;
       });
 
       match.sort((a, b) => {
         let names = a.name.toLowerCase().split(' ');
         let bnames = b.name.toLowerCase().split(' ');
-        let amatch = names.find(name => name.indexOf(this.value.toLowerCase()) === 0);
-        let bmatch = bnames.find(name => name.indexOf(this.value.toLowerCase()) === 0);
+        let amatch = names.find(name => name.indexOf(this.v.toLowerCase()) === 0);
+        let bmatch = bnames.find(name => name.indexOf(this.v.toLowerCase()) === 0);
 
         if (amatch !== undefined) {
           // some words in a match
           if (bmatch !== undefined) {
             // some words in b also match
-            if (a.name.toLowerCase().indexOf(this.value.toLowerCase()) === 0) {
-              // a starts with value
-              if (b.name.toLowerCase().indexOf(this.value.toLowerCase()) === 0) {
+            if (a.name.toLowerCase().indexOf(this.v.toLowerCase()) === 0) {
+              // a starts with v
+              if (b.name.toLowerCase().indexOf(this.v.toLowerCase()) === 0) {
                 // b also does
                 return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1;
               }
@@ -203,6 +205,7 @@ export default {
   }
   .autocomplete-item-subtitle {
     margin-bottom: 3px;
+    white-space: nowrap;
   }
 }
 </style>
