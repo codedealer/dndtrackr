@@ -9,9 +9,10 @@
       </v-overlay>
       <v-container fluid class="py-0">
         <v-row>
-          <v-col cols="auto">
+          <v-col class="spell-search-col">
             <Autocomplete
               :list="index"
+              :filter="filteredInput"
               defaultInput
               placeholder="Find spell"
               v-model="spellModel"
@@ -26,6 +27,38 @@
                 <v-chip x-small :color="sourceIconColor(item.tag)">{{ sourceIcon(item.tag) }}</v-chip>
               </div>
             </Autocomplete>
+            <v-menu
+              offset-y
+              :close-on-content-click="false"
+              transition="slide-y-transition"
+            >
+              <template #activator="{ on, attrs }">
+                <v-btn
+                  icon
+                  v-on="on"
+                  v-bind="attrs"
+                  class="ml-2"
+                >
+                  <v-icon>mdi-help</v-icon>
+                </v-btn>
+              </template>
+
+              <v-card>
+                <v-list>
+                  <v-list-item>
+                    <v-list-item-content>
+                      <v-list-item-title>Use special symbols (without spaces) to look for actors</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-list-item v-for="message in helpMessages">
+                    <v-list-item-content>
+                      <v-list-item-title>{{ message }}</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list>
+              </v-card>
+
+            </v-menu>
           </v-col>
           <v-spacer></v-spacer>
           <v-col cols="auto">
@@ -141,6 +174,7 @@ import SaveState from '../model/saveState';
 import Autocomplete from './Autocomplete';
 import SpellForm from './SpellForm';
 import strToBool from '../utils/strToBool';
+import QueryParser from '../utils/QueryParser';
 import { createNamespacedHelpers } from 'vuex';
 
 const { mapState, mapMutations, mapActions } = createNamespacedHelpers('spells');
@@ -148,15 +182,46 @@ const { mapState, mapMutations, mapActions } = createNamespacedHelpers('spells')
 export default {
   name: 'SpellInfo',
 
+  mounted () {
+    this.queryParser.add('#', 'dnd_class', { msg: 'Search by class' })
+                    .add('@=', 'level', {
+                      intSearch: 'eq',
+                      msg: 'Search by level (exactly)'
+                    })
+                    .add('@>', 'level', {
+                      intSearch: 'gt',
+                      msg: 'Search by level (greater than)'
+                    })
+                    .add('@<', 'level', {
+                      intSearch: 'lt',
+                      msg: 'Search by level (less than)'
+                    })
+                    .add(':c', 'concentration', { msg: 'Search by concentration (y/n)' })
+                    .add(':r', 'ritual', { msg: 'Search by ritual (y/n)' })
+                    .add('!s', 'school', {
+                      fullSearch: true,
+                      msg: 'Search by school of magic'
+                    });
+    this.helpMessages = this.queryParser.getHelpArray();
+  },
+
   data: () => ({
     spellModel: '',
     loading: false,
     editMode: false,
+    queryParser: new QueryParser(),
+    helpMessages: [],
   }),
 
   computed: {
     ...mapState(['spell']),
-    index () { return this.$store.getters['data/spellIndex']; },
+    filteredInput () {
+      return this.queryParser.getFilteredValue(this.spellModel);
+    },
+    queryParameters () {
+      return this.queryParser.getQueryParameters(this.spellModel);
+    },
+    index () { return this.queryParser.filter(this.$store.getters['data/spellIndex'], this.queryParameters); },
     editColor () { return this.editMode ? 'primary' : '' },
     canEdit () {
       return this.spell && (this.isOwned || !this.spell.key) && !this.loading
@@ -282,5 +347,11 @@ export default {
   position: sticky;
   top: -12px;
   z-index: 2;
+}
+.spell-search-col {
+  display: flex;
+  .autocomplete-container {
+    flex: 1 0 auto;
+  }
 }
 </style>

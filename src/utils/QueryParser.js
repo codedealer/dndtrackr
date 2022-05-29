@@ -105,6 +105,14 @@ class QueryParser {
 
     return list;
   }
+  getHelpArray () {
+    const arr = [];
+    this.syntaxMap.forEach((value, key) => {
+      if (value.msg) arr.push(`${key} ${value.msg}`);
+    });
+
+    return arr;
+  }
 }
 
 export default QueryParser;
