@@ -115,7 +115,15 @@ const actions = {
       }
 
       // reset the data beforehand
-      commit('encounter/RESET_DATA', index, { root: true });
+      commit('encounter/RESET_ACTOR', {
+        index,
+        save: {
+          type: actor.type,
+          name: actor.name,
+          key: actor.key,
+        }
+      }, { root: true });
+
       const data = DataDecorator.prepare(snapshot.val());
       commit('encounter/UPDATE_DATA', { index, ...data }, { root: true });
     } catch (e) {

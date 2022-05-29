@@ -26,6 +26,7 @@ const mutations = {
   },
   LOAD_ACTOR (state, { index, actor }) {
     state.actors.splice(index, 1, actor);
+    actor.settings.dirty = false; // freshly downloaded actor is clean
   },
   SELECT_ACTOR (state, uid) {
     state.selected = uid;
@@ -106,6 +107,12 @@ const mutations = {
       state.selected = false;
     }
     state.actors.splice(index, 1);
+  },
+  RESET_ACTOR (state, { index, save = {} }) {
+    const actor = new Actor(state.actors[index].uid);
+
+    Object.assign(actor, save);
+    state.actors.splice(index, 1, actor);
   },
   RESET_DATA (state, index) {
     state.actors[index].data = dataFactory();
