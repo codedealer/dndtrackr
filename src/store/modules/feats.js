@@ -60,10 +60,10 @@ const actions = {
     commit('server/SET_USER_LOADING', true, { root: true });
 
     try {
-      await dispatch('server/getFeat', {
-        indexObject,
-        featObject: new Feat()
-      }, { root: true });
+      await dispatch('loadFeat', indexObject);
+
+      commit('FEAT_TO_FORM');
+      commit('TOGGLE_DIALOG', true);
     } catch (e) {
       console.error(e);
       return;
@@ -71,10 +71,11 @@ const actions = {
 
     commit('server/SET_USER_LOADING', false, { root: true });
   },
-  loadFeat ({ state, commit }, feat) {
-    commit('SET_FEAT', feat);
-    commit('FEAT_TO_FORM');
-    commit('TOGGLE_DIALOG', true);
+  async loadFeat ({ dispatch }, indexObject) {
+    await dispatch('server/getFeat', {
+      indexObject,
+      featObject: new Feat()
+    }, { root: true });
   },
   async remove ({ state, commit, dispatch }, indexObject) {
     commit('server/SET_USER_LOADING', true, { root: true });

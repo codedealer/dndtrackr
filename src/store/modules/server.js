@@ -439,7 +439,7 @@ const actions = {
       const featData = snap.val();
       // data normalization
       const feat = merge(featObject, featData);
-      dispatch('feats/loadFeat', feat, { root: true });
+      commit('feats/SET_FEAT', feat, { root: true });
     } catch (e) {
       commit('SET_MSG', e.message || 'Cannot get data for ' + indexObject.name);
       commit('SET_ERROR', true);

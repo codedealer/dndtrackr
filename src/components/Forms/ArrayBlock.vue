@@ -9,7 +9,7 @@
       :el="el"
       :propertyName="property"
       :editOverride="editOverride"
-      :key="Math.random()"
+      :key="el.key"
     />
 
     <v-card class="actor-block-actions" v-show="editOverride">
@@ -46,7 +46,9 @@ export default {
   computed: {
     p: {
       get () {
-        return this.$store.state.encounter.actors[this.index].data[this.property];
+        const a = this.$store.state.encounter.actors[this.index].data[this.property];
+        a.forEach(o => { o.key = o.key ? o.key : Math.random() });
+        return a;
       }
     },
     showBlock () {
