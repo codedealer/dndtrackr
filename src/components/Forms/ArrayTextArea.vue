@@ -42,7 +42,6 @@
       <v-textarea
         filled
         auto-grow
-        rows="1"
         v-model="desc"
         @focus="e = true"
       ></v-textarea>

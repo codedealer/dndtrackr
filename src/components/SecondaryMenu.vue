@@ -38,6 +38,11 @@
             <v-list-item-title>User Spells</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+        <v-list-item :disabled="!user.state" value="UserFeats">
+          <v-list-item-content>
+            <v-list-item-title>User Feats</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list-item-group>
     </v-list>
 

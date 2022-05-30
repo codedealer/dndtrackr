@@ -8,6 +8,7 @@
 import SpellInfo from './SpellInfo';
 import UserActors from './UserActors';
 import UserSpells from './UserSpells';
+import UserFeats from './UserFeats';
 
 export default {
   data: () => ({}),
@@ -20,6 +21,7 @@ export default {
     SpellInfo,
     UserSpells,
     UserActors,
+    UserFeats,
   }
 }
 </script>

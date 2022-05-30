@@ -134,4 +134,9 @@ $panel-text-color: #dbd8df;
 .user-panel-container {
   position: relative;
 }
+.sticky-card {
+  position: sticky;
+  top: -12px;
+  z-index: 2;
+}
 </style>

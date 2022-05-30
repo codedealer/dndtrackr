@@ -61,6 +61,11 @@
                 <v-list-item-title>Spells</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
+            <v-list-item value="UserFeats">
+              <v-list-item-content>
+                <v-list-item-title>Feats</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
           </v-list-item-group>
         </v-list>
 

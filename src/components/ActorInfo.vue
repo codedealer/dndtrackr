@@ -291,9 +291,4 @@ export default {
     font-size: 18px;
   }
 }
-.sticky-card {
-  position: sticky;
-  top: -12px;
-  z-index: 2;
-}
 </style>

@@ -115,6 +115,11 @@ export default {
     school: spell.data.school,
     tag: uid,
   }),
+  getFeatIndex: (feat, uid, key) => ({
+    name: feat.name,
+    key,
+    tag: uid,
+  }),
   getActorPayload (actor, k) {
     const { uid, key, ...result } = actor;
     result.key = k;
@@ -126,5 +131,5 @@ export default {
     result.key = k;
 
     return result;
-  }
+  },
 }

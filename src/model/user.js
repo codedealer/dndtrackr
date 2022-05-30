@@ -6,12 +6,15 @@ let user = {
   token: false,
   monsterIndex: [],
   spellIndex: [],
+  featIndex: [],
   settings: {
     randomHitpoints: false,
     actorsOrderBy: 'name',
     actorsOrderAsc: true,
     spellsOrderBy: 'name',
     spellsOrderAsc: true,
+    featsOrderBy: 'name',
+    featsOrderAsc: true,
   },
 }
 

@@ -57,8 +57,15 @@ const actions = {
             if (userData.spells) {
               commit('data/SET_USER_SPELL_INDEX', Object.values(userData.spells), { root: true });
             }
+            if (userData.feats) {
+              commit('data/SET_USER_INDEX', {
+                property: 'userFeatIndex',
+                value: Object.values(userData.feats)
+              }, { root: true });
+            }
           }
         } catch (e) {
+          console.error(e);
           commit('SET_MSG', 'Error downloading user index.');
           commit('SET_ERROR', true);
         }
@@ -354,6 +361,110 @@ const actions = {
 
     commit('data/REMOVE_USER_SPELL_INDEX', spell, { root: true });
     commit('spells/SET_SPELL', false, { root: true });
+
+    commit('SET_MSG', 'Removed from the cloud.');
+    commit('SET_ERROR', true);
+  },
+  async saveFeat ({ state, commit, rootState }, feat) {
+    if (!feat.name || !feat.content) {
+      commit('SET_MSG', 'Feat cannot be empty.');
+      commit('SET_ERROR', true);
+      throw new Error('Feat cannot be empty.');
+    }
+
+    let key = feat.key;
+    let isNew = false;
+    if (!key) {
+      // new stuff
+      isNew = true;
+      const indexRef = firebase.database().ref(`userIndex/${rootState.user.uid}/feats`).push();
+      key = indexRef.key;
+    }
+
+    const featIndex = DataDecorator.getFeatIndex(feat, rootState.user.uid, key);
+    // it's the same
+    const featPayload = DataDecorator.getSpellPayload(feat, key);
+    const rootRef = firebase.database().ref();
+    const updatePayload = {
+      [`userIndex/${rootState.user.uid}/feats/${key}`]: featIndex,
+      [`userData/${rootState.user.uid}/feats/${key}`]: featPayload,
+    }
+
+    try {
+      await rootRef.update(updatePayload);
+    } catch (e) {
+      commit('SET_MSG', e.message || 'Error. Couldn\'t save.');
+      commit('SET_ERROR', true);
+      throw e;
+    }
+
+    const indexObject = {
+      property: 'userFeatIndex',
+      value: featIndex
+    };
+
+    if (isNew) {
+      // add the new spell to the index
+      commit('data/PUSH_USER_INDEX', indexObject, { root: true });
+    } else {
+      // update index information
+      commit('data/UPDATE_USER_INDEX', indexObject, { root: true });
+    }
+
+    commit('SET_MSG', 'Saved.');
+    commit('SET_ERROR', true);
+  },
+  async getFeat ({ commit, rootState, dispatch }, { indexObject, featObject }) {
+    if (!indexObject.key) {
+      commit('SET_MSG', 'Feat cannot be empty.');
+      commit('SET_ERROR', true);
+      throw new Error('Feat cannot be empty.');
+    }
+
+    try {
+      const snap = await firebase
+                .database()
+                .ref(`userData/${rootState.user.uid}/feats/${indexObject.key}`)
+                .once('value');
+      if (!snap.exists()) {
+        commit('SET_MSG', `No data for ${indexObject.name}`);
+        commit('SET_ERROR', true);
+        throw new Error(`No data for ${indexObject.name}`);
+      }
+
+      const featData = snap.val();
+      // data normalization
+      const feat = merge(featObject, featData);
+      dispatch('feats/loadFeat', feat, { root: true });
+    } catch (e) {
+      commit('SET_MSG', e.message || 'Cannot get data for ' + indexObject.name);
+      commit('SET_ERROR', true);
+      throw e;
+    }
+  },
+  async removeFeat ({ commit, rootState, dispatch }, { indexObject }) {
+    if (!indexObject.key) return;
+
+    const key = indexObject.key;
+    const rootRef = firebase.database().ref();
+    const updatePayload = {
+      [`userIndex/${rootState.user.uid}/feats/${key}`]: null,
+      [`userData/${rootState.user.uid}/feats/${key}`]: null,
+    }
+
+    try {
+      await rootRef.update(updatePayload);
+    } catch (e) {
+      commit('SET_MSG', e.message || 'Error. Couldn\'t remove.');
+      console.error(e);
+      commit('SET_ERROR', true);
+      throw e;
+    }
+
+    commit('data/REMOVE_USER_INDEX', {
+      property: 'userFeatIndex',
+      value: indexObject
+    }, { root: true });
 
     commit('SET_MSG', 'Removed from the cloud.');
     commit('SET_ERROR', true);

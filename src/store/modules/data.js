@@ -3,6 +3,7 @@ const state = () => ({
   _userMonsterIndex: [],
   _spellIndex: [],
   _userSpellIndex: [],
+  _userFeatIndex: [],
 });
 
 const getters = {
@@ -18,6 +19,68 @@ const getters = {
     }
     return state._spellIndex;
   },
+  featIndex (state, getters, rootState) {
+    return state._userFeatIndex;
+  },
+}
+
+function fixProperty (property) {
+  return property.startsWith('_') ? property : `_${property}`;
+}
+
+function setUserArray (state, payload) {
+  let property, array;
+  if (!Array.isArray(payload)) {
+    if (typeof payload === 'object' && payload.property && Array.isArray(payload.value)) {
+      // got the universal index object
+      ({ property, value: array } = payload);
+      property = fixProperty(property);
+    } else {
+      console.error('Trying to set user monster index with invalid array');
+      throw new Error('Trying to set user monster index with invalid array');
+      return;
+    }
+  } else {
+    // assume the default is monsterIndex
+    property = '_userMonsterIndex';
+    array = payload;
+  }
+
+  if (!{}.hasOwnProperty.call(state, property)) {
+    throw new Error(`Setting ${property} to data which is not permitted`);
+  }
+
+  state[property] = array;
+}
+
+function pushUserArray (state, el, property = '_userMonsterIndex') {
+  if (!{}.hasOwnProperty.call(state, property)) {
+    throw new Error(`Setting ${property} to data which is not permitted`);
+  }
+
+  state[property].push(el);
+}
+
+function updateUserArray (state, el, property = '_userMonsterIndex') {
+  if (!{}.hasOwnProperty.call(state, property)) {
+    throw new Error(`Setting ${property} to data which is not permitted`);
+  }
+
+  const i = state[property].findIndex(m => m.key === el.key);
+  if (i < 0) throw new Error('Trying to update non-existing user index');
+
+  state[property].splice(i, 1, el);
+}
+
+function removeUserArray (state, el, property = '_userMonsterIndex') {
+  if (!{}.hasOwnProperty.call(state, property)) {
+    throw new Error(`Setting ${property} to data which is not permitted`);
+  }
+
+  const i = state[property].findIndex(m => m.key === el.key);
+  if (i < 0) return;
+
+  state[property].splice(i, 1);
 }
 
 const mutations = {
@@ -28,26 +91,6 @@ const mutations = {
     }
     state._monsterIndex = payload;
   },
-  SET_USER_INDEX (state, payload) {
-    if (!Array.isArray(payload)) {
-      console.error('Trying to set user monster index with invalid array');
-      return;
-    }
-    state._userMonsterIndex = payload;
-  },
-  PUSH_USER_INDEX (state, el) {
-    state._userMonsterIndex.push(el);
-  },
-  UPDATE_USER_INDEX (state, el) {
-    const i = state._userMonsterIndex.findIndex(m => m.key === el.key);
-    if (i < 0) throw new Error('Trying to update non-existing user index');
-    state._userMonsterIndex.splice(i, 1, el);
-  },
-  REMOVE_USER_INDEX (state, el) {
-    const i = state._userMonsterIndex.findIndex(m => m.key === el.key);
-    if (i < 0) return;
-    state._userMonsterIndex.splice(i, 1);
-  },
   SET_SPELL_INDEX (state, payload) {
     if (!Array.isArray(payload)) {
       console.error('Trying to set user spell index with invalid array');
@@ -55,25 +98,41 @@ const mutations = {
     }
     state._spellIndex = payload;
   },
-  SET_USER_SPELL_INDEX (state, payload) {
-    if (!Array.isArray(payload)) {
-      console.error('Trying to set user spell index with invalid array');
-      return;
+  SET_USER_INDEX (state, payload) {
+    setUserArray(state, payload);
+  },
+  PUSH_USER_INDEX (state, el) {
+    if (el.property && el.value) {
+      pushUserArray(state, el.value, fixProperty(el.property));
+    } else {
+      pushUserArray(state, el);
     }
-    state._userSpellIndex = payload;
+  },
+  UPDATE_USER_INDEX (state, el) {
+    if (el.property && el.value) {
+      updateUserArray(state, el.value, fixProperty(el.property));
+    } else {
+      updateUserArray(state, el);
+    }
+  },
+  REMOVE_USER_INDEX (state, el) {
+    if (el.property && el.value) {
+      removeUserArray(state, el.value, fixProperty(el.property));
+    } else {
+      removeUserArray(state, el);
+    }
+  },
+  SET_USER_SPELL_INDEX (state, payload) {
+    setUserArray (state, { property: '_userSpellIndex', value: payload });
   },
   PUSH_USER_SPELL_INDEX (state, el) {
-    state._userSpellIndex.push(el);
+    pushUserArray(state, el, '_userSpellIndex');
   },
   UPDATE_USER_SPELL_INDEX (state, el) {
-    const i = state._userSpellIndex.findIndex(m => m.key === el.key);
-    if (i < 0) throw new Error('Trying to update non-existing user index');
-    state._userSpellIndex.splice(i, 1, el);
+    updateUserArray(state, el, '_userSpellIndex');
   },
   REMOVE_USER_SPELL_INDEX (state, el) {
-    const i = state._userSpellIndex.findIndex(m => m.key === el.key);
-    if (i < 0) return;
-    state._userSpellIndex.splice(i, 1);
+    removeUserArray(state, el, '_userSpellIndex');
   },
 }
 

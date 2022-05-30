@@ -7,7 +7,7 @@
       <v-progress-circular indeterminate size="40"></v-progress-circular>
     </v-overlay>
 
-    <v-card>
+    <v-card class="sticky-card">
 
     <v-container fluid class="py-0">
       <v-row>
