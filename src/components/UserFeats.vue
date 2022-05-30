@@ -68,7 +68,7 @@
           <v-tooltip bottom>
             <template v-slot:activator="{ on, attrs }">
               <v-btn icon small v-bind="attrs" v-on="on" @click="remove(actor)">
-                <v-icon color="primary">mdi-delete</v-icon>
+                <v-icon color="error">mdi-delete</v-icon>
               </v-btn>
             </template>
             <span>Remove</span>

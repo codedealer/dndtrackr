@@ -30,10 +30,19 @@ const mutations = {
 }
 
 const actions = {
-  async save ({ state, commit, dispatch }) {
+  async save ({ state, commit, dispatch, rootGetters }) {
     const newFeat = Object.assign(new Feat(), state.feat);
     newFeat.name = state._featName;
     newFeat.content = state._featContent;
+
+    // check for uniqueness
+    if (rootGetters['data/featIndex'].find(f => (
+      f.name.toLowerCase() === newFeat.name.toLowerCase()
+      && f.key !== newFeat.key
+    ))) {
+      dispatch('server/error', `Feat with the name ${newFeat.name} already exists`, { root: true });
+      return;
+    }
 
     try {
       await dispatch('server/saveFeat', newFeat, { root: true });

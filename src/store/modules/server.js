@@ -32,6 +32,10 @@ const mutations = {
 }
 
 const actions = {
+  error ({ commit }, msg) {
+    commit('SET_MSG', msg);
+    commit('SET_ERROR', true);
+  },
   async init ({ state, commit }) {
     if (firebase.apps.length) return;
 
