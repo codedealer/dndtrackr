@@ -20,6 +20,7 @@
         rows="1"
         v-model="p"
         @focus="e = true"
+        @paste="delegateHigher"
         v-if="inline === undefined"
       ></v-textarea>
       <v-text-field
@@ -32,6 +33,7 @@
         autocomplete="off"
         class="actor-text-field"
         @focus="e = true"
+        @paste="delegateHigher"
       >
         <template v-slot:prepend>
           <strong v-if="label">{{ label }} </strong>
@@ -43,10 +45,13 @@
 
 <script>
 import VueMarkdown from 'vue-markdown'
+import delegateHigherMixin from '../../utils/delegateHigherMixin';
 import { createNamespacedHelpers } from 'vuex';
 const { mapMutations } = createNamespacedHelpers('spells');
 
 export default {
+  mixins: [delegateHigherMixin],
+
   props: [
     'property',
     'label',

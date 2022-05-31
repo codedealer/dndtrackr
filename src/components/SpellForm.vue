@@ -47,28 +47,33 @@
         property="range"
         label="Range"
         inline
+        @paste="onPaste"
         :editOverride="editMode"
       />
       <SpellTextField
         property="casting_time"
         label="Casting time"
         inline
+        @paste="onPaste"
         :editOverride="editMode"
       />
       <SpellTextField
         property="duration"
         label="Duration"
         inline
+        @paste="onPaste"
         :editOverride="editMode"
       />
       <SpellTextField
         property="components"
         label="Components"
         inline
+        @paste="onPaste"
         :editOverride="editMode"
       />
       <SpellTextField
         property="material"
+        @paste="onPaste"
         label="Material components"
         :editOverride="editMode"
       />
@@ -186,6 +191,61 @@ export default {
 
       this.collision = result === undefined ? false : result;
     }, 250),
+    onPaste (e) {
+      // parse batch paste
+      let paste = (e.clipboardData || window.clipboardData).getData('text');
+      if (!paste) return;
+
+      const propMap = new Map([
+        ['Casting Time:', 'casting_time'],
+        ['Range:', 'range'],
+        ['Components:', 'components'],
+        ['Duration:', 'duration'],
+      ]);
+
+      // see if it's a batch
+      paste = paste.split('\n');
+
+      let isRichContent = false;
+      const updatePayload = {};
+      const recognizedProps = [];
+
+      paste.forEach(el => {
+        let found = false;
+        for (let [str, prop] of propMap) {
+          if (!el.startsWith(str)) continue;
+
+          let value = el.split(str)[1].trim();
+          updatePayload[prop] = value;
+          recognizedProps.push(prop);
+          isRichContent = true;
+          found = true;
+        }
+
+        if (!found) {
+          // deal with line breaks in rich content
+          if (isRichContent && recognizedProps.length > 0) {
+            // append the value to the previous property
+            updatePayload[recognizedProps[recognizedProps.length - 1]] += ' ' + el.trim();
+          }
+        }
+      });
+
+      // handle the special case of material components
+      if (updatePayload.components) {
+        let matches = updatePayload.components
+                      .match(/M(?<replacer>\s?\(?(?<matcher>[\w\s]+)\)?)/);
+        if (matches !== null && matches.groups.matcher) {
+          updatePayload.components = updatePayload.components.replace(matches.groups.replacer, '');
+          updatePayload.material = matches.groups.matcher;
+        }
+      }
+
+      if (isRichContent) {
+        e.preventDefault();
+        this.updateData(updatePayload);
+      }
+    },
   },
 
   components: {
