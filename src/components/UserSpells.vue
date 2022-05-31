@@ -85,6 +85,12 @@ const { mapMutations, mapActions } = createNamespacedHelpers('server');
 export default {
   mixins: [UserFormMixin],
 
+  menu: {
+    name: 'User Spells',
+    component: 'UserSpells',
+    loginRequired: true,
+  },
+
   data: () => ({
     fieldBy: 'spellsOrderBy',
     fieldAsc: 'spellsOrderAsc',

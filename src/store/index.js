@@ -25,7 +25,8 @@ export default new Vuex.Store({
   strict: process.env.NODE_ENV !== 'production',
   state: {
     user,
-    secondaryMenu: 'SpellInfo',
+    secondaryMenuObject: {},
+    secondaryMenu: '',
   },
   mutations: {
     RESTORE_MUTATION: vuexLocal.RESTORE_MUTATION,
@@ -43,7 +44,15 @@ export default new Vuex.Store({
       merge(state.user.settings, settings);
     },
     SET_MENU (state, value) {
-      state.secondaryMenu = value ? value : 'SpellInfo';
+      state.secondaryMenu = value ? value : '';
+    },
+    REGISTER_MENU (state, value) {
+      if (!value.component) {
+        console.error('Registering invalid menu object', value);
+        return;
+      }
+
+      state.secondaryMenuObject[value.component] = value;
     },
   },
   actions: {

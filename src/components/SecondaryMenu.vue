@@ -22,25 +22,15 @@
       <v-list-item-group
         v-model="m"
         active-class=""
+        v-for="(obj, key) in menuObject"
+        :key="key"
       >
-        <v-list-item value="SpellInfo">
+        <v-list-item
+          :value="obj.component"
+          :disabled="obj.loginRequired ? !user.state : false"
+        >
           <v-list-item-content>
-            <v-list-item-title>Spells</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item :disabled="!user.state" value="UserActors">
-          <v-list-item-content>
-            <v-list-item-title>User Actors</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item :disabled="!user.state" value="UserSpells">
-          <v-list-item-content>
-            <v-list-item-title>User Spells</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item :disabled="!user.state" value="UserFeats">
-          <v-list-item-content>
-            <v-list-item-title>User Feats</v-list-item-title>
+            <v-list-item-title>{{ obj.name }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list-item-group>
@@ -63,6 +53,7 @@ export default {
       }
     },
     user () { return this.$store.state.user },
+    menuObject () { return this.$store.state.secondaryMenuObject }
   },
 }
 </script>

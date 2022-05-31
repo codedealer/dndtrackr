@@ -96,6 +96,12 @@ const { mapMutations } = createNamespacedHelpers('encounter');
 export default {
   mixins: [UserFormMixin],
 
+  menu: {
+    name: 'User Actors',
+    component: 'UserActors',
+    loginRequired: true,
+  },
+
   data: () => ({
     types: TYPES,
     fieldBy: 'actorsOrderBy',

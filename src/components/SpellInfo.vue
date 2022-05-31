@@ -182,6 +182,12 @@ const { mapState, mapMutations, mapActions } = createNamespacedHelpers('spells')
 export default {
   name: 'SpellInfo',
 
+  menu: {
+    loginRequired: false,
+    component: 'SpellInfo',
+    name: 'Spells',
+  },
+
   mounted () {
     this.queryParser.add('#', 'dnd_class', { msg: 'Search by class' })
                     .add('@=', 'level', {

@@ -91,6 +91,12 @@ const { mapActions } = createNamespacedHelpers('feats');
 export default {
   mixins: [UserFormMixin],
 
+  menu: {
+    name: 'User Feats',
+    component: 'UserFeats',
+    loginRequired: true,
+  },
+
   data: () => ({
     fieldBy: 'featsOrderBy',
     fieldAsc: 'featsOrderAsc',
