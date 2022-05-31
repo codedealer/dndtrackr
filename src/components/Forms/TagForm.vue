@@ -41,7 +41,7 @@ export default {
     addTag () {
       if (this.tagModel.length < 1) return;
 
-      let newTags = this.tagModel.replaceAll(' ', ',').split(',').map(c => c.trim());
+      let newTags = this.tagModel.replaceAll(' ', ',').replaceAll(',,', ',').split(',').map(c => c.trim());
       this.$emit('update', [...this.tags, ...newTags]);
       this.tagModel = '';
     },

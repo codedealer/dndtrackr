@@ -234,7 +234,7 @@ export default {
       // handle the special case of material components
       if (updatePayload.components) {
         let matches = updatePayload.components
-                      .match(/M(?<replacer>\s?\(?(?<matcher>[\w\s]+)\)?)/);
+                      .match(/M(?<replacer>\s?\(?(?<matcher>[\w\s\,\.\-]+)\)?)/);
         if (matches !== null && matches.groups.matcher) {
           updatePayload.components = updatePayload.components.replace(matches.groups.replacer, '');
           updatePayload.material = matches.groups.matcher;
