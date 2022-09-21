@@ -15,7 +15,7 @@
     "v-hotkey": "^0.8.0",
     "vue": "^2.6.11",
     "vue-markdown": "^2.2.4",
-    "vuetify": "^2.2.11",
+    "vuetify": "^2.6.10",
     "vuex": "^3.4.0",
     "vuex-persist": "^2.2.0"
   },
